@@ -218,6 +218,14 @@ Wikilink. Заголовки `h2–h4` получают id и якорь `#`; п
 `backlinks(Document)` отдаёт обратные; страница документа склеивает оба набора
 (`array_merge($relations, $backlinks)`) и передаёт в компонент `doc/relation-groups`.
 
+Отдельно `evidenceGroups(Document)` собирает связанные **утверждения** (тип `claim`) и
+раскладывает их по `claim.evidence_direction`: `supports`, `contradicts`, `mixed`,
+`insufficient`. Направление берётся из Frontmatter утверждения, а не из типа ребра:
+связь `related_to` ничего не говорит о том, подтверждают данные тезис или нет. Внутри
+группы утверждения упорядочены по `claim.confidence` (`established` → `speculative`).
+Качество доказательств в этой выборке не участвует — оно принадлежит самому документу и
+присваивается по методологии.
+
 ## Статусы
 
 `DocumentTypes::STATUSES`: `draft`, `review`, `published`, `deprecated`.

@@ -164,6 +164,38 @@ final class ContentRepositoryTest extends TestCase
 		self::assertContains($rapamycin->title(), $titles, 'Обратная ссылка на mTOR не появилась');
 	}
 
+	public function testNoRawWikilinkMarkupSurvivesRendering(): void
+	{
+		foreach ($this->repository->allIncludingDrafts('en') as $document) {
+			self::assertStringNotContainsString(
+				'[[',
+				$document->html,
+				$document->relativePath . ': разметка Wikilink осталась текстом',
+			);
+		}
+	}
+
+	public function testEvidenceGroupsUseTheClaimDirection(): void
+	{
+		$rapamycin = $this->repository->find('compound', 'rapamycin', 'en');
+		self::assertNotNull($rapamycin);
+
+		$groups = $this->repository->evidenceGroups($rapamycin);
+		self::assertArrayHasKey('supports', $groups, 'Утверждение о рапамицине не попало в «подтверждает»');
+		self::assertSame(
+			['claim:rapamycin-extends-lifespan-in-mice'],
+			array_map(static fn (Document $document): string => $document->id(), $groups['supports']),
+		);
+	}
+
+	public function testEvidenceGroupsAreEmptyWithoutLinkedClaims(): void
+	{
+		$aging = $this->repository->find('concept', 'biological-aging', 'en');
+		self::assertNotNull($aging);
+
+		self::assertSame([], $this->repository->evidenceGroups($aging));
+	}
+
 	public function testRelatedGroupsAreLabelled(): void
 	{
 		$document = $this->repository->find('mechanism', 'cellular-senescence', 'en');

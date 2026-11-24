@@ -211,6 +211,24 @@ $this->layout('components::layout/site-layout', [
 				</section>
 
 				<section class="demo__section">
+					<h2 class="demo__heading">Связанные утверждения</h2>
+					<p class="demo__lead">Направление доказательств — поле самого утверждения, а не вывод из того, как оно связано со страницей.</p>
+					<?php $demoClaims = longevypedia_content()->find('compound', 'rapamycin', 'en'); ?>
+					<?= $demoClaims === null ? '' : $this->insert('components::ui/evidence-summary', [
+						'groups' => longevypedia_content()->evidenceGroups($demoClaims),
+						'id' => 'demo-claims',
+						'headingLevel' => 3,
+						'title' => 'Связанные утверждения',
+						'labels' => [
+							'supports' => 'Подтверждающие данные',
+							'contradicts' => 'Противоречащие данные',
+							'mixed' => 'Неоднозначные результаты',
+							'insufficient' => 'Недостаточно данных',
+						],
+					]) ?>
+				</section>
+
+				<section class="demo__section">
 					<h2 class="demo__heading">Цитата</h2>
 					<?= $this->insert('components::ui/quote', [
 						'text' => 'Рапамицин, введённый мышам в возрасте 20 месяцев, продлевал жизнь даже при начале лечения в позднем возрасте.',

@@ -24,7 +24,7 @@ $groups = [
 	'Навигация' => ['breadcrumbs', 'tabs', 'pagination', 'menu', 'mobile-nav', 'sidebar-nav'],
 	'Контент' => ['card', 'document-card', 'research-card', 'author-card', 'badge', 'tag', 'callout', 'quote', 'alert', 'divider', 'accordion', 'tooltip', 'empty-state'],
 	'Данные' => ['data-table', 'key-value', 'stat', 'progress', 'chart'],
-	'Научные данные' => ['evidence', 'claim-status', 'research-metadata', 'citation', 'source-list'],
+	'Научные данные' => ['evidence', 'evidence-summary', 'claim-status', 'research-metadata', 'citation', 'source-list'],
 	'Обратная связь' => ['toast', 'skeleton'],
 	'Бренд' => ['wordmark'],
 ];
@@ -254,6 +254,14 @@ $pages = [
 		'note' => 'Два независимых параметра: что говорят данные и насколько им можно верить.',
 		'specimens' => [
 			['Направление и качество', 'сильный эффект в малой выборке — это «подтверждает» + «низкое», а не «умеренно»', "<?= \$this->insert('components::ui/evidence', ['direction' => 'supports', 'quality' => 'high', 'basis' => 'Рандомизированное исследование, 190 участников, воспроизведено дважды.']) ?>\n<?= \$this->insert('components::ui/evidence', ['direction' => 'contradicts', 'quality' => 'low', 'basis' => 'Одна группа, 12 животных, эффект не воспроизведён.']) ?>\n<?= \$this->insert('components::ui/evidence', ['direction' => 'mixed', 'quality' => 'moderate']) ?>\n<?= \$this->insert('components::ui/evidence', ['direction' => 'insufficient', 'quality' => 'unassessed', 'basis' => 'Качество не оценивалось: нет разметки метода.']) ?>"],
+		],
+	],
+	'evidence-summary' => [
+		'title' => 'Сводка доказательств',
+		'note' => 'Связанные утверждения по направлению: подтверждает, противоречит, смешанно, мало данных.',
+		'specimens' => [
+			['Основное', 'направление берётся из фронтматтера утверждения, а не из типа связи', "<?php\n\$doc = longevypedia_content()->find('compound', 'rapamycin', 'en');\n?>\n<?= \$doc === null ? '' : \$this->insert('components::ui/evidence-summary', [\n\t'groups' => longevypedia_content()->evidenceGroups(\$doc),\n\t'id' => 'claims-main',\n]) ?>"],
+			['Свои подписи', 'перевод или другая терминология передаются словарём', "<?php\n\$doc = longevypedia_content()->find('compound', 'rapamycin', 'en');\n?>\n<?= \$doc === null ? '' : \$this->insert('components::ui/evidence-summary', [\n\t'groups' => longevypedia_content()->evidenceGroups(\$doc),\n\t'id' => 'claims-ru',\n\t'title' => 'Связанные утверждения',\n\t'labels' => [\n\t\t'supports' => 'Подтверждающие данные',\n\t\t'contradicts' => 'Противоречащие данные',\n\t],\n]) ?>"],
 		],
 	],
 	'claim-status' => [

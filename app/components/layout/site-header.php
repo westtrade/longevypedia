@@ -29,6 +29,7 @@ $navigation = [
 		<?= $this->insert('components::ui/wordmark', [
 			'href' => '/',
 			'label' => 'Longevypedia',
+			'tagline' => 'The science of longevity',
 			'attrs' => ['class' => 'site-header__brand'],
 		]) ?>
 

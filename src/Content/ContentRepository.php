@@ -335,6 +335,56 @@ final class ContentRepository
     }
 
     /**
+     * Связанные утверждения, разложенные по направлению доказательств.
+     *
+     * Направление берётся из frontmatter утверждения (`claim.evidence_direction`),
+     * а не выводится из того, как утверждение связано с документом: связь
+     * «related_to» ничего не говорит о том, подтверждают данные тезис или нет.
+     * Качество доказательств здесь намеренно отсутствует — его нельзя вывести
+     * из направления, оно присваивается по методологии и живёт в самом
+     * документе.
+     *
+     * @return array<string, list<Document>> код направления => утверждения
+     */
+    public function evidenceGroups(Document $document): array
+    {
+        $this->load();
+
+        $claims = [];
+
+        foreach ([$this->related($document), $this->backlinks($document)] as $groups) {
+            foreach ($groups as $group) {
+                foreach ($group['documents'] as $candidate) {
+                    if ($candidate->type !== 'claim') {
+                        continue;
+                    }
+
+                    $claims[$candidate->key()] = $candidate;
+                }
+            }
+        }
+
+        $result = [];
+
+        foreach ($claims as $claim) {
+            $meta = (array) $claim->metaValue('claim', []);
+            $direction = (string) ($meta['evidence_direction'] ?? '');
+
+            if ($direction === '') {
+                continue;
+            }
+
+            $result[$direction][] = $claim;
+        }
+
+        foreach ($result as $direction => $items) {
+            $result[$direction] = self::sortByConfidence($items);
+        }
+
+        return $result;
+    }
+
+    /**
      * Переводы документа на другие языки.
      *
      * @return array<string, Document> код языка => документ
@@ -743,6 +793,17 @@ final class ContentRepository
 
             $rendered = $renderer->render($item['body'], $item['locale']);
 
+            // Разметка Wikilink, оставшаяся в HTML как текст, означает, что
+            // парсер её не увидел: чаще всего ссылку разорвало переносом строки
+            // (Obsidian такие тоже не понимает). Молча печатать `[[…]]` нельзя —
+            // это видимая поломка статьи, поэтому она попадает в problems().
+            if (str_contains($rendered['html'], '[[')) {
+                $this->problems[] = sprintf(
+                    '%s: Wikilink не разобран — вероятно, разорван переносом строки',
+                    $item['relative'],
+                );
+            }
+
             $document = new Document(
                 type: $item['type'],
                 slug: $item['slug'],
@@ -863,6 +924,30 @@ final class ContentRepository
                 }
 
                 return strcmp(mb_strtolower($a->title()), mb_strtolower($b->title()));
+            },
+        );
+
+        return $documents;
+    }
+
+    /**
+     * Утверждения внутри одного направления: сначала более уверенные.
+     *
+     * @param list<Document> $documents
+     *
+     * @return list<Document>
+     */
+    private static function sortByConfidence(array $documents): array
+    {
+        $order = ['established' => 0, 'likely' => 1, 'uncertain' => 2, 'contested' => 3, 'speculative' => 4];
+
+        usort(
+            $documents,
+            static function (Document $a, Document $b) use ($order): int {
+                $left = $order[(string) ((array) $a->metaValue('claim', [])['confidence'] ?? '')] ?? 5;
+                $right = $order[(string) ((array) $b->metaValue('claim', [])['confidence'] ?? '')] ?? 5;
+
+                return $left <=> $right ?: strcmp(mb_strtolower($a->title()), mb_strtolower($b->title()));
             },
         );
 

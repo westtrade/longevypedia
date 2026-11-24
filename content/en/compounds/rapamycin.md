@@ -81,8 +81,8 @@ In genetically heterogeneous mice, rapamycin added to the diet extended median
 and maximum lifespan in both sexes, and the effect was present even when
 treatment began late in adult life. This is reported in
 [[research/harrison-2009-rapamycin-mice|Harrison et al., 2009]] and underlies the
-claim that [[claims/rapamycin-extends-lifespan-in-mice|rapamycin extends lifespan
-in mice]].
+claim that
+[[claims/rapamycin-extends-lifespan-in-mice|rapamycin extends lifespan in mice]].
 
 In humans, the relevant evidence is indirect. The mTOR inhibitor everolimus
 improved the response to influenza vaccination in older adults, which is a

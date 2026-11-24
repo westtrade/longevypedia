@@ -111,10 +111,13 @@ hx-trigger="change, submit, input changed delay:400ms from:find input[type='sear
 4. Хлебные крошки: Knowledge → каталог типа → заголовок.
 5. Метаданные: метка типа, дата обновления, время чтения (`readingMinutes()`), тематики.
 6. Блоки типа: `components::doc/claim-fields` для `claim`,
-   `components::doc/study-fields` для `research` (с флагом `isExample` из
+   `components::ui/research-metadata` для `research` (с флагом `isExample` из
    `study.example`).
-7. `.prose` с готовым HTML, оглавление, источники (`doc/source-list`), связи и обратные
-   ссылки (`doc/relation-groups`), подвал со ссылками на файл и историю.
+7. `.prose` с готовым HTML, источники (`ui/source-list`), сводка связанных утверждений
+   по направлению доказательств (`ui/evidence-summary`, данные из
+   `ContentRepository::evidenceGroups()`), связи и обратные ссылки
+   (`doc/relation-groups`), оглавление (`ui/sidebar-nav`), подвал со ссылками на файл и
+   историю.
 
 Статус в `find()` не проверяется: черновик откроется по прямому адресу, хотя в каталог и
 на главную не попадёт.
@@ -162,7 +165,7 @@ hx-trigger="change, submit, input changed delay:400ms from:find input[type='sear
 | --- | --- | --- |
 | `app/components/layout/` | каркас страницы | `site-layout`, `site-header`, `site-footer` |
 | `app/components/site/` | блоки сайта | `search-form`, `breadcrumbs` |
-| `app/components/doc/` | документ и его части | `document-card`, `claim-fields`, `study-fields`, `source-list`, `relation-groups`, `table-of-contents` |
+| `app/components/doc/` | документ и его части | `claim-fields`, `relation-groups` |
 | `app/components/ui/` | элементы интерфейса | `button`, `field`, `choice`, `card`, `badge`, `tag`, `callout`, `quote`, `alert`, `tabs`, `menu`, `pagination`, `data-table`, `evidence`, `claim-status`, `toast`, `skeleton`, … |
 | `app/components/ui-kit/` | инфраструктура набора | `nav`, `shell`, `specimen`, `snippet` |
 | `app/components/catalog/` | результаты каталога | `results` |
@@ -170,8 +173,8 @@ hx-trigger="change, submit, input changed delay:400ms from:find input[type='sear
 
 Правило: страница выбирает данные и раскладывает блоки, компонент рисует один блок и
 ничего не знает о репозитории. Компоненты получают готовые значения (строки, массивы,
-`Document`) и не ходят в контент сами — исключение составляют `doc/relation-groups` и
-`doc/source-list`, которым передают уже подготовленные группы и источники.
+`Document`) и не ходят в контент сами: `doc/relation-groups`, `ui/source-list` и
+`ui/evidence-summary` получают уже подготовленные группы, источники и утверждения.
 
 ## Layout и секции
 

@@ -96,10 +96,13 @@ $tag = $href !== null ? 'a' : 'span';
 		font-size: var(--text-3xl);
 	}
 
+	/* Подпись набрана капителью, как в брендбуке: строчные в мелком кегле
+	   читаются как обычный текст и спорят с названием. */
 	.ui-wordmark__tagline {
 		color: var(--color-text-subtle);
 		font-family: var(--font-ui);
-		font-size: var(--text-xs);
-		letter-spacing: var(--tracking-wide);
+		font-size: 0.625rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 	}
 </style>

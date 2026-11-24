@@ -101,6 +101,7 @@ translation, or by any other single downstream process.
 
 ## What it supports
 
-The claim that [[claims/rapamycin-extends-lifespan-in-mice|rapamycin extends
-lifespan in mice]] rests substantially on this study together with later
+The claim that
+[[claims/rapamycin-extends-lifespan-in-mice|rapamycin extends lifespan in mice]]
+rests substantially on this study together with later
 dose–response work. It does not support any claim about human lifespan.

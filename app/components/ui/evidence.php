@@ -35,7 +35,9 @@ $directions = [
 	'contradicts' => ['label' => 'Contradicts', 'icon' => 'close', 'tone' => 'danger'],
 	'mixed' => ['label' => 'Mixed results', 'icon' => 'graph', 'tone' => 'warning'],
 	'neutral' => ['label' => 'No effect', 'icon' => 'document', 'tone' => 'neutral'],
-	'insufficient' => ['label' => 'Insufficient data', 'icon' => 'alert', 'tone' => 'neutral'],
+	// «Недостаточно данных» — синий (info), а не серый: серый в палитре занят
+	// нейтральным результатом. Разные вещи не должны выглядеть одинаково.
+	'insufficient' => ['label' => 'Insufficient data', 'icon' => 'alert', 'tone' => 'info'],
 ];
 
 $qualities = [
@@ -119,6 +121,10 @@ $qual = $qualities[$quality] ?? $qualities['unassessed'];
 
 	.ui-evidence__direction--neutral {
 		color: var(--color-text-muted);
+	}
+
+	.ui-evidence__direction--info {
+		color: var(--color-info-text);
 	}
 
 	.ui-evidence__quality {

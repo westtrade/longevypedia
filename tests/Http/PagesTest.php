@@ -81,6 +81,16 @@ final class PagesTest extends TestCase
 		self::assertStringContainsString('/commits/main/content/en/compounds/rapamycin.md', $body);
 	}
 
+	public function testDocumentPageGroupsRelatedClaimsByEvidenceDirection(): void
+	{
+		$body = $this->client()->get('/compounds/rapamycin/')->assertOk()->body();
+
+		self::assertStringContainsString('ui-evidence-summary', $body);
+		self::assertStringContainsString('Supporting evidence', $body);
+		self::assertStringContainsString('Rapamycin extends lifespan in mice', $body);
+		self::assertStringNotContainsString('Contradicting evidence', $body, 'Утверждений с противоречащими данными в корпусе нет');
+	}
+
 	public function testDocumentPageRendersTableOfContents(): void
 	{
 		$body = $this->client()->get('/mechanisms/autophagy/')->assertOk()->body();

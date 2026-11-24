@@ -40,6 +40,11 @@ $relations = $repository->related($document);
 $backlinks = $repository->backlinks($document);
 $groups = array_merge($relations, $backlinks);
 
+// Связанные утверждения раскладываются по направлению доказательств: это
+// отдельный блок, потому что «подтверждает» и «противоречит» — не ярлык связи,
+// а собственное поле утверждения.
+$evidence = $repository->evidenceGroups($document);
+
 $schema = match ($document->type) {
 	'claim' => [
 		'@context' => 'https://schema.org',
@@ -118,48 +123,57 @@ $this->start('page');
 				<?php endif; ?>
 			</header>
 
-			<?php if ($document->type === 'claim'): ?>
-				<?= $this->insert('components::doc/claim-fields', ['claim' => $claimMeta]) ?>
-			<?php endif; ?>
+			<div class="doc__body">
+				<?php if ($document->type === 'claim'): ?>
+					<?= $this->insert('components::doc/claim-fields', ['claim' => $claimMeta]) ?>
+				<?php endif; ?>
 
-			<?php if ($document->type === 'research'): ?>
-				<?= $this->insert('components::ui/research-metadata', [
-					'study' => $studyMeta,
-					'isExample' => (bool) ($studyMeta['example'] ?? false),
-					'id' => 'study',
+				<?php if ($document->type === 'research'): ?>
+					<?= $this->insert('components::ui/research-metadata', [
+						'study' => $studyMeta,
+						'isExample' => (bool) ($studyMeta['example'] ?? false),
+						'id' => 'study',
+					]) ?>
+				<?php endif; ?>
+
+				<div class="prose">
+					<?= $document->html ?>
+				</div>
+
+				<?= $this->insert('components::ui/source-list', [
+					'sources' => $document->sources(),
+					'title' => 'Sources',
 				]) ?>
-			<?php endif; ?>
 
-			<div class="prose">
-				<?= $document->html ?>
+				<?= $this->insert('components::ui/evidence-summary', [
+					'groups' => $evidence,
+					'title' => 'Related claims',
+					'id' => 'related-claims',
+					'headingLevel' => 2,
+				]) ?>
+
+				<?= $this->insert('components::doc/relation-groups', [
+					'groups' => $groups,
+					'title' => 'Connections',
+				]) ?>
+
+				<footer class="doc__footer">
+					<p>
+						<a class="doc__source-link" href="<?= $this->e($sourceUrl) ?>" rel="noopener">
+							View the source Markdown on GitHub
+						</a>
+					</p>
+					<p>
+						<a class="doc__source-link" href="<?= $this->e($historyUrl) ?>" rel="noopener">
+							Change history
+						</a>
+						<span class="doc__dot" aria-hidden="true">·</span>
+						<span><?= $this->e((string) $document->license()) ?></span>
+						<span class="doc__dot" aria-hidden="true">·</span>
+						<span><?= $document->wordCount() ?> words</span>
+					</p>
+				</footer>
 			</div>
-
-			<?= $this->insert('components::ui/source-list', [
-				'sources' => $document->sources(),
-				'title' => 'Sources',
-			]) ?>
-
-			<?= $this->insert('components::doc/relation-groups', [
-				'groups' => $groups,
-				'title' => 'Connections',
-			]) ?>
-
-			<footer class="doc__footer">
-				<p>
-					<a class="doc__source-link" href="<?= $this->e($sourceUrl) ?>" rel="noopener">
-						View the source Markdown on GitHub
-					</a>
-				</p>
-				<p>
-					<a class="doc__source-link" href="<?= $this->e($historyUrl) ?>" rel="noopener">
-						Change history
-					</a>
-					<span class="doc__dot" aria-hidden="true">·</span>
-					<span><?= $this->e((string) $document->license()) ?></span>
-					<span class="doc__dot" aria-hidden="true">·</span>
-					<span><?= $document->wordCount() ?> words</span>
-				</p>
-			</footer>
 		</article>
 
 		<aside class="doc-page__aside">
@@ -201,8 +215,17 @@ $this->start('page');
 		margin-top: 1rem;
 	}
 
+	/* Блоки статьи идут друг за другом без собственных внешних отступов:
+	   вертикальный ритм задаёт колонка, иначе источники прилипают к последнему
+	   абзацу, а связи — к сводке утверждений. */
+	.doc__body {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-8);
+	}
+
 	.doc__header {
-		margin-bottom: 1.5rem;
+		margin-bottom: var(--space-8);
 	}
 
 	.doc__meta {
