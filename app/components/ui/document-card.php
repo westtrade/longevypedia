@@ -77,7 +77,7 @@ $updated = $document->updated();
 		text-transform: uppercase;
 		letter-spacing: 0.07em;
 		font-weight: 600;
-		color: var(--color-accent);
+		color: var(--color-accent-text);
 	}
 
 	.doc-card__title {
@@ -93,7 +93,7 @@ $updated = $document->updated();
 		text-decoration: none;
 
 		&:hover {
-			color: var(--color-accent);
+			color: var(--color-accent-text);
 		}
 
 		/* Ссылка растягивается на карточку: кликабельна вся площадь,
@@ -128,7 +128,7 @@ $updated = $document->updated();
 		border-bottom: 1px dotted var(--color-border-strong);
 
 		&:hover {
-			color: var(--color-accent);
+			color: var(--color-accent-text);
 		}
 	}
 </style>

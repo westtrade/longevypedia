@@ -96,15 +96,46 @@ $this->layout('components::layout/site-layout', [
 						эффект может быть сильным, а доказательство — слабым.
 					</p>
 					<div class="demo__evidence">
+						<?php
+						// Демонстрационная страница русская, а подписи компонентов по
+						// умолчанию английские (язык интерфейса сайта) — поэтому словарь
+						// передаётся здесь, а не правится в компоненте.
+						?>
 						<?= $this->insert('components::ui/evidence', [
 							'direction' => 'supports',
 							'quality' => 'moderate',
+							'label' => 'Доказательность',
+							'labels' => [
+								'quality' => 'Качество данных',
+								'supports' => 'Подтверждает',
+								'contradicts' => 'Противоречит',
+								'mixed' => 'Смешанные результаты',
+								'neutral' => 'Без эффекта',
+								'insufficient' => 'Недостаточно данных',
+								'high' => 'Высокое',
+								'moderate' => 'Умеренное',
+								'low' => 'Низкое',
+								'very-low' => 'Очень низкое',
+								'unassessed' => 'Не оценено',
+							],
 							'basis' => 'Одно крупное исследование на мышах с двумя возрастными когортами; независимого воспроизведения на людях нет.',
 						]) ?>
 						<?= $this->insert('components::ui/claim-status', [
 							'confidence' => 'likely',
 							'direction' => 'supports',
 							'asOf' => '2026-11-20',
+							'label' => 'Статус утверждения',
+							'labels' => [
+								'established' => 'Установлено',
+								'likely' => 'Вероятно',
+								'uncertain' => 'Неопределённо',
+								'contested' => 'Оспаривается',
+								'speculative' => 'Спекулятивно',
+								'supports' => 'Данные подтверждают',
+								'contradicts' => 'Данные противоречат',
+								'mixed' => 'Данные смешанные',
+								'insufficient' => 'Данных недостаточно',
+							],
 						]) ?>
 					</div>
 				</section>
@@ -164,6 +195,7 @@ $this->layout('components::layout/site-layout', [
 				<section class="demo__section">
 					<h2 class="demo__heading">Источники</h2>
 					<?= $this->insert('components::ui/source-list', [
+						'title' => 'Источники',
 						'sources' => [
 							[
 								'citation' => 'Harrison DE, Strong R, Sharp ZD, et al. Rapamycin fed late in life extends lifespan in genetically heterogeneous mice. Nature. 2009;460(7253):392–395.',
@@ -470,7 +502,7 @@ $this->layout('components::layout/site-layout', [
 		gap: var(--space-3);
 	}
 
-	@media (max-width: 60rem) {
+	@media (max-width: $bp-xl) {
 		.demo__layout {
 			grid-template-columns: minmax(0, 1fr);
 		}

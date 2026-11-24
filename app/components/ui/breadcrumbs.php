@@ -13,7 +13,7 @@ declare(strict_types=1);
  */
 
 $items ??= [];
-$label ??= 'Хлебные крошки';
+$label ??= 'Breadcrumb';
 
 if ($items === []) {
 	return;

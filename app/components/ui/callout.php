@@ -18,10 +18,10 @@ $title ??= null;
 $children ??= null;
 
 $kinds = [
-	'note' => ['label' => 'Примечание'],
-	'definition' => ['label' => 'Определение'],
-	'method' => ['label' => 'Методика'],
-	'caution' => ['label' => 'Осторожно'],
+	'note' => ['label' => 'Note'],
+	'definition' => ['label' => 'Definition'],
+	'method' => ['label' => 'Method'],
+	'caution' => ['label' => 'Caution'],
 ];
 
 $meta = $kinds[$kind] ?? $kinds['note'];

@@ -21,6 +21,7 @@ declare(strict_types=1);
  * @param string|null $href      если задан — заголовок становится ссылкой
  * @param string      $variant   default | outlined | flat | brand
  * @param string|null $meta      строка метаданных под заголовком
+ * @param string      $titleTag  уровень заголовка карточки (h2 | h3 | h4)
  * @param array       $attrs
  */
 
@@ -33,6 +34,7 @@ $media ??= null;
 $href ??= null;
 $variant ??= 'default';
 $meta ??= null;
+$titleTag ??= 'h3';
 $attrs ??= [];
 
 $tag = $href !== null ? 'a' : 'div';
@@ -48,13 +50,13 @@ $tag = $href !== null ? 'a' : 'div';
 		<?php endif; ?>
 
 		<?php if ($title !== null): ?>
-			<h3 class="ui-card__title">
+			<<?= e($titleTag) ?> class="ui-card__title">
 				<?php if ($href !== null): ?>
 					<a class="ui-card__link" href="<?= $this->e((string) $href) ?>"><?= $this->e((string) $title) ?></a>
 				<?php else: ?>
 					<?= $this->e((string) $title) ?>
 				<?php endif; ?>
-			</h3>
+			</<?= e($titleTag) ?>>
 		<?php endif; ?>
 
 		<?php if ($meta !== null): ?>

@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Страница документа: статья, исследование, утверждение, сущность.
  *
  * Один шаблон на все типы: общий каркас (заголовок, содержание, источники,
- * связи) одинаков, а различия вынесены в компоненты `doc/study-fields` и
+ * связи) одинаков, а различия вынесены в компоненты `ui/research-metadata` и
  * `doc/claim-fields`. Дублировать страницу на каждый тип пришлось бы потому,
  * что у исследования и утверждения разные поля, — но не разную вёрстку.
  *
@@ -79,11 +79,14 @@ $this->layout('components::layout/site-layout', [
 $this->start('page');
 ?>
 <div class="container doc-page">
-	<?= $this->insert('components::site/breadcrumbs', ['items' => [
-		['label' => 'Knowledge', 'url' => '/catalog'],
-		['label' => $document->typeLabel(), 'url' => '/' . \Longevypedia\Content\DocumentTypes::dir($document->type) . '/'],
-		['label' => $document->title()],
-	]]) ?>
+	<?= $this->insert('components::ui/breadcrumbs', [
+		'items' => [
+			['label' => 'Knowledge', 'url' => '/catalog'],
+			['label' => $document->typeLabel(), 'url' => '/' . \Longevypedia\Content\DocumentTypes::dir($document->type) . '/'],
+			['label' => $document->title()],
+		],
+		'label' => 'Breadcrumb',
+	]) ?>
 
 	<div class="doc-page__grid">
 		<article class="doc">
@@ -120,9 +123,10 @@ $this->start('page');
 			<?php endif; ?>
 
 			<?php if ($document->type === 'research'): ?>
-				<?= $this->insert('components::doc/study-fields', [
+				<?= $this->insert('components::ui/research-metadata', [
 					'study' => $studyMeta,
 					'isExample' => (bool) ($studyMeta['example'] ?? false),
+					'id' => 'study',
 				]) ?>
 			<?php endif; ?>
 
@@ -159,7 +163,20 @@ $this->start('page');
 		</article>
 
 		<aside class="doc-page__aside">
-			<?= $this->insert('components::doc/table-of-contents', ['toc' => $document->toc]) ?>
+			<?php
+			// Содержание — тот же боковой список, что и в наборе: отдельного
+			// компонента для оглавления не нужно, различается только источник.
+			$tocItems = array_map(static fn (array $entry): array => [
+				'label' => $entry['text'],
+				'url' => '#' . $entry['id'],
+				'level' => max(0, $entry['level'] - 2),
+			], $document->toc);
+			?>
+			<?= $this->insert('components::ui/sidebar-nav', [
+				'title' => 'On this page',
+				'items' => $tocItems,
+				'sticky' => true,
+			]) ?>
 
 			<?php if ($document->aliases() !== []): ?>
 				<div class="doc-page__aliases">
@@ -202,7 +219,7 @@ $this->start('page');
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 		font-weight: 600;
-		color: var(--color-accent);
+		color: var(--color-accent-text);
 	}
 
 	.doc__dot {
@@ -244,7 +261,7 @@ $this->start('page');
 		text-decoration: none;
 
 		&:hover {
-			color: var(--color-accent);
+			color: var(--color-accent-text);
 			border-color: var(--color-accent);
 			background: var(--color-accent-subtle);
 		}
@@ -295,7 +312,7 @@ $this->start('page');
 		color: var(--color-text-muted);
 	}
 
-	@media (max-width: 60rem) {
+	@media (max-width: $bp-xl) {
 		.doc-page__grid {
 			grid-template-columns: minmax(0, 1fr);
 			gap: 1.5rem;

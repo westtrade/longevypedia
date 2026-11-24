@@ -101,7 +101,7 @@ $kit = require dirname(__DIR__, 3) . '/data/ui-kit.php';
 		line-height: var(--leading-relaxed);
 	}
 
-	@media (max-width: 60rem) {
+	@media (max-width: $bp-xl) {
 		.ui-kit-page {
 			grid-template-columns: minmax(0, 1fr);
 		}

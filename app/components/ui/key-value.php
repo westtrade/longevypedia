@@ -93,7 +93,7 @@ if ($items === []) {
 		padding: var(--space-1) 0;
 	}
 
-	@media (max-width: 40rem) {
+	@media (max-width: $bp-sm) {
 		.ui-kv__row {
 			grid-template-columns: minmax(0, 1fr);
 			gap: 2px;

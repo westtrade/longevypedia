@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 $lines ??= 3;
 $variant ??= 'text';
-$label ??= 'Загрузка';
+$label ??= 'Loading';
 ?>
 <div class="ui-skeleton ui-skeleton--<?= e($variant) ?>" aria-hidden="true" data-skeleton>
 	<?php if ($variant === 'table'): ?>

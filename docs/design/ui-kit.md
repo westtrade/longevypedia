@@ -133,7 +133,29 @@ Longevypedia выглядит как научное издание, а не ка
 | `--layout-gap` | `var(--space-8)` | сеточные промежутки |
 | `--layout-header` | 4rem | высота липкой шапки |
 
-Брейкпоинты: `40rem` (sm), `48rem` (md), `60rem` (lg), `72rem` (xl), `90rem` (2xl).
+### Точки перехода
+
+Медиазапрос не принимает значение из CSS-переменной — `@media (max-width: var(--bp-md))`
+невалиден, — поэтому точки живут SCSS-переменными в одном файле
+`app/client/styles/_breakpoints.scss`:
+
+| Переменная | Значение | Когда срабатывает |
+| --- | --- | --- |
+| `$bp-xs` | 30rem (480px) | узкий телефон: одна колонка, крупные отступы |
+| `$bp-sm` | 40rem (640px) | телефон: шапка переносится, боковые колонки вниз |
+| `$bp-md` | 48rem (768px) | сетки схлопываются в одну колонку |
+| `$bp-lg` | 56rem (896px) | планшет: узкая боковая колонка ещё рядом с текстом |
+| `$bp-xl` | 60rem (960px) | ноутбук: статья и содержание не помещаются рядом |
+| `$bp-2xl` | 64rem (1024px) | широкий ноутбук: компактные варианты полей и навигации |
+
+Файл подставляется в каждую единицу компиляции через
+`css.preprocessorOptions.scss.additionalData` в `vite.config.js` (плюс `loadPaths` на
+`app/client/styles`). Это нужно потому, что стили компонентов вырезаются из шаблонов в
+`.bolt/client/generated/…` и компилируются отдельными файлами: относительный `@use` из них
+не нашёл бы общий файл. Значения при этом остаются в одном месте, а не копируются в каждый
+компонент — за этим следит тест `testBreakpointsComeFromTheSharedScale`: он падает, если в
+`app/` появится медиазапрос с числом мимо шкалы.
+
 Media queries — desktop-first (`max-width`), потому что базовый макет широкий.
 
 Каркас: `.page` — flex-колонка на `100dvh`, `.page__main` растягивается, `.container`
@@ -231,13 +253,17 @@ Media queries — desktop-first (`max-width`), потому что базовы�
 | Вкладки | `ui/tabs.php` | переключение с сохранением состояния в URL |
 | Постраничная навигация | `ui/pagination.php` | номера страниц считаются в компоненте |
 | Меню | `ui/menu.php` | выпадающее на `<details>` |
-| Боковая навигация | `ui/sidebar-nav.php` | разделы UI-кита |
+| Мобильная навигация | `ui/mobile-nav.php` | меню для узкого экрана, без JS |
+| Боковая навигация | `ui/sidebar-nav.php` | содержание статьи и разделы страницы |
 
 ### Контент
 
 | Компонент | Путь | Назначение |
 | --- | --- | --- |
-| Карточка | `ui/card.php` | заголовок, метаданные, ссылка, слот |
+| Карточка | `ui/card.php` | заголовок, метаданные, ссылка, слот, `titleTag` |
+| Карточка документа | `ui/document-card.php` | тип, дата, заголовок, summary, тематики |
+| Карточка исследования | `ui/research-card.php` | дизайн, авторы, журнал, год, исходы |
+| Карточка автора | `ui/author-card.php` | имя, роль, организация, ссылка на профиль |
 | Бейдж | `ui/badge.php` | короткий статус словом |
 | Тег | `ui/tag.php` | ссылка на каталог по тематике |
 | Врезка | `ui/callout.php` | редакционное замечание (не ошибка) |
@@ -264,6 +290,8 @@ Media queries — desktop-first (`max-width`), потому что базовы�
 | --- | --- | --- |
 | Доказательность | `ui/evidence.php` | две независимые оси: направление и качество |
 | Статус утверждения | `ui/claim-status.php` | confidence + evidence_direction из Frontmatter |
+| Параметры исследования | `ui/research-metadata.php` | дизайн, выборка, исходы; `data-code` рядом с подписью |
+| Цитата источника | `ui/citation.php` | отсылка в тексте: номер, автор, год |
 | Источники | `ui/source-list.php` | DOI → doi.org, PMID → PubMed |
 
 ### Обратная связь и бренд
@@ -278,17 +306,12 @@ Media queries — desktop-first (`max-width`), потому что базовы�
 
 | Компонент | Путь | Назначение |
 | --- | --- | --- |
-| Карточка документа | `doc/document-card.php` | тип, заголовок, summary, метаданные |
-| Поля утверждения | `doc/claim-fields.php` | statement, confidence, direction, scope, as_of |
-| Поля исследования | `doc/study-fields.php` | дизайн, выборка, исходы, DOI/PMID |
-| Источники документа | `doc/source-list.php` | список с внешними ссылками |
+| Поля утверждения | `doc/claim-fields.php` | statement, confidence, direction, scope, as_of — на `ui/quote` и `ui/claim-status` |
 | Связи | `doc/relation-groups.php` | группы исходящих и обратных связей |
-| Оглавление | `doc/table-of-contents.php` | из `Document::$toc` |
 | Layout | `layout/site-layout.php` | каркас, SEO, тема, ассеты |
 | Шапка | `layout/site-header.php` | навигация, поиск, тема |
 | Подвал | `layout/site-footer.php` | ссылки, лицензии, дисклеймер |
-| Поиск | `site/search-form.php` | GET + HTMX-подсказки |
-| Хлебные крошки сайта | `site/breadcrumbs.php` | общий компонент |
+| Поиск | `site/search-form.php` | GET + HTMX-подсказки; поле и кнопка — из набора |
 | Результаты каталога | `catalog/results.php` | группировка по типам |
 
 ## Направление ≠ качество доказательств
@@ -297,6 +320,11 @@ Media queries — desktop-first (`max-width`), потому что базовы�
 
 - `direction`: `supports`, `contradicts`, `mixed`, `neutral`, `insufficient`;
 - `quality`: `high`, `moderate`, `low`, `very-low`, `unassessed`.
+
+**Акцентный цвет не бывает цветом текста.** `--color-accent` (#c47a45) даёт 3.17:1 на
+фоне и 3.38:1 на поверхности — ниже AA для обычного текста, поэтому он остаётся для
+заливок, рамок и линий, а текст берёт `--color-accent-text` (#9a5a2e, 5.08:1). За этим
+следит тест `testAccentIsNotUsedAsTextColour`.
 
 Их нельзя выводить друг из друга. Исследование может быть методологически слабым
 (`low`), но показывать рост (`supports`); может быть сильным (`high`) и не находить

@@ -144,13 +144,13 @@ $this->layout('components::layout/site-layout', [
 
 		&:hover {
 			border-color: var(--color-accent);
-			color: var(--color-accent);
+			color: var(--color-accent-text);
 		}
 
 		&.is-active {
 			background: var(--color-accent-subtle);
 			border-color: var(--color-accent);
-			color: var(--color-accent);
+			color: var(--color-accent-text);
 			font-weight: 600;
 		}
 	}
@@ -181,7 +181,7 @@ $this->layout('components::layout/site-layout', [
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		font-weight: 600;
-		color: var(--color-accent);
+		color: var(--color-accent-text);
 	}
 
 	.search-page__dot {
@@ -199,7 +199,7 @@ $this->layout('components::layout/site-layout', [
 			text-decoration: none;
 
 			&:hover {
-				color: var(--color-accent);
+				color: var(--color-accent-text);
 			}
 		}
 	}
@@ -213,7 +213,7 @@ $this->layout('components::layout/site-layout', [
 
 	.search-page__snippet mark {
 		background: var(--color-accent-subtle);
-		color: var(--color-accent);
+		color: var(--color-accent-text);
 		border-radius: 2px;
 		padding-inline: 1px;
 	}

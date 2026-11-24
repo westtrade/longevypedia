@@ -227,7 +227,7 @@ $this->layout('components::layout/site-layout', [
 			text-decoration: none;
 
 			&:hover {
-				color: var(--color-accent);
+				color: var(--color-accent-text);
 			}
 		}
 	}
@@ -309,7 +309,7 @@ $this->layout('components::layout/site-layout', [
 		font-size: var(--text-sm);
 	}
 
-	@media (max-width: 56rem) {
+	@media (max-width: $bp-lg) {
 		.about__grid {
 			grid-template-columns: minmax(0, 1fr);
 			gap: 1rem;

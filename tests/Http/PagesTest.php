@@ -85,7 +85,8 @@ final class PagesTest extends TestCase
 	{
 		$body = $this->client()->get('/mechanisms/autophagy/')->assertOk()->body();
 
-		self::assertStringContainsString('doc-toc', $body);
+		// Содержание — боковой список набора, а не отдельный компонент.
+		self::assertStringContainsString('ui-sidebar-nav', $body);
 		self::assertStringContainsString('href="#', $body);
 	}
 
@@ -101,7 +102,8 @@ final class PagesTest extends TestCase
 	{
 		$body = $this->client()->get('/research/harrison-2009-rapamycin-mice/')->assertOk()->body();
 
-		self::assertStringContainsString('study__fields', $body);
+		self::assertStringContainsString('ui-research-meta', $body);
+		self::assertStringContainsString('ui-kv__row', $body);
 		// Подпись «Animal experiment» — для человека, код дизайна — для машин.
 		self::assertStringContainsString('Animal experiment', $body);
 		self::assertStringContainsString('data-code="animal_experiment"', $body);
@@ -111,7 +113,10 @@ final class PagesTest extends TestCase
 	{
 		$body = $this->client()->get('/claims/rapamycin-extends-lifespan-in-mice/')->assertOk()->body();
 
-		self::assertStringContainsString('claim__statement', $body);
+		// Утверждение печатается цитатой из набора, а не отдельным классом.
+		self::assertStringContainsString('ui-claim', $body);
+		self::assertStringContainsString('ui-quote__text', $body);
+		self::assertStringContainsString('ui-claim-status', $body);
 		// Уверенность и направление доказательств — независимые параметры,
 		// оба должны доехать до разметки машинным кодом, а не только переводом.
 		self::assertStringContainsString('data-confidence="likely"', $body);

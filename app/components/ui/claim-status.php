@@ -13,27 +13,40 @@ declare(strict_types=1);
  * @var string $direction supports | contradicts | mixed | insufficient
  * @var string|null $asOf дата оценки, ISO
  * @var string|null $label подпись блока
+ * @var array<string, string> $labels переопределение подписей уверенности и направления
  */
 
 $confidence ??= 'uncertain';
 $direction ??= 'insufficient';
 $asOf ??= null;
-$label ??= 'Статус утверждения';
+$label ??= 'Claim status';
+$labels ??= [];
 
 $confidences = [
-	'established' => ['label' => 'Установлено', 'tone' => 'success'],
-	'likely' => ['label' => 'Вероятно', 'tone' => 'brand'],
-	'uncertain' => ['label' => 'Неопределённо', 'tone' => 'neutral'],
-	'contested' => ['label' => 'Оспаривается', 'tone' => 'warning'],
-	'speculative' => ['label' => 'Спекулятивно', 'tone' => 'danger'],
+	'established' => ['label' => 'Established', 'tone' => 'success'],
+	'likely' => ['label' => 'Likely', 'tone' => 'brand'],
+	'uncertain' => ['label' => 'Uncertain', 'tone' => 'neutral'],
+	'contested' => ['label' => 'Contested', 'tone' => 'warning'],
+	'speculative' => ['label' => 'Speculative', 'tone' => 'danger'],
 ];
 
 $directions = [
-	'supports' => 'Данные подтверждают',
-	'contradicts' => 'Данные противоречат',
-	'mixed' => 'Данные смешанные',
-	'insufficient' => 'Данных недостаточно',
+	'supports' => 'Evidence supports it',
+	'contradicts' => 'Evidence contradicts it',
+	'mixed' => 'Evidence is mixed',
+	'insufficient' => 'Evidence is insufficient',
 ];
+
+// Подписи по умолчанию английские; страница на другом языке передаёт словарь.
+foreach ($labels as $code => $text) {
+	if (isset($confidences[$code])) {
+		$confidences[$code]['label'] = $text;
+	}
+
+	if (isset($directions[$code])) {
+		$directions[$code] = $text;
+	}
+}
 
 $conf = $confidences[$confidence] ?? $confidences['uncertain'];
 ?>
@@ -45,7 +58,7 @@ $conf = $confidences[$confidence] ?? $confidences['uncertain'];
 	<span class="ui-claim-status__direction"><?= e($directions[$direction] ?? $directions['insufficient']) ?></span>
 
 	<?php if ($asOf !== null && $asOf !== ''): ?>
-		<span class="ui-claim-status__date">на <?= e($asOf) ?></span>
+		<span class="ui-claim-status__date">as of <?= e($asOf) ?></span>
 	<?php endif ?>
 </div>
 

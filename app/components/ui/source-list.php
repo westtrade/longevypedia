@@ -14,7 +14,7 @@ declare(strict_types=1);
  */
 
 $sources ??= [];
-$title ??= 'Источники';
+$title ??= 'Sources';
 
 if ($sources === []) {
 	return;

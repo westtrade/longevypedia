@@ -13,7 +13,7 @@ declare(strict_types=1);
  */
 
 $items ??= [];
-$label ??= 'Разделы';
+$label ??= 'Sections';
 
 if ($items === []) {
 	return;

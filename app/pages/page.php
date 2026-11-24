@@ -94,7 +94,7 @@ $this->layout('components::layout/site-layout', [
 			</div>
 			<div class="home-list">
 				<?php foreach ($recent as $document): ?>
-					<?= $this->insert('components::doc/document-card', ['document' => $document]) ?>
+					<?= $this->insert('components::ui/document-card', ['document' => $document]) ?>
 				<?php endforeach; ?>
 			</div>
 		</section>
@@ -108,7 +108,7 @@ $this->layout('components::layout/site-layout', [
 			</p>
 			<div class="home-list">
 				<?php foreach ($popular as $document): ?>
-					<?= $this->insert('components::doc/document-card', ['document' => $document]) ?>
+					<?= $this->insert('components::ui/document-card', ['document' => $document]) ?>
 				<?php endforeach; ?>
 			</div>
 		</section>
@@ -155,15 +155,21 @@ $this->layout('components::layout/site-layout', [
 </div>
 
 <style lang="scss">
+	/* Плоская подложка вместо градиента: первый экран должен читаться как
+	   страница энциклопедии, а не как лендинг. Границей отделяем от остального. */
 	.home-hero {
 		border-bottom: 1px solid var(--color-border);
-		background:
-			radial-gradient(120% 100% at 15% 0%, var(--color-accent-subtle), transparent 60%),
-			var(--color-bg);
+		background: var(--color-surface-alt);
 	}
 
+	/* Ширину ограничивает только текст: заголовок и поиск стоят на одной
+	   линии сетки с остальными разделами страницы. */
 	.home-hero__inner {
 		padding-block: clamp(2.5rem, 5vw, 4.5rem);
+	}
+
+	.home-hero__title,
+	.home-hero__lead {
 		max-width: 46rem;
 	}
 
@@ -172,7 +178,7 @@ $this->layout('components::layout/site-layout', [
 		font-size: var(--text-xs);
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: var(--color-accent);
+		color: var(--color-accent-text);
 		font-weight: 600;
 	}
 
@@ -277,7 +283,7 @@ $this->layout('components::layout/site-layout', [
 		text-decoration: none;
 
 		&:hover {
-			color: var(--color-accent);
+			color: var(--color-accent-text);
 		}
 	}
 

@@ -32,6 +32,9 @@ declare(strict_types=1);
  * @param string|null       $suffix      единица измерения после поля
  * @param mixed             $element     Closure для своего контрола
  * @param array             $attrs
+ * @param list<string>      $describedBy дополнительные id для aria-describedby
+ *                                        (счётчик подсказок, статус запроса)
+ * @param bool              $labelHidden подпись только для скринридера
  */
 
 $name ??= '';
@@ -50,16 +53,23 @@ $options ??= [];
 $suffix ??= null;
 $element ??= null;
 $attrs ??= [];
+$describedBy ??= [];
+$labelHidden ??= false;
 
 $id = (string) $id;
 $hasError = (string) $error !== '';
 $descriptionId = $id . '-description';
 $errorId = $id . '-error';
 
-$describedBy = array_values(array_filter([
-	$description !== '' ? $descriptionId : null,
-	$hasError ? $errorId : null,
-]));
+// Порядок важен: сначала внешние id (их передал вызывающий), затем
+// собственные описание и ошибка — скринридер читает в этом же порядке.
+$describedByIds = array_values(array_filter(array_merge(
+	array_map(static fn ($value): string => (string) $value, (array) $describedBy),
+	[
+		$description !== '' ? $descriptionId : null,
+		$hasError ? $errorId : null,
+	],
+)));
 
 $controlAttrs = array_merge($attrs, [
 	'id' => $id,
@@ -68,7 +78,7 @@ $controlAttrs = array_merge($attrs, [
 		'ui-field__input--error' => $hasError,
 	]),
 	'aria-invalid' => $hasError ? 'true' : null,
-	'aria-describedby' => $describedBy === [] ? null : implode(' ', $describedBy),
+	'aria-describedby' => $describedByIds === [] ? null : implode(' ', $describedByIds),
 	'required' => $required ?: null,
 	'disabled' => $disabled ?: null,
 	'readonly' => $readonly ?: null,
@@ -76,7 +86,7 @@ $controlAttrs = array_merge($attrs, [
 ]);
 ?>
 <div class="ui-field<?= $hasError ? ' ui-field--error' : '' ?><?= $disabled ? ' ui-field--disabled' : '' ?>">
-	<label class="ui-field__label" for="<?= $this->e($id) ?>">
+	<label class="ui-field__label<?= $labelHidden ? ' visually-hidden' : '' ?>" for="<?= $this->e($id) ?>">
 		<?= $this->e((string) $label) ?>
 		<?php if ($required): ?>
 			<span class="ui-field__required" aria-hidden="true">*</span>
@@ -153,7 +163,9 @@ $controlAttrs = array_merge($attrs, [
 	/* Граница контрола — 3:1 к фону: иначе поле не видно без цвета заливки. */
 	.ui-field__input {
 		width: 100%;
-		min-height: 2.5rem;
+		/* Высота настраивается снаружи переменной, а не параметром PHP:
+		   компактный вариант нужен шапке, но структура поля от этого не меняется. */
+		min-height: var(--ui-field-input-height, 2.5rem);
 		padding: var(--space-2) var(--space-3);
 		border: 1px solid var(--color-control-border);
 		border-radius: var(--radius-sm);

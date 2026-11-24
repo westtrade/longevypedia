@@ -3,7 +3,11 @@
 declare(strict_types=1);
 
 /**
- * Шапка сайта: название, навигация, поиск, переключатель темы.
+ * Шапка сайта: логотип, навигация, поиск, переключатель темы.
+ *
+ * Логотип приходит из `components::ui/wordmark`, поэтому замена знака не
+ * трогает разметку шапки. На узком экране пункты меню прячутся, и вместо них
+ * выводится `components::ui/mobile-nav` — та же навигация в `<details>`.
  *
  * Поиск работает без JavaScript (обычный GET на `/search`). С HTMX тот же
  * адрес с `_fragments=search-results` отдаёт только список подсказок —
@@ -22,14 +26,11 @@ $navigation = [
 ?>
 <header class="site-header">
 	<div class="container site-header__inner">
-		<a class="site-header__brand" href="/" aria-label="Longevypedia — home">
-			<svg class="site-header__mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-				<circle cx="16" cy="16" r="12.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".35"/>
-				<path d="M16 5.5c5.8 0 10.5 4.7 10.5 10.5S21.8 26.5 16 26.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-				<circle cx="16" cy="16" r="4.2" fill="currentColor"/>
-			</svg>
-			<span class="site-header__name">Longevypedia</span>
-		</a>
+		<?= $this->insert('components::ui/wordmark', [
+			'href' => '/',
+			'label' => 'Longevypedia',
+			'attrs' => ['class' => 'site-header__brand'],
+		]) ?>
 
 		<nav class="site-nav" aria-label="Main">
 			<ul class="site-nav__list">
@@ -54,6 +55,13 @@ $navigation = [
 			<?= $this->insert('bolt://ui-kit/icon', ['name' => 'github', 'size' => 20]) ?>
 			<span class="visually-hidden">Source code on GitHub</span>
 		</a>
+
+		<?= $this->insert('components::ui/mobile-nav', [
+			'id' => 'site-mobile-nav',
+			'label' => 'Main navigation',
+			'items' => $navigation,
+			'current' => $current,
+		]) ?>
 	</div>
 </header>
 
@@ -74,23 +82,11 @@ $navigation = [
 		min-height: 3.75rem;
 	}
 
+	/* Логотип — компонент `ui/wordmark`; шапка отвечает только за то, чтобы он
+	   прижимался влево и не сжимался. */
 	.site-header__brand {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.55rem;
-		color: var(--color-text);
-		text-decoration: none;
-		font-family: var(--font-serif);
-		font-size: 1.15rem;
-		font-weight: 600;
-		letter-spacing: -0.01em;
+		flex: none;
 		margin-inline-end: auto;
-	}
-
-	.site-header__mark {
-		width: 1.75rem;
-		height: 1.75rem;
-		color: var(--color-accent);
 	}
 
 	.site-nav__list {
@@ -115,9 +111,11 @@ $navigation = [
 			background: var(--color-surface-alt);
 		}
 
+		/* Текущий раздел — бренд-цветом: акцент оставлен вторичным
+		   выделениям (надзаголовки, ссылки), иначе шапка спорит с текстом. */
 		&[aria-current='page'] {
-			color: var(--color-accent);
-			background: var(--color-accent-subtle);
+			color: var(--color-brand-text);
+			background: var(--color-brand-subtle);
 		}
 	}
 
@@ -183,7 +181,7 @@ $navigation = [
 	   строке, поиск уходит во вторую. Иначе форма поиска (у неё на мобильном
 	   `max-width: none`) выталкивает кнопки за край и появляется горизонтальная
 	   прокрутка. */
-	@media (max-width: 48rem) {
+	@media (max-width: $bp-md) {
 		.site-nav {
 			display: none;
 		}

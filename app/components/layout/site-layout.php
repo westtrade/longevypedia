@@ -61,6 +61,14 @@ $bodyClass ??= '';
 	<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 	<meta name="color-scheme" content="light dark">
 
+	<?php /* Порядок CSS-слоёв задаёт первое объявление в документе, а CSS из
+	       Vite приходит последним. Поэтому список слоёв стоит здесь, до тегов
+	       Vite: база проекта ниже встроенного ui-kit, компоненты проекта —
+	       выше всех. Иначе базовое правило перебивает компонент по одному
+	       факту «объявлено без слоя», и специфичность не спасает. */ ?>
+	<?php /* `inline` обязателен: AssetExtractingEngine вырезает любой <style> */ ?>
+	<style inline>@layer bolt.base, bolt.ui-kit, bolt._app;</style>
+
 	<?= vite_assets(['app/client/main.ts'], '/build') ?>
 </head>
 

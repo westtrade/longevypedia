@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @var mixed $action кнопка или ссылка
  */
 
-$title ??= 'Ничего не найдено';
+$title ??= 'Nothing found';
 $text ??= null;
 $icon ??= null;
 $action ??= null;

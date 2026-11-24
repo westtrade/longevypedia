@@ -17,7 +17,7 @@ declare(strict_types=1);
 $current ??= 1;
 $total ??= 1;
 $href ??= '';
-$label ??= 'Постраничная навигация';
+$label ??= 'Pagination';
 
 $current = max(1, min($current, max(1, $total)));
 $total = max(1, $total);
@@ -51,9 +51,9 @@ foreach ($pages as $index => $page) {
 ?>
 <nav class="ui-pagination" aria-label="<?= e($label) ?>">
 	<?php if ($current > 1): ?>
-		<a class="ui-pagination__step" href="<?= e($url($current - 1)) ?>" rel="prev">Назад</a>
+		<a class="ui-pagination__step" href="<?= e($url($current - 1)) ?>" rel="prev">Previous</a>
 	<?php else: ?>
-		<span class="ui-pagination__step ui-pagination__step--disabled" aria-disabled="true">Назад</span>
+		<span class="ui-pagination__step ui-pagination__step--disabled" aria-disabled="true">Previous</span>
 	<?php endif ?>
 
 	<ol class="ui-pagination__list">
@@ -72,9 +72,9 @@ foreach ($pages as $index => $page) {
 	</ol>
 
 	<?php if ($current < $total): ?>
-		<a class="ui-pagination__step" href="<?= e($url($current + 1)) ?>" rel="next">Вперёд</a>
+		<a class="ui-pagination__step" href="<?= e($url($current + 1)) ?>" rel="next">Next</a>
 	<?php else: ?>
-		<span class="ui-pagination__step ui-pagination__step--disabled" aria-disabled="true">Вперёд</span>
+		<span class="ui-pagination__step ui-pagination__step--disabled" aria-disabled="true">Next</span>
 	<?php endif ?>
 </nav>
 

@@ -29,6 +29,20 @@ export default defineConfig(({ command }) => {
 	return {
 		base: command === 'build' ? '/build/' : '/',
 
+		// Точки перехода — SCSS-переменные в app/client/styles/_breakpoints.scss.
+		// Медиазапрос не читает CSS-переменные, а стили компонентов компилируются
+		// из .bolt/client/generated/ отдельными файлами, где относительный @use не
+		// нашёл бы этот файл. Поэтому подставляем его в каждую единицу компиляции
+		// через loadPaths + additionalData: значения остаются в одном месте.
+		css: {
+			preprocessorOptions: {
+				scss: {
+					loadPaths: [path.resolve(__dirname, 'app/client/styles')],
+					additionalData: '@use "breakpoints" as *;\n'
+				}
+			}
+		},
+
 		build: {
 			manifest: true,
 			copyPublicDir: false,

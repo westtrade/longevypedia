@@ -21,10 +21,10 @@ $groups = [
 	'Основы' => ['overview', 'tokens', 'icons', 'accessibility'],
 	'Действия' => ['button'],
 	'Формы' => ['field', 'choice'],
-	'Навигация' => ['breadcrumbs', 'tabs', 'pagination', 'menu', 'sidebar-nav'],
-	'Контент' => ['card', 'badge', 'tag', 'callout', 'quote', 'alert', 'divider', 'accordion', 'tooltip', 'empty-state'],
+	'Навигация' => ['breadcrumbs', 'tabs', 'pagination', 'menu', 'mobile-nav', 'sidebar-nav'],
+	'Контент' => ['card', 'document-card', 'research-card', 'author-card', 'badge', 'tag', 'callout', 'quote', 'alert', 'divider', 'accordion', 'tooltip', 'empty-state'],
 	'Данные' => ['data-table', 'key-value', 'stat', 'progress', 'chart'],
-	'Научные данные' => ['evidence', 'claim-status', 'source-list'],
+	'Научные данные' => ['evidence', 'claim-status', 'research-metadata', 'citation', 'source-list'],
 	'Обратная связь' => ['toast', 'skeleton'],
 	'Бренд' => ['wordmark'],
 ];
@@ -56,6 +56,8 @@ $pages = [
 			['Основное', 'подпись связана с полем, id строится из имени', "<?= \$this->insert('components::ui/field', ['name' => 'query', 'label' => 'Поиск по энциклопедии', 'type' => 'search', 'placeholder' => 'сенолитики, mTOR, саркопения']) ?>"],
 			['Описание и ошибка', 'ошибка не заменяет описание: скринридер читает оба', "<?= \$this->insert('components::ui/field', ['name' => 'email', 'label' => 'Почта', 'type' => 'email', 'description' => 'Нужна для ответа на правку.', 'error' => 'Адрес не похож на почтовый.']) ?>\n<?= \$this->insert('components::ui/field', ['name' => 'doi', 'label' => 'DOI', 'description' => 'Только если идентификатор проверен.', 'required' => true]) ?>"],
 			['Выбор и текст', 'select и textarea — те же состояния, что у input', "<?= \$this->insert('components::ui/field', ['name' => 'type', 'label' => 'Тип документа', 'type' => 'select', 'options' => ['concept' => 'Понятие', 'mechanism' => 'Механизм', 'research' => 'Исследование']]) ?>\n<?= \$this->insert('components::ui/field', ['name' => 'note', 'label' => 'Комментарий к правке', 'type' => 'textarea', 'rows' => 4]) ?>"],
+			['Обязательное', 'required помечает подпись и ставит атрибут на поле', "<?= \$this->insert('components::ui/field', ['name' => 'title', 'label' => 'Название документа', 'required' => true, 'description' => 'Короткое и точное: по нему документ ищут.']) ?>"],
+			['Дата, файл, диапазон', 'типы без отдельного компонента: разметку даёт то же поле', "<?= \$this->insert('components::ui/field', ['name' => 'reviewed', 'label' => 'Дата проверки', 'type' => 'date', 'value' => '2026-11-20']) ?>\n<?= \$this->insert('components::ui/field', ['name' => 'figure', 'label' => 'Рисунок', 'type' => 'file', 'description' => 'SVG или PNG до 2 МБ.']) ?>\n<?= \$this->insert('components::ui/field', ['name' => 'confidence', 'label' => 'Уверенность', 'type' => 'range', 'value' => '3']) ?>"],
 			['Отключённое', 'состояние видно и объяснено, а не только серое', "<?= \$this->insert('components::ui/field', ['name' => 'slug', 'label' => 'Адрес', 'value' => 'mechanisms/autophagy', 'disabled' => true, 'description' => 'Адрес меняется только через перенос документа.']) ?>"],
 		],
 	],
@@ -104,6 +106,13 @@ $pages = [
 			['Содержание', 'уровень вложенности приходит параметром', "<?= \$this->insert('components::ui/sidebar-nav', ['title' => 'На этой странице', 'items' => [['label' => 'Определение', 'url' => '#definition', 'active' => true], ['label' => 'Механизм', 'url' => '#mechanism'], ['label' => 'Данные', 'url' => '#evidence', 'level' => 1], ['label' => 'Источники', 'url' => '#sources']]]) ?>"],
 		],
 	],
+	'mobile-nav' => [
+		'title' => 'Мобильная навигация',
+		'note' => 'Меню для узкого экрана: раскрывается без JavaScript, закрывается повторным нажатием.',
+		'specimens' => [
+			['Основное', 'видно только на узком экране; в документации показано всегда', "<?= \$this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav', 'label' => 'Основная навигация', 'current' => 'catalog', 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>"],
+		],
+	],
 	'card' => [
 		'title' => 'Карточка',
 		'note' => 'Контейнер материала: надзаголовок, заголовок, метаданные, действия.',
@@ -111,6 +120,31 @@ $pages = [
 			['Основное', 'карточка-ссылка: вся площадь кликабельна, фокус на ссылке', "<?= \$this->insert('components::ui/card', ['eyebrow' => 'Механизм', 'title' => 'Клеточное старение', 'meta' => 'Обновлено 20 ноября 2026', 'href' => '/mechanisms/cellular-senescence', 'children' => 'Клетки перестают делиться, но остаются в ткани и выделяют сигнальные молекулы.']) ?>"],
 			['Виды', 'outlined — на белом фоне, flat — внутри другой карточки', "<?= \$this->insert('components::ui/card', ['title' => 'Определение', 'variant' => 'outlined', 'children' => 'Старение — постепенное снижение функции организма со временем.']) ?>\n<?= \$this->insert('components::ui/card', ['title' => 'Заметка', 'variant' => 'flat', 'children' => 'Вложенная карточка не добавляет вторую рамку.']) ?>"],
 			['С действиями', 'кнопки в подвале — не ссылки на всю карточку', "<?= \$this->insert('components::ui/card', ['title' => 'Исследование', 'meta' => 'Harrison et al., 2009', 'children' => 'Рапамицин продлевает медианную и максимальную продолжительность жизни мышей.', 'footer' => 'Nature, 2009']) ?>"],
+		],
+	],
+	'document-card' => [
+		'title' => 'Карточка документа',
+		'note' => 'Документ в списке: тип, дата, заголовок, краткое описание, тематики.',
+		'specimens' => [
+			['Основное', 'тип и дата — метаданные, заголовок — ссылка на документ', "<?php \$doc = longevypedia_content()->recent(1, 'en')[0] ?? null; ?>\n<?= \$doc === null ? '' : \$this->insert('components::ui/document-card', ['document' => \$doc]) ?>"],
+			['С тематиками', 'showTopics добавляет ссылки в каталог; summary можно убрать в плотном списке', "<?php \$doc = longevypedia_content()->recent(1, 'en')[0] ?? null; ?>\n<?= \$doc === null ? '' : \$this->insert('components::ui/document-card', ['document' => \$doc, 'showTopics' => true, 'showSummary' => false]) ?>"],
+			['Без типа', 'showType выключается там, где список уже отфильтрован по типу', "<?php \$doc = longevypedia_content()->recent(1, 'en')[0] ?? null; ?>\n<?= \$doc === null ? '' : \$this->insert('components::ui/document-card', ['document' => \$doc, 'showType' => false]) ?>"],
+		],
+	],
+	'research-card' => [
+		'title' => 'Карточка исследования',
+		'note' => 'Публикация в списке: дизайн, авторы, журнал, год, число исходов.',
+		'specimens' => [
+			['Основное', 'дизайн и библиография берутся из фронтматтера, а не из текста', "<?php \$doc = longevypedia_content()->find('research', 'harrison-2009-rapamycin-mice', 'en'); ?>\n<?= \$doc === null ? '' : \$this->insert('components::ui/research-card', ['document' => \$doc]) ?>"],
+			['Уровень заголовка', 'headingLevel держит порядок заголовков страницы', "<?php \$doc = longevypedia_content()->find('research', 'harrison-2009-rapamycin-mice', 'en'); ?>\n<?= \$doc === null ? '' : \$this->insert('components::ui/research-card', ['document' => \$doc, 'headingLevel' => 2, 'showSummary' => false]) ?>"],
+		],
+	],
+	'author-card' => [
+		'title' => 'Карточка автора',
+		'note' => 'Автор или рецензент: имя, роль, организация, внешняя ссылка.',
+		'specimens' => [
+			['Основное', 'адрес профиля печатается текстом — заголовок уже ссылка', "<?= \$this->insert('components::ui/author-card', ['name' => 'Harrison D. E.', 'role' => 'Corresponding author', 'affiliation' => 'The Jackson Laboratory', 'href' => 'https://orcid.org/0000-0002-1825-0097']) ?>"],
+			['Без ссылки', 'для рецензента без публичного профиля', "<?= \$this->insert('components::ui/author-card', ['name' => 'Рецензент 2', 'role' => 'Reviewer', 'affiliation' => 'Независимый рецензент']) ?>"],
 		],
 	],
 	'badge' => [
@@ -184,6 +218,7 @@ $pages = [
 			['Основное', 'числа выровнены вправо и набраны табличными цифрами', "<?= \$this->insert('components::ui/data-table', ['caption' => 'Сравнение вмешательств', 'columns' => [['label' => 'Вмешательство', 'key' => 'name'], ['label' => 'Цель', 'key' => 'target'], ['label' => 'Статус', 'key' => 'status']], 'rows' => [['cells' => ['name' => 'Рапамицин', 'target' => 'mTOR', 'status' => 'Исследуется']], ['cells' => ['name' => 'Метформин', 'target' => 'AMPK', 'status' => 'Исследуется']]]]) ?>"],
 			['Сортировка', 'состояние сортировки приходит из адреса', "<?= \$this->insert('components::ui/data-table', ['caption' => 'Плотная таблица', 'density' => 'compact', 'sort' => ['key' => 'year', 'direction' => 'desc'], 'sortUrl' => static fn (string \$key, string \$direction): string => '/research?sort=' . \$key . '&direction=' . \$direction, 'columns' => [['label' => 'Год', 'key' => 'year', 'numeric' => true, 'sortable' => true], ['label' => 'Исследование', 'key' => 'title', 'sortable' => true]], 'rows' => [['cells' => ['year' => '2009', 'title' => 'Рапамицин у мышей']], ['cells' => ['year' => '2015', 'title' => 'Сенолитики у мышей']]]]) ?>"],
 			['Пустое состояние', 'пустая таблица объясняет причину, а не молчит', "<?= \$this->insert('components::ui/data-table', ['caption' => 'Результаты фильтра', 'columns' => [['label' => 'Документ', 'key' => 'title']], 'rows' => [], 'empty' => 'Под выбранные фильтры документов нет.']) ?>"],
+			['Закреплённая шапка', 'sticky держит заголовки при прокрутке длинной таблицы; highlight помечает строку, к которой вернулись', "<?= \$this->insert('components::ui/data-table', ['caption' => 'Исходы исследования', 'sticky' => true, 'columns' => [['label' => 'Исход', 'key' => 'outcome'], ['label' => 'Направление', 'key' => 'direction'], ['label' => 'Показатель', 'key' => 'measure', 'numeric' => true]], 'rows' => [['cells' => ['outcome' => 'Медианная продолжительность жизни', 'direction' => 'Увеличение', 'measure' => '+9%']], ['cells' => ['outcome' => 'Максимальная продолжительность жизни', 'direction' => 'Увеличение', 'measure' => '+14%'], 'highlight' => true], ['cells' => ['outcome' => 'Масса тела', 'direction' => 'Без изменений', 'measure' => '—']]]]) ?>"],
 		],
 	],
 	'key-value' => [
@@ -226,6 +261,22 @@ $pages = [
 		'note' => 'Уверенность сообщества и направление доказательств — разные шкалы.',
 		'specimens' => [
 			['Уровни', 'статус приходит из frontmatter утверждения', "<?= \$this->insert('components::ui/claim-status', ['confidence' => 'established', 'direction' => 'supports', 'asOf' => '2026-11-20']) ?>\n<?= \$this->insert('components::ui/claim-status', ['confidence' => 'likely', 'direction' => 'supports', 'asOf' => '2026-11-20']) ?>\n<?= \$this->insert('components::ui/claim-status', ['confidence' => 'contested', 'direction' => 'mixed']) ?>\n<?= \$this->insert('components::ui/claim-status', ['confidence' => 'speculative', 'direction' => 'insufficient']) ?>"],
+		],
+	],
+	'research-metadata' => [
+		'title' => 'Параметры исследования',
+		'note' => 'Дизайн, выборка, вмешательство и исходы: поля и таблица из набора.',
+		'specimens' => [
+			['Основное', 'машинный код дизайна остаётся в data-code рядом с подписью', "<?php \$doc = longevypedia_content()->find('research', 'harrison-2009-rapamycin-mice', 'en'); ?>\n<?= \$doc === null ? '' : \$this->insert('components::ui/research-metadata', ['study' => (array) \$doc->metaValue('study', []), 'id' => 'kit-study']) ?>"],
+			['Пустые поля', 'незаполненные поля не печатаются: прочерк выглядит как данные', "<?= \$this->insert('components::ui/research-metadata', ['study' => ['design' => 'meta_analysis', 'sample_size' => '12 исследований'], 'title' => 'Обзор', 'id' => 'kit-study-2']) ?>"],
+		],
+	],
+	'citation' => [
+		'title' => 'Цитата источника',
+		'note' => 'Отсылка внутри текста; идентификаторы живут в списке источников.',
+		'specimens' => [
+			['Основное', 'номер и подпись, ссылка на источник', "<?= \$this->insert('components::ui/citation', ['number' => 1, 'text' => 'Harrison et al., 2009', 'href' => 'https://doi.org/10.1038/nature08221']) ?>\n<?= \$this->insert('components::ui/citation', ['number' => 2, 'text' => 'Saxton & Sabatini, 2017', 'href' => 'https://doi.org/10.1016/j.cell.2017.02.004', 'note' => 'обзор']) ?>"],
+			['Без ссылки', 'источник упомянут, но адреса нет — cite без ссылки', "<?= \$this->insert('components::ui/citation', ['text' => 'личное сообщение, 2026']) ?>"],
 		],
 	],
 	'source-list' => [

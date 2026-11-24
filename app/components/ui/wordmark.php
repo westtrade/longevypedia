@@ -14,16 +14,18 @@ declare(strict_types=1);
  * @var string $label видимое имя
  * @var string|null $tagline подпись под именем
  * @var string $size md | lg
+ * @var array $attrs дополнительные атрибуты ссылки
  */
 
 $href ??= '/';
 $label ??= 'Longevypedia';
 $tagline ??= null;
 $size ??= 'md';
+$attrs ??= [];
 
 $tag = $href !== null ? 'a' : 'span';
 ?>
-<<?= $tag ?> class="ui-wordmark ui-wordmark--<?= e($size) ?>"<?= $href !== null ? ' href="' . e($href) . '"' : '' ?>>
+<<?= $tag ?><?= attrs($attrs, ['class' => clsx('ui-wordmark', 'ui-wordmark--' . $size)]) ?><?= $href !== null ? ' href="' . e($href) . '"' : '' ?>>
 	<span class="ui-wordmark__mark" aria-hidden="true">
 		<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<circle cx="16" cy="16" r="14" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.5"/>

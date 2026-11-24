@@ -57,6 +57,30 @@ $this->layout('components::layout/site-layout', [
 			<?php },
 		]) ?>
 		<?= $this->insert('components::ui-kit/specimen', [
+			'title' => 'Обязательное',
+			'note' => 'required помечает подпись и ставит атрибут на поле',
+			'code' => <<<'HTML'
+				<?= $this->insert('components::ui/field', ['name' => 'title', 'label' => 'Название документа', 'required' => true, 'description' => 'Короткое и точное: по нему документ ищут.']) ?>
+				HTML,
+			'body' => function (): void { ?>
+				<?= $this->insert('components::ui/field', ['name' => 'title', 'label' => 'Название документа', 'required' => true, 'description' => 'Короткое и точное: по нему документ ищут.']) ?>
+			<?php },
+		]) ?>
+		<?= $this->insert('components::ui-kit/specimen', [
+			'title' => 'Дата, файл, диапазон',
+			'note' => 'типы без отдельного компонента: разметку даёт то же поле',
+			'code' => <<<'HTML'
+				<?= $this->insert('components::ui/field', ['name' => 'reviewed', 'label' => 'Дата проверки', 'type' => 'date', 'value' => '2026-11-20']) ?>
+				<?= $this->insert('components::ui/field', ['name' => 'figure', 'label' => 'Рисунок', 'type' => 'file', 'description' => 'SVG или PNG до 2 МБ.']) ?>
+				<?= $this->insert('components::ui/field', ['name' => 'confidence', 'label' => 'Уверенность', 'type' => 'range', 'value' => '3']) ?>
+				HTML,
+			'body' => function (): void { ?>
+				<?= $this->insert('components::ui/field', ['name' => 'reviewed', 'label' => 'Дата проверки', 'type' => 'date', 'value' => '2026-11-20']) ?>
+				<?= $this->insert('components::ui/field', ['name' => 'figure', 'label' => 'Рисунок', 'type' => 'file', 'description' => 'SVG или PNG до 2 МБ.']) ?>
+				<?= $this->insert('components::ui/field', ['name' => 'confidence', 'label' => 'Уверенность', 'type' => 'range', 'value' => '3']) ?>
+			<?php },
+		]) ?>
+		<?= $this->insert('components::ui-kit/specimen', [
 			'title' => 'Отключённое',
 			'note' => 'состояние видно и объяснено, а не только серое',
 			'code' => <<<'HTML'

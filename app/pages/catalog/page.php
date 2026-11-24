@@ -63,6 +63,13 @@ usort($documents, static function ($a, $b) use ($sort): int {
 
 $stats = $repository->stats($locale);
 $topics = $repository->topics($locale);
+
+// Варианты для `ui/field` type=select: подпись — человеку, слаг — значением.
+$topicOptions = ['' => 'All topics'];
+
+foreach ($topics as $slug => $definition) {
+	$topicOptions[$slug] = $definition['label'] . ' (' . $definition['count'] . ')';
+}
 $title = $type !== '' ? \Longevypedia\Content\DocumentTypes::plural($type) : 'Knowledge base';
 
 // Ссылка фильтра сохраняет остальные параметры: чипы типов не должны сбрасывать
@@ -97,13 +104,20 @@ $this->start('page');
 	</header>
 
 	<nav class="catalog__chips" aria-label="Filter by document type">
-		<a class="catalog__chip<?= $type === '' ? ' is-active' : '' ?>" href="<?= $this->e($urlWith(['type' => ''])) ?>"<?= $type === '' ? ' aria-current="page"' : '' ?>>All</a>
+		<?= $this->insert('components::ui/tag', [
+			'label' => 'All',
+			'href' => $urlWith(['type' => '']),
+			'count' => $stats['total'],
+			'active' => $type === '',
+		]) ?>
 		<?php foreach ($stats['byType'] as $chipType => $count): ?>
-			<a class="catalog__chip<?= $type === $chipType ? ' is-active' : '' ?>" href="<?= $this->e($urlWith(['type' => $chipType])) ?>"<?= $type === $chipType ? ' aria-current="page"' : '' ?>>
-				<?= $this->e(\Longevypedia\Content\DocumentTypes::plural($chipType)) ?>
-				<span class="catalog__chip-count"><?= $count ?></span>
-			</a>
-		<?php endforeach; ?>
+			<?= $this->insert('components::ui/tag', [
+				'label' => \Longevypedia\Content\DocumentTypes::plural($chipType),
+				'href' => $urlWith(['type' => $chipType]),
+				'count' => $count,
+				'active' => $type === $chipType,
+			]) ?>
+		<?php endforeach ?>
 	</nav>
 
 	<form
@@ -115,39 +129,55 @@ $this->start('page');
 		hx-select="#catalog-results"
 		hx-swap="outerHTML"
 		hx-push-url="true"
+		hx-indicator="#catalog-pending"
 		hx-trigger="change, submit, input changed delay:400ms from:find input[type='search']"
 	>
 		<?php if ($type !== ''): ?>
 			<input type="hidden" name="type" value="<?= $this->e($type) ?>">
-		<?php endif; ?>
+		<?php endif ?>
 
-		<div class="catalog__filter">
-			<label class="catalog__label" for="catalog-topic">Topic</label>
-			<select class="catalog__select" id="catalog-topic" name="topic">
-				<option value="">All topics</option>
-				<?php foreach ($topics as $slug => $definition): ?>
-					<option value="<?= $this->e($slug) ?>"<?= $topic === $slug ? ' selected' : '' ?>>
-						<?= $this->e($definition['label']) ?> (<?= $definition['count'] ?>)
-					</option>
-				<?php endforeach; ?>
-			</select>
-		</div>
+		<?= $this->insert('components::ui/field', [
+			'name' => 'topic',
+			'id' => 'catalog-topic',
+			'label' => 'Topic',
+			'type' => 'select',
+			'value' => $topic,
+			'options' => $topicOptions,
+			'attrs' => ['class' => 'catalog__filter'],
+		]) ?>
 
-		<div class="catalog__filter">
-			<label class="catalog__label" for="catalog-sort">Sort</label>
-			<select class="catalog__select" id="catalog-sort" name="sort">
-				<option value="recent"<?= $sort === 'recent' ? ' selected' : '' ?>>Recently updated</option>
-				<option value="title"<?= $sort === 'title' ? ' selected' : '' ?>>Title A–Z</option>
-			</select>
-		</div>
+		<?= $this->insert('components::ui/field', [
+			'name' => 'sort',
+			'id' => 'catalog-sort',
+			'label' => 'Sort',
+			'type' => 'select',
+			'value' => $sort,
+			'options' => ['recent' => 'Recently updated', 'title' => 'Title A–Z'],
+			'attrs' => ['class' => 'catalog__filter'],
+		]) ?>
 
-		<div class="catalog__filter catalog__filter--search">
-			<label class="catalog__label" for="catalog-q">Search within</label>
-			<input class="catalog__input" id="catalog-q" type="search" name="q" value="<?= $this->e($query) ?>" placeholder="e.g. senescence">
-		</div>
+		<?= $this->insert('components::ui/field', [
+			'name' => 'q',
+			'id' => 'catalog-q',
+			'label' => 'Search within',
+			'type' => 'search',
+			'value' => $query,
+			'placeholder' => 'e.g. senescence',
+			'attrs' => ['class' => 'catalog__filter catalog__filter--search'],
+		]) ?>
 
-		<button class="catalog__submit" type="submit">Apply</button>
+		<?= $this->insert('components::ui/button', [
+			'label' => 'Apply',
+			'type' => 'submit',
+			'variant' => 'secondary',
+			'attrs' => ['class' => 'catalog__submit'],
+		]) ?>
 	</form>
+
+	<p class="catalog__pending" id="catalog-pending" role="status" aria-live="polite">
+		<span class="catalog__pending-spinner" aria-hidden="true"></span>
+		Updating results…
+	</p>
 
 	<p class="visually-hidden" role="status" aria-live="polite" data-catalog-status></p>
 
@@ -160,80 +190,49 @@ $this->start('page');
 
 <style lang="scss">
 	.catalog {
-		padding-block: 2rem 0;
+		padding-block: var(--space-8) 0;
 	}
 
 	.catalog__header {
 		max-width: var(--layout-measure);
-		margin-bottom: 1.5rem;
+		margin-bottom: var(--space-5);
 	}
 
 	.catalog__title {
-		margin: 0 0 0.5rem;
+		margin: 0 0 var(--space-2);
 		font-family: var(--font-serif);
-		font-size: clamp(1.8rem, 1.3rem + 1.8vw, 2.4rem);
-		line-height: 1.15;
+		font-size: clamp(1.8rem, 1.3rem + 1.8vw, var(--text-4xl));
+		line-height: var(--leading-tight);
 	}
 
 	.catalog__lead {
 		margin: 0;
 		color: var(--color-text-muted);
-		line-height: 1.55;
+		line-height: var(--leading-normal);
 	}
 
+	/* Чипы — теги набора: страница задаёт только раскладку, вид тега живёт в
+	   компоненте, поэтому фильтр и карточка документа выглядят одинаково. */
 	.catalog__chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.4rem;
-		margin-bottom: 1.25rem;
-	}
-
-	.catalog__chip {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-		padding: 0.3rem 0.7rem;
-		border: 1px solid var(--color-border);
-		border-radius: 999px;
-		font-size: var(--text-sm);
-		color: var(--color-text-muted);
-		text-decoration: none;
-		background: var(--color-surface);
-
-		&:hover {
-			border-color: var(--color-accent);
-			color: var(--color-accent);
-		}
-
-		&.is-active {
-			border-color: var(--color-accent);
-			background: var(--color-accent-subtle);
-			color: var(--color-accent);
-			font-weight: 600;
-		}
-	}
-
-	.catalog__chip-count {
-		font-size: var(--text-xs);
-		color: var(--color-text-subtle);
+		gap: var(--space-2);
+		margin-bottom: var(--space-5);
 	}
 
 	.catalog__filters {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: end;
-		gap: 0.75rem;
-		padding: 0.9rem 1rem;
+		gap: var(--space-3);
+		padding: var(--space-4);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-md);
 		background: var(--color-surface);
-		margin-bottom: 1.75rem;
+		margin-bottom: var(--space-6);
 	}
 
 	.catalog__filter {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
 		min-width: 9rem;
 	}
 
@@ -241,37 +240,45 @@ $this->start('page');
 		flex: 1 1 12rem;
 	}
 
-	.catalog__label {
-		font-size: var(--text-xs);
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-		color: var(--color-text-subtle);
-	}
-
-	.catalog__select,
-	.catalog__input {
-		padding: 0.4rem 0.5rem;
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-sm);
-		background: var(--color-bg);
-		color: var(--color-text);
-		font: inherit;
-		font-size: var(--text-sm);
-	}
-
 	.catalog__submit {
-		padding: 0.45rem 1rem;
-		border: 1px solid var(--color-accent);
-		border-radius: var(--radius-sm);
-		background: var(--color-accent-fill);
-		color: var(--color-on-accent);
-		font: inherit;
-		font-size: var(--text-sm);
-		font-weight: 600;
-		cursor: pointer;
+		align-self: end;
+	}
 
-		&:hover {
-			background: var(--color-accent-fill-hover);
+	/* Индикатор запроса: htmx добавляет класс htmx-request, пока идёт обмен.
+	   Без него фильтр «замирает» без обратной связи. */
+	.catalog__pending {
+		display: none;
+		align-items: center;
+		gap: var(--space-2);
+		margin: -1rem 0 var(--space-4);
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.catalog__pending.htmx-request {
+		display: flex;
+	}
+
+	.catalog__pending-spinner {
+		width: 0.9rem;
+		height: 0.9rem;
+		border: 2px solid var(--color-border-strong);
+		border-top-color: var(--color-brand);
+		border-radius: var(--radius-full);
+		animation: catalog-spin 0.8s linear infinite;
+	}
+
+	@keyframes catalog-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (max-width: $bp-md) {
+		.catalog__filter,
+		.catalog__filter--search {
+			flex: 1 1 100%;
+			min-width: 0;
 		}
 	}
 </style>

@@ -99,7 +99,7 @@ $total = count($hits) === 6 ? '6+' : (string) count($hits);
 
 	.search-hits mark {
 		background: var(--color-accent-subtle);
-		color: var(--color-accent);
+		color: var(--color-accent-text);
 		border-radius: 2px;
 		padding-inline: 1px;
 	}

@@ -168,3 +168,7 @@
 	margin-inline-start: 0.25em;
 	text-decoration: none;
 }
+
+/* Базовый слой: ниже компонентов, чтобы компонент мог отменить правило. */
+@layer bolt.base {
+}

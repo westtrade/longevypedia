@@ -264,6 +264,74 @@ final class DesignSystemTest extends TestCase
 	/**
 	 * @return list<string>
 	 */
+	/**
+	 * Точки перехода заданы одной шкалой.
+	 *
+	 * Медиазапрос не читает CSS-переменные, поэтому значения живут
+	 * SCSS-переменными в `_breakpoints.scss`. Проверка держит два обещания:
+	 * шкала действительно объявлена (иначе `$bp-md` тихо станет пустым) и ни
+	 * один медиазапрос не написан числом мимо неё — иначе «точки перехода» есть
+	 * только на бумаге.
+	 */
+	public function testBreakpointsComeFromTheSharedScale(): void
+	{
+		$file = $this->projectRoot() . '/app/client/styles/_breakpoints.scss';
+		self::assertFileExists($file);
+
+		$source = (string) file_get_contents($file);
+		preg_match_all('/^\$bp-([a-z0-9]+):\s*([0-9.]+rem);/m', $source, $matches);
+
+		self::assertNotSame([], $matches[1], 'Шкала точек перехода не объявлена.');
+
+		$values = $matches[2];
+		self::assertContains('48rem', $values, 'Планшетная точка 48rem должна быть в шкале.');
+
+		$offenders = [];
+
+		foreach ($this->templateFiles() as $path) {
+			if (str_ends_with($path, '_breakpoints.scss')) {
+				continue;
+			}
+
+			$text = (string) file_get_contents($path);
+
+			// `@media (max-width: 48rem)` и `@media (min-width: 48rem)` — числа
+			// мимо шкалы; `@media (width<=48rem)` — тоже.
+			if (preg_match_all('/@media[^{]*?(?:max-width|min-width|width\s*[<>]=?)\s*:?\s*([0-9.]+(?:rem|px))/', $text, $found) > 0) {
+				foreach ($found[1] as $value) {
+					$offenders[] = $this->shortPath($path) . ' — ' . $value;
+				}
+			}
+		}
+
+		self::assertSame([], $offenders, 'Медиазапросы написаны числами мимо шкалы: ' . implode(', ', $offenders));
+	}
+
+	/**
+	 * Акцентный цвет не используется как цвет текста.
+	 *
+	 * `--color-accent` (#c47a45) на светлом фоне даёт 3.17:1 — ниже AA для
+	 * обычного текста. Он остаётся для заливок, рамок и линий, а текст берёт
+	 * `--color-accent-text` (#9a5a2e, 5.08:1). Брендовый `--color-brand`
+	 * проверять не нужно: 6.30:1 на поверхности и 5.91:1 на фоне.
+	 */
+	public function testAccentIsNotUsedAsTextColour(): void
+	{
+		$offenders = [];
+
+		foreach ($this->templateFiles() as $path) {
+			$text = (string) file_get_contents($path);
+
+			// `color:` именно как цвет текста; `border-color`, `background`,
+			// `outline-color` сюда не попадают.
+			if (preg_match_all('/(?<![\w-])color:\s*var\(--color-accent\)/', $text, $found) > 0) {
+				$offenders[] = $this->shortPath($path);
+			}
+		}
+
+		self::assertSame([], $offenders, 'Акцент как цвет текста (нужен --color-accent-text): ' . implode(', ', $offenders));
+	}
+
 	private function templateFiles(): array
 	{
 		$files = [];

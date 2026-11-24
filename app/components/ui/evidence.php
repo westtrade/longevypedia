@@ -21,28 +21,34 @@ declare(strict_types=1);
  * @var string $quality high | moderate | low | very-low | unassessed
  * @var string|null $basis на чём основана оценка качества
  * @var string|null $label подпись блока
+ * @var array<string, string> $labels переопределение подписей (перевод, другая терминология)
  */
 
 $direction ??= 'insufficient';
 $quality ??= 'unassessed';
 $basis ??= null;
-$label ??= 'Доказательность';
+$label ??= 'Evidence';
+$labels ??= [];
 
 $directions = [
-	'supports' => ['label' => 'Подтверждает', 'icon' => 'check', 'tone' => 'success'],
-	'contradicts' => ['label' => 'Противоречит', 'icon' => 'close', 'tone' => 'danger'],
-	'mixed' => ['label' => 'Смешанные результаты', 'icon' => 'graph', 'tone' => 'warning'],
-	'neutral' => ['label' => 'Без эффекта', 'icon' => 'document', 'tone' => 'neutral'],
-	'insufficient' => ['label' => 'Недостаточно данных', 'icon' => 'alert', 'tone' => 'neutral'],
+	'supports' => ['label' => 'Supports', 'icon' => 'check', 'tone' => 'success'],
+	'contradicts' => ['label' => 'Contradicts', 'icon' => 'close', 'tone' => 'danger'],
+	'mixed' => ['label' => 'Mixed results', 'icon' => 'graph', 'tone' => 'warning'],
+	'neutral' => ['label' => 'No effect', 'icon' => 'document', 'tone' => 'neutral'],
+	'insufficient' => ['label' => 'Insufficient data', 'icon' => 'alert', 'tone' => 'neutral'],
 ];
 
 $qualities = [
-	'high' => ['label' => 'Высокое', 'level' => 4],
-	'moderate' => ['label' => 'Умеренное', 'level' => 3],
-	'low' => ['label' => 'Низкое', 'level' => 2],
-	'very-low' => ['label' => 'Очень низкое', 'level' => 1],
-	'unassessed' => ['label' => 'Не оценено', 'level' => 0],
+	'high' => ['label' => 'High', 'level' => 4],
+	'moderate' => ['label' => 'Moderate', 'level' => 3],
+	'low' => ['label' => 'Low', 'level' => 2],
+	'very-low' => ['label' => 'Very low', 'level' => 1],
+	'unassessed' => ['label' => 'Not assessed', 'level' => 0],
 ];
+
+// Подписи по умолчанию — английские: это язык интерфейса сайта. Страница на
+// другом языке передаёт свой словарь, а не переписывает компонент.
+$labels += ['quality' => 'Evidence quality'];
 
 $dir = $directions[$direction] ?? $directions['insufficient'];
 $qual = $qualities[$quality] ?? $qualities['unassessed'];
@@ -62,7 +68,7 @@ $qual = $qualities[$quality] ?? $qualities['unassessed'];
 			<?php endfor ?>
 		</span>
 		<span class="ui-evidence__quality-text">
-			Качество данных: <strong><?= e($qual['label']) ?></strong>
+			<?= e($labels['quality']) ?>: <strong><?= e($qual['label']) ?></strong>
 		</span>
 	</span>
 

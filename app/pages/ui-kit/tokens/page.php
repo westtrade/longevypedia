@@ -242,7 +242,7 @@ $this->layout('components::layout/site-layout', [
 				border-radius: var(--radius-sm);
 			}
 
-			@media (max-width: 40rem) {
+			@media (max-width: $bp-sm) {
 				.kit-token {
 					grid-template-columns: minmax(0, 1fr);
 					gap: var(--space-1);

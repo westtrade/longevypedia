@@ -52,6 +52,16 @@ $this->layout('components::layout/site-layout', [
 				<?= $this->insert('components::ui/data-table', ['caption' => 'Результаты фильтра', 'columns' => [['label' => 'Документ', 'key' => 'title']], 'rows' => [], 'empty' => 'Под выбранные фильтры документов нет.']) ?>
 			<?php },
 		]) ?>
+		<?= $this->insert('components::ui-kit/specimen', [
+			'title' => 'Закреплённая шапка',
+			'note' => 'sticky держит заголовки при прокрутке длинной таблицы; highlight помечает строку, к которой вернулись',
+			'code' => <<<'HTML'
+				<?= $this->insert('components::ui/data-table', ['caption' => 'Исходы исследования', 'sticky' => true, 'columns' => [['label' => 'Исход', 'key' => 'outcome'], ['label' => 'Направление', 'key' => 'direction'], ['label' => 'Показатель', 'key' => 'measure', 'numeric' => true]], 'rows' => [['cells' => ['outcome' => 'Медианная продолжительность жизни', 'direction' => 'Увеличение', 'measure' => '+9%']], ['cells' => ['outcome' => 'Максимальная продолжительность жизни', 'direction' => 'Увеличение', 'measure' => '+14%'], 'highlight' => true], ['cells' => ['outcome' => 'Масса тела', 'direction' => 'Без изменений', 'measure' => '—']]]]) ?>
+				HTML,
+			'body' => function (): void { ?>
+				<?= $this->insert('components::ui/data-table', ['caption' => 'Исходы исследования', 'sticky' => true, 'columns' => [['label' => 'Исход', 'key' => 'outcome'], ['label' => 'Направление', 'key' => 'direction'], ['label' => 'Показатель', 'key' => 'measure', 'numeric' => true]], 'rows' => [['cells' => ['outcome' => 'Медианная продолжительность жизни', 'direction' => 'Увеличение', 'measure' => '+9%']], ['cells' => ['outcome' => 'Максимальная продолжительность жизни', 'direction' => 'Увеличение', 'measure' => '+14%'], 'highlight' => true], ['cells' => ['outcome' => 'Масса тела', 'direction' => 'Без изменений', 'measure' => '—']]]]) ?>
+			<?php },
+		]) ?>
 	<?php },
 ]) ?>
 <?php $this->end(); ?>

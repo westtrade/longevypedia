@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @var string $align выравнивание панели: start | end
  */
 
-$label ??= 'Меню';
+$label ??= 'Menu';
 $items ??= [];
 $align ??= 'start';
 

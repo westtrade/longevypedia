@@ -66,7 +66,7 @@ $this->layout('components::layout/site-layout', [
 		margin: 0;
 		font-family: var(--font-mono);
 		font-size: var(--text-sm);
-		color: var(--color-accent);
+		color: var(--color-accent-text);
 		letter-spacing: 0.1em;
 	}
 
