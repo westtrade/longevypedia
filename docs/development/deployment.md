@@ -145,7 +145,7 @@ php scripts/content-check.php        # «Контент в порядке.» и 
 php vendor/bin/bolt check            # OK: 1 бандл(ов), 26 маршрут(ов)
 
 # 3. Тесты
-php vendor/bin/phpunit               # OK (89 tests, 430 assertions)
+php vendor/bin/phpunit               # OK (96 tests, 460 assertions)
 
 # 4. Гигиена репозитория
 php scripts/repo-check.php           # «Репозиторий в порядке.»

@@ -18,7 +18,11 @@ $locale = (string) ($route['locale'] ?? $repository->defaultLocale());
 $stats = $repository->stats($locale);
 $topics = $repository->topics($locale);
 $recent = $repository->recent(4, $locale);
-$popular = $repository->popular(4, $locale);
+
+// Колонки стоят рядом, поэтому документ, попавший в «обновлённые», не должен
+// повторяться в «связанных»: иначе первый экран показывает одно и то же дважды.
+$recentKeys = array_map(static fn ($document): string => $document->key(), $recent);
+$popular = $repository->popular(4, $locale, $recentKeys);
 
 $repositoryUrl = (string) ($config['app']['repository'] ?? 'https://github.com/westtrade/longevypedia');
 
@@ -47,19 +51,19 @@ $this->layout('components::layout/site-layout', [
 
 			<dl class="home-hero__stats">
 				<div class="home-hero__stat">
-					<dt>Documents</dt>
+					<dt><?= (int) $stats['total'] === 1 ? 'Document' : 'Documents' ?></dt>
 					<dd><?= $stats['total'] ?></dd>
 				</div>
 				<div class="home-hero__stat">
-					<dt>Topics</dt>
+					<dt><?= (int) $stats['topics'] === 1 ? 'Topic' : 'Topics' ?></dt>
 					<dd><?= $stats['topics'] ?></dd>
 				</div>
 				<div class="home-hero__stat">
-					<dt>Studies</dt>
+					<dt><?= (int) $stats['studies'] === 1 ? 'Study' : 'Studies' ?></dt>
 					<dd><?= $stats['studies'] ?></dd>
 				</div>
 				<div class="home-hero__stat">
-					<dt>Claims</dt>
+					<dt><?= (int) $stats['claims'] === 1 ? 'Claim' : 'Claims' ?></dt>
 					<dd><?= $stats['claims'] ?></dd>
 				</div>
 			</dl>
@@ -74,13 +78,29 @@ $this->layout('components::layout/site-layout', [
 
 		<ul class="home-topics">
 			<?php foreach ($topics as $slug => $topic): ?>
-				<li class="home-topic">
-					<a class="home-topic__link" href="/catalog?topic=<?= rawurlencode($slug) ?>">
-						<span class="home-topic__label"><?= $this->e($topic['label']) ?></span>
-						<span class="home-topic__count"><?= $topic['count'] ?></span>
-					</a>
+				<?php $isEmpty = $topic['count'] === 0; ?>
+				<li class="home-topic<?= $isEmpty ? ' home-topic--empty' : '' ?>">
+					<?php
+					// Тематика без документов остаётся видимой — она показывает состав
+					// энциклопедии, — но не притворяется ссылкой: переход в пустой
+					// каталог читается как поломка, а не как «здесь пока ничего нет».
+					?>
+					<?php if ($isEmpty): ?>
+						<span class="home-topic__label">
+							<?= $this->e($topic['label']) ?>
+							<span class="home-topic__count">0</span>
+						</span>
+					<?php else: ?>
+						<a class="home-topic__link" href="/catalog?topic=<?= rawurlencode($slug) ?>">
+							<span class="home-topic__label"><?= $this->e($topic['label']) ?></span>
+							<span class="home-topic__count"><?= $topic['count'] ?></span>
+						</a>
+					<?php endif; ?>
 					<?php if ($topic['description'] !== ''): ?>
 						<p class="home-topic__text"><?= $this->e($topic['description']) ?></p>
+					<?php endif; ?>
+					<?php if ($isEmpty): ?>
+						<p class="home-topic__empty">No documents yet</p>
 					<?php endif; ?>
 				</li>
 			<?php endforeach; ?>
@@ -302,6 +322,26 @@ $this->layout('components::layout/site-layout', [
 		font-size: var(--text-xs);
 		line-height: 1.5;
 		color: var(--color-text-muted);
+	}
+
+	/* Тематика без документов: карточка остаётся на месте, но читается как
+	   «здесь пока пусто», а не как приглашение нажать. */
+	.home-topic--empty {
+		background: var(--color-surface-alt);
+	}
+
+	.home-topic > .home-topic__label {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.5rem;
+		color: var(--color-text-muted);
+	}
+
+	.home-topic__empty {
+		margin: 0.35rem 0 0;
+		font-size: var(--text-xs);
+		color: var(--color-text-subtle);
 	}
 
 	.home-columns {

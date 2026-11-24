@@ -435,11 +435,23 @@ final class ContentRepository
      * Считаются связи графа знаний: чем плотнее документ вплетён в энциклопедию,
      * тем выше он в списке.
      *
+     * @param list<string> $exclude ключи документов, которые уже показаны рядом
+     *
      * @return list<Document>
      */
-    public function popular(int $limit = 6, ?string $locale = null): array
+    public function popular(int $limit = 6, ?string $locale = null, array $exclude = []): array
     {
         $documents = $this->all($locale);
+
+        if ($exclude !== []) {
+            // Один и тот же документ в двух соседних колонках — не «популярность»,
+            // а повтор: список связей должен добавлять, а не перепечатывать.
+            $skip = array_flip($exclude);
+            $documents = array_values(array_filter(
+                $documents,
+                static fn (Document $document): bool => !isset($skip[$document->key()]),
+            ));
+        }
 
         usort($documents, function (Document $a, Document $b): int {
             return $this->linkCount($b) <=> $this->linkCount($a)

@@ -223,6 +223,17 @@ final class ContentRepositoryTest extends TestCase
 		self::assertSame($sorted, $dates);
 	}
 
+	public function testPopularCanExcludeDocumentsShownElsewhere(): void
+	{
+		$recent = $this->repository->recent(4, 'en');
+		$keys = array_map(static fn ($document): string => $document->key(), $recent);
+		$popular = $this->repository->popular(4, 'en', $keys);
+
+		foreach ($popular as $document) {
+			self::assertNotContains($document->key(), $keys, 'popular() повторил документ из recent()');
+		}
+	}
+
 	public function testPopularIsRankedByGraphLinks(): void
 	{
 		$popular = $this->repository->popular(5, 'en');

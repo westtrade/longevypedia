@@ -17,7 +17,7 @@ aliases:
 identifiers:
   hgnc: HGNC:3821
   uniprot: O43524
-created: 2026-11-20
+created: 2026-11-24
 updated: 2026-11-24
 license: CC-BY-SA-4.0
 review:

@@ -17,7 +17,7 @@ aliases:
   - Rapamune
 identifiers:
   mesh: D020123
-created: 2026-11-20
+created: 2026-11-24
 updated: 2026-11-24
 license: CC-BY-SA-4.0
 review:

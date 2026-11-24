@@ -12,10 +12,10 @@ phpunit.xml                          конфигурация PHPUnit 11.5
 tests/bootstrap.php                  APP_ENV=production + автозагрузка
 tests/TestCase.php                   базовый класс: boot, reset, client()
 tests/Content/FrontmatterTest.php    10 тестов
-tests/Content/ContentRepositoryTest.php  23 теста
+tests/Content/ContentRepositoryTest.php  26 тестов
 tests/Content/MarkdownRendererTest.php   13 тестов
 tests/Content/StudyDesignsTest.php    3 теста
-tests/Http/PagesTest.php             27 тестов
+tests/Http/PagesTest.php             29 тестов
 tests/Design/DesignSystemTest.php    13 тестов
 ```
 
@@ -178,7 +178,7 @@ php vendor/bin/phpunit --no-coverage
 Ожидаемый результат на текущем корпусе:
 
 ```text
-OK (89 tests, 430 assertions)
+OK (96 tests, 460 assertions)
 ```
 
 Два сообщения `[router] файловая страница не найдена для "/..."` в выводе — это

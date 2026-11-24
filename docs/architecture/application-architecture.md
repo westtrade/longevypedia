@@ -69,11 +69,20 @@
 
 ### Главная (`app/pages/page.php`)
 
-Берёт `stats($locale)`, `topics($locale)`, `recent(4)`, `popular(4)`. Показывает
-hero-поиск, четыре счётчика (документы, тематики, исследования, утверждения), сетку
-тематик со ссылками на `/catalog?topic=…`, блоки «Recently updated» и «Most connected»
-(карточки документов) и раздел о принципах. Ссылка на репозиторий — из
+Берёт `stats($locale)`, `topics($locale)`, `recent(4)`, `popular(4, $locale, $exclude)`.
+Показывает hero-поиск, четыре счётчика (документы, тематики, исследования, утверждения),
+сетку тематик со ссылками на `/catalog?topic=…`, блоки «Recently updated» и «Most
+connected» (карточки документов) и раздел о принципах. Ссылка на репозиторий — из
 `$config['app']['repository']`.
+
+Две колонки стоят рядом, поэтому `popular()` получает ключи документов из `recent()` в
+параметре `$exclude` и не повторяет их: один и тот же документ в двух соседних колонках
+читается как ошибка выборки, а не как совпадение. Тематика с нулём документов остаётся
+в сетке (она показывает состав энциклопедии), но рендерится без ссылки и с пометкой
+«No documents yet» — переход в пустой каталог выглядит поломкой. Оба правила закреплены
+тестами `testHomePageDoesNotShowTheSameDocumentTwice`,
+`testHomePageMarksTopicWithoutDocumentsAsNotLinked` и
+`testPopularCanExcludeDocumentsShownElsewhere`.
 
 ### Каталог (`app/pages/catalog/page.php`)
 

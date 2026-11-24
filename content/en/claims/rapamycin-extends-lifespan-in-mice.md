@@ -14,7 +14,7 @@ tags:
   - evidence
 aliases:
   - Rapamycin longevity claim
-created: 2026-11-20
+created: 2026-11-24
 updated: 2026-11-24
 license: CC-BY-SA-4.0
 review:
@@ -24,7 +24,7 @@ claim:
   confidence: likely
   evidence_direction: supports
   scope: Mice only. The evidence does not establish a lifespan or healthspan effect in humans, nor an optimal dose or schedule.
-  as_of: 2026-11-20
+  as_of: 2026-11-24
 relations:
   - type: supported_by
     target: research:harrison-2009-rapamycin-mice

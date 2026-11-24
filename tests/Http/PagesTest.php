@@ -35,6 +35,39 @@ final class PagesTest extends TestCase
 		self::assertStringContainsString('href="/research"', $body);
 	}
 
+	public function testHomePageDoesNotShowTheSameDocumentTwice(): void
+	{
+		$body = $this->client()->get('/')->assertOk()->body();
+
+		// Две колонки стоят рядом: документ, попавший в «обновлённые», не должен
+		// повторяться в «связанных», иначе первый экран показывает одно и то же.
+		preg_match_all(
+			'~href="(/[a-z]+/[a-z0-9-]+/)"~',
+			$body,
+			$matches,
+		);
+
+		$duplicates = array_keys(array_filter(
+			array_count_values($matches[1]),
+			static fn (int $count): bool => $count > 1,
+		));
+
+		self::assertSame([], $duplicates, 'Документы повторяются на главной: ' . implode(', ', $duplicates));
+	}
+
+	public function testHomePageMarksTopicWithoutDocumentsAsNotLinked(): void
+	{
+		$body = $this->client()->get('/')->assertOk()->body();
+
+		self::assertStringContainsString('home-topic--empty', $body);
+		self::assertStringContainsString('No documents yet', $body);
+		self::assertStringNotContainsString(
+			'href="/catalog?topic=biomarkers"',
+			$body,
+			'Пустая тематика не должна вести в пустой каталог',
+		);
+	}
+
 	public function testCatalogListsDocuments(): void
 	{
 		$response = $this->client()->get('/catalog')->assertOk();
