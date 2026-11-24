@@ -1,0 +1,17 @@
+# Фреймворк Bolt лежит рядом с проектом (`../bolt`) и подключён composer-путём
+# (`repositories[path].url = "../bolt"`, `options.symlink = true`).
+#
+# Внутри контейнера он должен оказаться по ТОМУ ЖЕ относительному пути, что и на
+# хосте. `vendor/bsti/bolt` — симлинк на `../../bolt`; если смонтировать Bolt в
+# другое место, симлинк повиснет, и `require vendor/autoload.php` упадёт, хотя
+# `ddev composer install` отработает без ошибок.
+#
+# ${DDEV_APPROOT} — корень проекта на хосте
+# (/home/io/workspace/work/legacy-bolt/longevypedia), значит:
+#   /home/io/workspace/work/legacy-bolt/bolt → /var/www/bolt
+#   корень проекта                          → /var/www/html
+# и `../../bolt` из `/var/www/html/vendor/bsti/bolt` разрешается верно.
+services:
+  web:
+    volumes:
+      - "${DDEV_APPROOT}/../bolt:/var/www/bolt:cached"

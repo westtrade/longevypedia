@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Как устроен проект
+    url: https://github.com/westtrade/longevypedia/blob/main/docs/architecture/overview.md
+    about: Архитектура, структура каталогов и принятые решения.
+  - name: Формат Markdown-документа
+    url: https://github.com/westtrade/longevypedia/blob/main/docs/specifications/longevypedia-markdown.md
+    about: Обязательные поля Frontmatter, типы документов, связи, Wikilinks.
+  - name: Локальный запуск
+    url: https://github.com/westtrade/longevypedia/blob/main/docs/development/local-environment.md
+    about: Как получить оба репозитория и поднять DDEV.
+  - name: Уязвимость в безопасности
+    url: https://github.com/westtrade/longevypedia/blob/main/SECURITY.md
+    about: Не создавайте публичный issue — напишите приватно, как описано в SECURITY.md.

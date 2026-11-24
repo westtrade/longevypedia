@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://longevypedia.localhost/schemas/article.schema.json",
+  "title": "Longevypedia article document",
+  "description": "Long-form editorial text that is not itself a study, a claim or an entity page: overviews, explainers, field notes. Everything factual in it must trace back to cited sources.",
+  "allOf": [
+    { "$ref": "document.schema.json" },
+    {
+      "properties": {
+        "type": { "enum": ["article"] },
+        "article": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["overview", "explainer", "essay", "interview", "news"],
+              "description": "Editorial format. `overview` and `explainer` are encyclopedic; `essay` and `interview` are opinionated and must say so."
+            },
+            "series": {
+              "type": "string",
+              "maxLength": 120,
+              "description": "Series name, when the text belongs to one."
+            },
+            "reading_level": {
+              "type": "string",
+              "enum": ["general", "informed", "specialist"]
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["type"]
+    }
+  ],
+  "unevaluatedProperties": false
+}

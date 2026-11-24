@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://longevypedia.localhost/schemas/guideline.schema.json",
+  "title": "Longevypedia guideline document",
+  "description": "A recommendation issued by an organization — clinical guidance, consensus statement or screening protocol. Longevypedia restates it and links the evidence; it does not issue its own medical advice.",
+  "allOf": [
+    { "$ref": "document.schema.json" },
+    {
+      "properties": {
+        "type": { "enum": ["guideline"] },
+        "guideline": {
+          "type": "object",
+          "required": ["organization", "issued"],
+          "properties": {
+            "organization": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 200,
+              "description": "Body that issued the guidance."
+            },
+            "issued": {
+              "type": "string",
+              "format": "date",
+              "description": "Publication date of the guideline version described here."
+            },
+            "version": { "type": "string", "maxLength": 40 },
+            "audience": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "Who the guidance is written for: clinicians, patients, public health."
+            },
+            "url": { "type": "string", "format": "uri" },
+            "supersedes_url": { "type": "string", "format": "uri" }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["type", "guideline"]
+    }
+  ],
+  "unevaluatedProperties": false
+}

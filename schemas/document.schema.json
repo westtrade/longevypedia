@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://longevypedia.localhost/schemas/document.schema.json",
+  "title": "Longevypedia document frontmatter",
+  "description": "Fields every Longevypedia Markdown document must declare in its YAML frontmatter, regardless of type. Type-specific schemas extend this one.",
+  "type": "object",
+  "required": ["id", "type", "title", "summary", "status", "locale", "created", "updated", "license"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*:[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Stable identifier `<type>:<slug>`. Must match the directory and file name."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "concept",
+        "mechanism",
+        "pathway",
+        "gene",
+        "protein",
+        "biomarker",
+        "disease",
+        "compound",
+        "intervention",
+        "research",
+        "claim",
+        "guideline",
+        "article"
+      ],
+      "description": "Document type. Determines the directory, the JSON Schema and the page template."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120,
+      "description": "Human-readable title shown in the article header and in the catalog."
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 400,
+      "description": "One or two sentences that answer what this is. Used in cards, search results and meta description."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "review", "published", "deprecated"],
+      "description": "Publication status. Only `published` documents are visible on the public site."
+    },
+    "locale": {
+      "type": "string",
+      "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+      "description": "Language of the text. Must match the content directory the file lives in."
+    },
+    "topics": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      },
+      "description": "Topic slugs from taxonomy/topics.php."
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 2, "maxLength": 40 },
+      "description": "Free-form keywords for search. Not curated; prefer topics for navigation."
+    },
+    "aliases": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 2, "maxLength": 120 },
+      "description": "Alternative names that resolve to this document: `[[Alias]]` and `[[slug|text]]` both work."
+    },
+    "created": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the document was first written (YYYY-MM-DD)."
+    },
+    "updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the last substantive edit (YYYY-MM-DD). Shown on the article page."
+    },
+    "license": {
+      "type": "string",
+      "description": "License of the prose. Defaults to CC-BY-SA-4.0; quoted excerpts keep their own terms."
+    },
+    "review": {
+      "type": "object",
+      "description": "Editorial review state. Separate from `status`: a published document can be unreviewed.",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["unreviewed", "community", "expert"]
+        },
+        "reviewers": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 2 }
+        },
+        "reviewed_at": { "type": "string", "format": "date" },
+        "notes": { "type": "string", "maxLength": 600 }
+      },
+      "unevaluatedProperties": false
+    },
+    "relations": {
+      "type": "array",
+      "description": "Typed edges of the knowledge graph. Inverse edges are computed, never stored.",
+      "items": { "$ref": "#/$defs/relation" }
+    },
+    "sources": {
+      "type": "array",
+      "description": "Primary sources. Never invent a DOI or PMID: omit the field when the source does not provide one.",
+      "items": { "$ref": "#/$defs/source" }
+    }
+  },
+  "$defs": {
+    "relation": {
+      "type": "object",
+      "required": ["type", "target"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "related_to",
+            "part_of",
+            "has_part",
+            "cites",
+            "cited_by",
+            "supported_by",
+            "supports",
+            "contradicted_by",
+            "contradicts",
+            "studies",
+            "studied_by",
+            "measured_by",
+            "measures",
+            "targets",
+            "targeted_by",
+            "regulates",
+            "regulated_by"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Document id (`type:slug`), path (`concepts/longevity`) or slug."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Why the edge exists. Required in practice for contradicting evidence."
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": ["citation"],
+      "properties": {
+        "citation": {
+          "type": "string",
+          "minLength": 8,
+          "description": "Full reference as it appears in the publication."
+        },
+        "url": { "type": "string", "format": "uri" },
+        "doi": {
+          "type": "string",
+          "pattern": "^10\\.[0-9]{4,9}/[-._;()/:a-zA-Z0-9]+$"
+        },
+        "pmid": { "type": "string", "pattern": "^[1-9][0-9]{0,8}$" },
+        "note": { "type": "string", "maxLength": 300 }
+      },
+      "unevaluatedProperties": false
+    }
+  }
+}

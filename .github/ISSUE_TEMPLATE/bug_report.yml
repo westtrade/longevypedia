@@ -1,0 +1,69 @@
+name: Ошибка на сайте
+description: Страница падает, отдаёт 404, кривая разметка или сломанный поиск.
+labels: ['bug', 'site']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ошибка в **контенте** (неверный факт, опечатка, плохой источник) — это
+        отдельная форма: «Исправление контента».
+
+  - type: input
+    id: url
+    attributes:
+      label: Адрес страницы
+      placeholder: https://longevypedia.localhost/compounds/rapamycin/
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Что должно было произойти
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Что произошло на самом деле
+      description: Если это HTTP-ошибка, приложите код ответа. Если 500 — текст страницы ошибки.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Как воспроизвести
+      placeholder: |
+        1. Открыть /catalog
+        2. Выбрать тип «Genes»
+        3. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Тема оформления
+      options:
+        - Светлая
+        - Тёмная
+        - Системная
+        - Не относится к делу
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Устройство
+      options:
+        - Компьютер
+        - Планшет
+        - Телефон
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Окружение
+      description: Версия PHP, BOLT, браузера — если это локальная сборка.
+      placeholder: PHP 8.4.27, BOLT dev-main, Firefox 141

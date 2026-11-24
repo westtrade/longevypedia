@@ -1,0 +1,81 @@
+name: Исправление контента
+description: Неверный факт, устаревший источник, ошибочная оценка доказательности или опечатка.
+labels: ['content']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Правку можно предложить и сразу пул-реквестом — форма нужна, когда
+        непонятно, что именно менять, или нужен разговор о формулировке.
+
+        Минимум, без которого правка не рассматривается: **какой файл** и
+        **какой первоисточник** подтверждает изменение.
+
+  - type: input
+    id: document
+    attributes:
+      label: Документ
+      description: Путь к файлу или идентификатор документа.
+      placeholder: content/en/compounds/rapamycin.md (compound:rapamycin)
+    validations:
+      required: true
+
+  - type: textarea
+    id: quote
+    attributes:
+      label: Что сейчас написано
+      description: Цитата из документа, которую нужно изменить.
+    validations:
+      required: true
+
+  - type: textarea
+    id: correction
+    attributes:
+      label: Как должно быть
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Первоисточник
+      description: |
+        DOI, PMID или ссылка на публикацию. Обзорная статья не заменяет
+        первоисточник: если речь о результате, нужна работа, где он получен.
+      placeholder: https://doi.org/10.1038/nature08221
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Что именно неверно
+      options:
+        - Факт или число
+        - Формулировка вывода
+        - Оценка уверенности (confidence)
+        - Направление доказательств (evidence_direction)
+        - Ссылка на источник
+        - Опечатка или разметка
+        - Другое
+    validations:
+      required: true
+
+  - type: textarea
+    id: contradiction
+    attributes:
+      label: Противоречащие результаты
+      description: |
+        Если существуют работы с противоположным результатом, перечислите их.
+        Энциклопедия показывает разногласие, а не устраняет его удалением
+        неудобного источника.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Подтверждения
+      options:
+        - label: Я проверил(а) первоисточник, а не пересказ
+          required: true
+        - label: Я не добавляю DOI или PMID, которых не видел(а) в публикации
+          required: true

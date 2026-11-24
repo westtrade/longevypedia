@@ -1,0 +1,34 @@
+# --- зависимости ---
+/vendor/
+/node_modules/
+/bun.lockb
+
+# --- сборка и скрытые генерации BOLT ---
+# `.bolt/` — сгенерированные barrel-файлы Vite (`componentAssets`), их пишет
+# сборка и пересоздаёт при каждом запуске. В репозитории им нечего делать.
+/.bolt/
+/public/build/
+
+# --- кеши и артефакты прогонов ---
+/var/
+/tmp/
+
+# --- окружение и секреты ---
+# `.env` в проекте нет; если появится — он локальный и не публикуется.
+/.env
+/.env.*
+!/.env.example
+/.ddev/.env
+/.ddev/.env.*
+
+# --- IDE и ОС ---
+/.idea/
+/.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- прочее ---
+*.log
+/coverage/
+.phpunit.result.cache

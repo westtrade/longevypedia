@@ -1,0 +1,50 @@
+name: Предложение
+description: Новая возможность, новый тип документа, улучшение интерфейса или архитектуры.
+labels: ['enhancement']
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Область
+      options:
+        - Контент и спецификация формата
+        - Сайт и интерфейс
+        - Поиск
+        - Доступность
+        - Сборка, окружение, CI
+        - Другое
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какую задачу это решает
+      description: |
+        Опишите проблему, а не решение: «не могу найти исследования по
+        биомаркеру» полезнее, чем «добавьте поле в поиск».
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Предлагаемое решение
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Что уже пробовали и какие есть альтернативы
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Ограничения проекта
+      description: |
+        Стек зафиксирован: PHP 8.2+ на BOLT, Plates, Vite, TypeScript, SCSS,
+        htmx 4, Bun. Контент — Markdown с YAML Frontmatter, без базы данных.
+      options:
+        - label: Предложение не требует нового PHP-фреймворка, ORM или CMS
+          required: true
+        - label: Предложение не требует React/Vue/Svelte или UI-фреймворка
+          required: true

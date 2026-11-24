@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://longevypedia.localhost/schemas/entity.schema.json",
+  "title": "Longevypedia entity document",
+  "description": "Concepts, mechanisms, pathways, genes, proteins, biomarkers, diseases, compounds and interventions share one shape: a described entity plus typed identifiers.",
+  "allOf": [
+    { "$ref": "document.schema.json" },
+    {
+      "properties": {
+        "type": {
+          "enum": [
+            "concept",
+            "mechanism",
+            "pathway",
+            "gene",
+            "protein",
+            "biomarker",
+            "disease",
+            "compound",
+            "intervention"
+          ]
+        },
+        "identifiers": {
+          "type": "object",
+          "description": "Curated identifiers from authoritative databases. Only fill in what the source actually provides.",
+          "properties": {
+            "hgnc": { "type": "string", "pattern": "^HGNC:[0-9]+$" },
+            "uniprot": {
+              "type": "string",
+              "pattern": "^([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{3}[0-9]){1,2})$"
+            },
+            "chembl": { "type": "string", "pattern": "^CHEMBL[0-9]+$" },
+            "drugbank": { "type": "string", "pattern": "^DB[0-9]{5}$" },
+            "mondo": { "type": "string", "pattern": "^MONDO:[0-9]{7}$" },
+            "mesh": { "type": "string", "pattern": "^(D|C|G)[0-9]{6}$" },
+            "omim": { "type": "string", "pattern": "^[0-9]{6}$" },
+            "go": { "type": "string", "pattern": "^GO:[0-9]{7}$" },
+            "kegg": { "type": "string", "pattern": "^[a-z]{2,4}[0-9]{5}$" }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["type"]
+    }
+  ],
+  "unevaluatedProperties": false
+}

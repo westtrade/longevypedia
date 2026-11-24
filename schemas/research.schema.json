@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://longevypedia.localhost/schemas/research.schema.json",
+  "title": "Longevypedia research document",
+  "description": "A single study or a clearly delimited body of evidence. The `study` block carries bibliographic facts; findings belong in the Markdown body, where they can be read in context.",
+  "allOf": [
+    { "$ref": "document.schema.json" },
+    {
+      "properties": {
+        "type": { "enum": ["research"] },
+        "study": {
+          "type": "object",
+          "required": ["design"],
+          "properties": {
+            "design": {
+              "type": "string",
+              "enum": [
+                "systematic_review",
+                "meta_analysis",
+                "randomized_controlled_trial",
+                "controlled_trial",
+                "cohort",
+                "case_control",
+                "cross_sectional",
+                "case_series",
+                "case_report",
+                "animal_experiment",
+                "in_vitro",
+                "ecological",
+                "narrative_review",
+                "other"
+              ]
+            },
+            "species": {
+              "type": "string",
+              "description": "Model organism or `human`."
+            },
+            "population": {
+              "type": "string",
+              "maxLength": 300,
+              "description": "Who was studied: age range, health status, country, cohort name."
+            },
+            "sample_size": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Number of participants or animals. Omit for reviews that pool studies."
+            },
+            "intervention": { "type": "string", "maxLength": 300 },
+            "comparator": { "type": "string", "maxLength": 300 },
+            "duration": { "type": "string", "maxLength": 120 },
+            "outcomes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string", "minLength": 3, "maxLength": 160 },
+                  "direction": {
+                    "type": "string",
+                    "enum": ["increase", "decrease", "no_change", "mixed", "unclear"]
+                  },
+                  "measure": { "type": "string", "maxLength": 160 }
+                },
+                "unevaluatedProperties": false
+              }
+            },
+            "authors": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 2 }
+            },
+            "journal": { "type": "string", "maxLength": 200 },
+            "year": {
+              "type": "integer",
+              "minimum": 1800,
+              "maximum": 2200
+            },
+            "doi": {
+              "type": "string",
+              "pattern": "^10\\.[0-9]{4,9}/[-._;()/:a-zA-Z0-9]+$"
+            },
+            "pmid": { "type": "string", "pattern": "^[1-9][0-9]{0,8}$" },
+            "registration": {
+              "type": "string",
+              "maxLength": 60,
+              "description": "Trial or review registration number, when the study has one."
+            },
+            "preprint": { "type": "boolean" },
+            "example": {
+              "type": "boolean",
+              "description": "True marks a demonstration document that describes no real study. Required for any fictional example: the page renders a warning banner."
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["type", "study"]
+    }
+  ],
+  "unevaluatedProperties": false
+}

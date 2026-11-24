@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://longevypedia.localhost/schemas/claim.schema.json",
+  "title": "Longevypedia claim document",
+  "description": "A scientific statement evaluated separately from the evidence. The claim block records the exact proposition and the current state of evidence; sources and relations record why.",
+  "allOf": [
+    { "$ref": "document.schema.json" },
+    {
+      "properties": {
+        "type": { "enum": ["claim"] },
+        "claim": {
+          "type": "object",
+          "required": ["statement", "confidence", "evidence_direction"],
+          "properties": {
+            "statement": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 500,
+              "description": "The proposition in one sentence, phrased so that it could be refuted. Not a summary of a paper."
+            },
+            "confidence": {
+              "type": "string",
+              "enum": ["established", "likely", "uncertain", "contested", "speculative"],
+              "description": "How well the claim is supported overall. `established` is reserved for textbook-level consensus."
+            },
+            "evidence_direction": {
+              "type": "string",
+              "enum": ["supports", "contradicts", "mixed", "insufficient"],
+              "description": "Net direction of the evidence collected on this page."
+            },
+            "scope": {
+              "type": "string",
+              "maxLength": 300,
+              "description": "Where the claim applies: species, population, dose range, timeframe. A claim without scope is usually overstated."
+            },
+            "as_of": {
+              "type": "string",
+              "format": "date",
+              "description": "Date the evidence assessment was last checked."
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["type", "claim"]
+    }
+  ],
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,170 @@
+/**
+ * Текст статьи.
+ *
+ * Область `.prose` — единственное место, где живёт оформление Markdown:
+ * разметку генерирует CommonMark, поэтому стилизовать её тегами можно, но
+ * только под этим классом, иначе те же теги в интерфейсе получат чужой вид.
+ *
+ * Ширина строки ограничена `--layout-measure` (68ch): длинная строка — главная
+ * причина, по которой научный текст не читают. Таблицы и код шире — они
+ * выходят за меру и прокручиваются внутри своего контейнера.
+ */
+
+.prose {
+	max-width: var(--layout-measure);
+	font-family: var(--font-serif);
+	font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+	line-height: var(--leading-relaxed);
+	color: var(--color-text);
+	font-variant-numeric: tabular-nums;
+}
+
+.prose > * + * {
+	margin-top: 1.15em;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+	position: relative;
+	margin-block: 2em 0.55em;
+	scroll-margin-top: calc(var(--layout-header) + var(--space-6));
+}
+
+.prose h2 {
+	padding-bottom: 0.25em;
+	border-bottom: 1px solid var(--color-border);
+	font-size: var(--text-2xl);
+}
+
+.prose h3 {
+	font-size: var(--text-xl);
+}
+
+.prose h4 {
+	font-size: var(--text-lg);
+}
+
+/* Якорь заголовка: виден при наведении и с клавиатуры, не мешает чтению. */
+.prose :is(h2, h3, h4) > a[href^='#'] {
+	position: absolute;
+	left: -1.15em;
+	top: 0;
+	color: var(--color-text-subtle);
+	text-decoration: none;
+	opacity: 0;
+	font-family: var(--font-ui);
+	font-size: 0.8em;
+	line-height: var(--leading-snug);
+}
+
+.prose :is(h2, h3, h4):hover > a[href^='#'],
+.prose :is(h2, h3, h4) > a[href^='#']:focus-visible {
+	opacity: 1;
+}
+
+.prose ul,
+.prose ol {
+	padding-inline-start: 1.4em;
+}
+
+.prose li + li {
+	margin-top: 0.35em;
+}
+
+.prose li::marker {
+	color: var(--color-text-subtle);
+}
+
+/* Wikilink: внутренняя ссылка графа знаний. */
+.prose .wikilink {
+	text-decoration-color: color-mix(in oklch, var(--color-brand) 40%, transparent);
+}
+
+/* Цель ещё не написана: не битая ссылка, а приглашение. */
+.prose .wikilink--missing {
+	color: var(--color-text-muted);
+	text-decoration: underline dotted;
+	cursor: help;
+}
+
+.prose .wikilink--missing::after {
+	content: '?';
+	margin-inline-start: 0.1em;
+	font-size: 0.75em;
+	vertical-align: super;
+}
+
+/* Таблицы шире меры: прокрутка внутри своего блока, страница не «прыгает». */
+.prose table {
+	display: block;
+	width: max-content;
+	max-width: 100%;
+	margin-block: var(--space-6);
+	overflow-x: auto;
+	border-collapse: collapse;
+	font-family: var(--font-ui);
+	font-size: var(--text-sm);
+	line-height: var(--leading-table);
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.prose thead th {
+	position: sticky;
+	top: 0;
+	background: var(--color-surface-alt);
+	font-weight: var(--weight-semibold);
+	text-align: start;
+}
+
+.prose th,
+.prose td {
+	padding: var(--space-2) var(--space-3);
+	border-bottom: 1px solid var(--color-border);
+	vertical-align: top;
+}
+
+.prose tbody tr:hover {
+	background: color-mix(in oklch, var(--color-surface-alt) 65%, transparent);
+}
+
+.prose img {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+}
+
+.prose blockquote {
+	padding-inline-start: var(--space-5);
+	border-inline-start: 3px solid var(--color-brand-subtle);
+	color: var(--color-text-muted);
+	font-style: italic;
+}
+
+.prose hr {
+	margin-block: var(--space-10);
+}
+
+.prose code {
+	font-size: 0.86em;
+}
+
+/* Сноски: CommonMark собирает их в конце документа. */
+.prose .footnotes {
+	margin-top: var(--space-12);
+	padding-top: var(--space-5);
+	border-top: 1px solid var(--color-border);
+	font-family: var(--font-ui);
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
+	color: var(--color-text-muted);
+}
+
+.prose .footnotes ol {
+	padding-inline-start: 1.2em;
+}
+
+.prose .footnote-backref {
+	margin-inline-start: 0.25em;
+	text-decoration: none;
+}
