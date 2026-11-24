@@ -72,7 +72,7 @@ $this->layout('components::layout/site-layout', [
 
 	.error-page__title {
 		margin: 0.35rem 0 0.6rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: clamp(1.8rem, 1.4rem + 1.6vw, 2.4rem);
 	}
 

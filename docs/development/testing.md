@@ -15,8 +15,8 @@ tests/Content/FrontmatterTest.php    10 тестов
 tests/Content/ContentRepositoryTest.php  23 теста
 tests/Content/MarkdownRendererTest.php   13 тестов
 tests/Content/StudyDesignsTest.php    3 теста
-tests/Http/PagesTest.php             26 тестов
-tests/Design/DesignSystemTest.php    10 тестов
+tests/Http/PagesTest.php             27 тестов
+tests/Design/DesignSystemTest.php    11 тестов
 ```
 
 `phpunit.xml`:
@@ -173,7 +173,7 @@ php vendor/bin/phpunit --no-coverage
 Ожидаемый результат на текущем корпусе:
 
 ```text
-OK (85 tests, 411 assertions)
+OK (87 tests, 422 assertions)
 ```
 
 Два сообщения `[router] файловая страница не найдена для "/..."` в выводе — это

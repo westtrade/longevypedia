@@ -45,6 +45,9 @@
 	--color-accent: #d99a68;
 	--color-accent-text: #e2ab7f;
 	--color-accent-subtle: #2a2117;
+	--color-accent-fill: #d99a68;
+	--color-accent-fill-hover: #e8b489;
+	--color-on-accent: #111a1b;
 
 	--color-success: #7fbf9b;
 	--color-success-text: #93cdaa;
@@ -176,6 +179,12 @@
 	--color-accent: #c47a45;
 	--color-accent-text: #9a5a2e;
 	--color-accent-subtle: #f7efe6;
+	/* Заливка акцентной кнопки: #c47a45 с белым текстом даёт 3.38:1 — ниже AA.
+	   Поэтому у заливки отдельное, более тёмное значение, а --color-accent
+	   остаётся для рамок, иконок и линеек. */
+	--color-accent-fill: #a85f2e;
+	--color-accent-fill-hover: #8f5024;
+	--color-on-accent: #ffffff;
 
 	--color-success: #3f765b;
 	--color-success-text: #356349;

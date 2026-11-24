@@ -117,7 +117,7 @@ $this->layout('components::layout/site-layout', [
 
 	.search-page__title {
 		margin: 0 0 1rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: clamp(1.8rem, 1.3rem + 1.8vw, 2.4rem);
 	}
 
@@ -190,7 +190,7 @@ $this->layout('components::layout/site-layout', [
 
 	.search-page__name {
 		margin: 0 0 0.3rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: var(--text-lg);
 		line-height: 1.3;
 

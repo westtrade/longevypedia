@@ -163,6 +163,20 @@ final class PagesTest extends TestCase
 		self::assertStringContainsString('href="/ui-kit/button"', $body);
 	}
 
+	public function testUiKitIndexIsInsideThePageContainer(): void
+	{
+		// `.page__main` не даёт боковых отступов — их даёт `.container`.
+		// Без него индекс набора прилипал к краю окна, тогда как все
+		// остальные страницы выровнены по общей сетке.
+		$body = $this->client()->get('/ui-kit')->assertOk()->body();
+
+		self::assertMatchesRegularExpression(
+			'/<div class="container ui-kit-index">/',
+			$body,
+			'индекс UI-набора должен быть обёрнут в .container',
+		);
+	}
+
 	public function testUiKitComponentPageShowsExampleAndSource(): void
 	{
 		$body = $this->client()->get('/ui-kit/button')->assertOk()->body();

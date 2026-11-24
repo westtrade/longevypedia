@@ -178,7 +178,7 @@ $this->layout('components::layout/site-layout', [
 
 	.home-hero__title {
 		margin: 0 0 0.75rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: clamp(2.6rem, 1.8rem + 3.6vw, 4rem);
 		line-height: 1.05;
 		letter-spacing: -0.02em;
@@ -216,7 +216,7 @@ $this->layout('components::layout/site-layout', [
 
 		dd {
 			margin: 0;
-			font-family: var(--font-text);
+			font-family: var(--font-serif);
 			font-size: var(--text-2xl);
 			line-height: 1;
 		}
@@ -236,7 +236,7 @@ $this->layout('components::layout/site-layout', [
 
 	.home-section__title {
 		margin: 0;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: var(--text-2xl);
 		line-height: 1.2;
 	}
@@ -350,13 +350,13 @@ $this->layout('components::layout/site-layout', [
 		gap: 0.2rem;
 		padding: 1rem 1.15rem;
 		border-radius: var(--radius-md);
-		background: var(--color-accent);
-		color: var(--color-accent-fg);
+		background: var(--color-accent-fill);
+		color: var(--color-on-accent);
 		text-decoration: none;
 		font-weight: 600;
 
 		&:hover {
-			filter: brightness(1.07);
+			background: var(--color-accent-fill-hover);
 		}
 	}
 

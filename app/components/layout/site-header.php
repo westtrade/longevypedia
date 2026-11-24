@@ -80,7 +80,7 @@ $navigation = [
 		gap: 0.55rem;
 		color: var(--color-text);
 		text-decoration: none;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: 1.15rem;
 		font-weight: 600;
 		letter-spacing: -0.01em;
@@ -123,6 +123,7 @@ $navigation = [
 
 	.theme-toggle {
 		display: inline-flex;
+		flex: none;
 		align-items: center;
 		justify-content: center;
 		width: 2.25rem;
@@ -170,6 +171,7 @@ $navigation = [
 
 	.site-header__github {
 		display: inline-flex;
+		flex: none;
 		color: var(--color-text-muted);
 
 		&:hover {
@@ -177,9 +179,26 @@ $navigation = [
 		}
 	}
 
+	/* На узком экране шапка переносится: бренд, тема и GitHub остаются в первой
+	   строке, поиск уходит во вторую. Иначе форма поиска (у неё на мобильном
+	   `max-width: none`) выталкивает кнопки за край и появляется горизонтальная
+	   прокрутка. */
 	@media (max-width: 48rem) {
 		.site-nav {
 			display: none;
+		}
+
+		.site-header__inner {
+			flex-wrap: wrap;
+			row-gap: 0;
+			padding-block: var(--space-2);
+		}
+
+		.site-header__inner > .search {
+			order: 3;
+			flex: 1 0 100%;
+			max-width: none;
+			margin-block-end: var(--space-2);
 		}
 	}
 </style>

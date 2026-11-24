@@ -82,7 +82,7 @@ $updated = $document->updated();
 
 	.doc-card__title {
 		margin: 0;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: var(--text-lg);
 		font-weight: 600;
 		line-height: 1.25;

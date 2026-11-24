@@ -129,6 +129,8 @@ final class DesignSystemTest extends TestCase
 			'--gutter',
 			'--color-bg-alt',
 			'--color-accent-soft',
+			'--font-text',
+			'--color-accent-fg',
 		];
 
 		$offenders = [];
@@ -146,6 +148,47 @@ final class DesignSystemTest extends TestCase
 		}
 
 		self::assertSame([], $offenders, "устаревшие токены:\n" . implode("\n", $offenders));
+	}
+
+	public function testEveryCustomPropertyIsDefinedOrAssignedLocally(): void
+	{
+		// `var(--нет-такого)` не ломает сборку: CSS просто отбрасывает
+		// объявление, и свойство наследуется. Ошибка видна только глазами —
+		// заголовок молча рисуется не тем шрифтом. Поэтому проверяем, что
+		// каждое имя либо объявлено в токенах, либо задано в проекте локально.
+		$tokens = (string) file_get_contents($this->projectRoot() . '/app/client/styles/_tokens.scss');
+		preg_match_all('/(--[a-z0-9-]+)\s*:/', $tokens, $definedMatch);
+		$defined = array_fill_keys($definedMatch[1], true);
+
+		$used = [];
+		$assigned = [];
+
+		foreach ($this->templateFiles() as $file) {
+			$contents = (string) file_get_contents($file);
+
+			preg_match_all('/var\((--[a-z0-9-]+)/', $contents, $usedMatch);
+			preg_match_all('/(--[a-z0-9-]+)\s*:/', $contents, $assignedMatch);
+
+			foreach ($usedMatch[1] as $name) {
+				$used[$name][] = $this->shortPath($file);
+			}
+
+			foreach ($assignedMatch[1] as $name) {
+				$assigned[$name] = true;
+			}
+		}
+
+		$offenders = [];
+
+		foreach ($used as $name => $files) {
+			if (isset($defined[$name]) || isset($assigned[$name])) {
+				continue;
+			}
+
+			$offenders[] = $name . ' (' . implode(', ', array_unique($files)) . ')';
+		}
+
+		self::assertSame([], $offenders, "необъявленные CSS-переменные:\n" . implode("\n", $offenders));
 	}
 
 	public function testProjectIconsAreDiscoveredWithoutSuffix(): void

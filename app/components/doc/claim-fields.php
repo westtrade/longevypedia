@@ -95,7 +95,7 @@ $asOf = (string) ($claim['as_of'] ?? '');
 	.claim__title {
 		margin: 0 0 0.6rem;
 		font-size: var(--text-lg);
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 	}
 
 	.claim__statement {
@@ -104,7 +104,7 @@ $asOf = (string) ($claim['as_of'] ?? '');
 		border: 0;
 		font-size: var(--text-lg);
 		line-height: 1.45;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		color: var(--color-text);
 	}
 

@@ -211,7 +211,7 @@ $this->start('page');
 
 	.doc__title {
 		margin: 0 0 0.6rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: clamp(1.9rem, 1.3rem + 2.2vw, 2.7rem);
 		line-height: 1.15;
 		letter-spacing: -0.015em;
@@ -297,15 +297,17 @@ $this->start('page');
 
 	@media (max-width: 60rem) {
 		.doc-page__grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 			gap: 1.5rem;
 		}
 
+		/* На узком экране оглавление уходит под статью: над заголовком оно
+		   читается как «страница началась не с названия». */
 		.doc-page__aside {
 			position: static;
-			order: -1;
-			border-bottom: 1px solid var(--color-border);
-			padding-bottom: 1rem;
+			order: 1;
+			border-top: 1px solid var(--color-border);
+			padding-top: 1rem;
 		}
 	}
 </style>

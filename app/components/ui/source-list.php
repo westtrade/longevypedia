@@ -99,7 +99,18 @@ if ($sources === []) {
 		color: var(--color-brand-text);
 		text-decoration: underline;
 		text-underline-offset: 0.18em;
+	}
+
+	/* Перенос разрешён по умолчанию: ссылка-цитата — это обычный текст
+	   библиографии, и `nowrap` на ней растягивает всю страницу. Запрещаем
+	   перенос только коротким идентификаторам (DOI, PMID), где разрыв
+	   посреди номера читается как ошибка. */
+	.ui-sources__links .ui-sources__link {
 		white-space: nowrap;
+	}
+
+	.ui-sources__citation {
+		overflow-wrap: anywhere;
 	}
 
 	.ui-sources__note {

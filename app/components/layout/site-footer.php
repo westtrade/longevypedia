@@ -71,7 +71,7 @@ declare(strict_types=1);
 
 	.site-footer__title {
 		margin: 0 0 0.35rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: 1.1rem;
 		color: var(--color-text);
 	}
@@ -119,7 +119,7 @@ declare(strict_types=1);
 
 	@media (max-width: 48rem) {
 		.site-footer__inner {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

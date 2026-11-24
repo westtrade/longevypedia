@@ -183,7 +183,7 @@ $this->layout('components::layout/site-layout', [
 
 	.about__title {
 		margin: 0 0 0.6rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: clamp(1.9rem, 1.4rem + 2vw, 2.6rem);
 	}
 
@@ -261,7 +261,7 @@ $this->layout('components::layout/site-layout', [
 
 	.about__section-title {
 		margin: 0 0 0.75rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: var(--text-xl);
 	}
 
@@ -311,7 +311,7 @@ $this->layout('components::layout/site-layout', [
 
 	@media (max-width: 56rem) {
 		.about__grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 			gap: 1rem;
 		}
 

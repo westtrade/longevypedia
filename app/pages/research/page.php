@@ -106,7 +106,7 @@ $this->start('page');
 
 	.research-index__title {
 		margin: 0 0 0.5rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: clamp(1.8rem, 1.3rem + 1.8vw, 2.4rem);
 	}
 
@@ -139,7 +139,7 @@ $this->start('page');
 
 	.research-index__name {
 		margin: 0;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: var(--text-xl);
 		line-height: 1.25;
 

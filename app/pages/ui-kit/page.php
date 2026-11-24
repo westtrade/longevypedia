@@ -19,7 +19,7 @@ $this->layout('components::layout/site-layout', [
 ]);
 ?>
 <?php $this->start('page'); ?>
-<div class="ui-kit-index">
+<div class="container ui-kit-index">
 	<header class="ui-kit-index__header">
 		<p class="ui-kit-index__eyebrow">Дизайн-система</p>
 		<h1 class="ui-kit-index__title"><?= e((string) ($kit['title'] ?? 'UI-набор')) ?></h1>

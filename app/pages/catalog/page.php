@@ -170,7 +170,7 @@ $this->start('page');
 
 	.catalog__title {
 		margin: 0 0 0.5rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: clamp(1.8rem, 1.3rem + 1.8vw, 2.4rem);
 		line-height: 1.15;
 	}
@@ -263,15 +263,15 @@ $this->start('page');
 		padding: 0.45rem 1rem;
 		border: 1px solid var(--color-accent);
 		border-radius: var(--radius-sm);
-		background: var(--color-accent);
-		color: var(--color-accent-fg);
+		background: var(--color-accent-fill);
+		color: var(--color-on-accent);
 		font: inherit;
 		font-size: var(--text-sm);
 		font-weight: 600;
 		cursor: pointer;
 
 		&:hover {
-			filter: brightness(1.08);
+			background: var(--color-accent-fill-hover);
 		}
 	}
 </style>

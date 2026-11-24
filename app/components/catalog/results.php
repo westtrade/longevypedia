@@ -72,7 +72,7 @@ foreach ($documents as $document) {
 		align-items: baseline;
 		gap: 0.5rem;
 		margin: 0 0 0.75rem;
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 		font-size: var(--text-xl);
 	}
 

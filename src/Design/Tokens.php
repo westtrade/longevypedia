@@ -118,6 +118,8 @@ final class Tokens
 			['fg' => '--color-brand-text', 'bg' => '--color-brand-subtle', 'label' => 'Ссылка на подсветке бренда', 'size' => 'normal'],
 			['fg' => '--color-on-brand', 'bg' => '--color-brand', 'label' => 'Текст на заливке бренда', 'size' => 'normal'],
 			['fg' => '--color-accent-text', 'bg' => '--color-surface', 'label' => 'Акцентный текст', 'size' => 'normal'],
+			['fg' => '--color-on-accent', 'bg' => '--color-accent-fill', 'label' => 'Текст на акцентной заливке', 'size' => 'normal'],
+			['fg' => '--color-on-accent', 'bg' => '--color-accent-fill-hover', 'label' => 'Текст на акцентной заливке (наведение)', 'size' => 'normal'],
 			['fg' => '--color-success-text', 'bg' => '--color-success-soft', 'label' => 'Успех: текст на подложке', 'size' => 'normal'],
 			['fg' => '--color-warning-text', 'bg' => '--color-warning-soft', 'label' => 'Предупреждение: текст на подложке', 'size' => 'normal'],
 			['fg' => '--color-danger-text', 'bg' => '--color-danger-soft', 'label' => 'Ошибка: текст на подложке', 'size' => 'normal'],

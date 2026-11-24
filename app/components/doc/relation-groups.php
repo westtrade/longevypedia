@@ -40,7 +40,7 @@ $title ??= 'Connections';
 	.doc-relations__title {
 		margin: 0 0 0.75rem;
 		font-size: var(--text-lg);
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 	}
 
 	.doc-relations__group + .doc-relations__group {

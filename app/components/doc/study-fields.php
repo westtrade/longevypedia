@@ -105,7 +105,7 @@ $fields = [
 	.study__title {
 		margin: 0 0 0.75rem;
 		font-size: var(--text-lg);
-		font-family: var(--font-text);
+		font-family: var(--font-serif);
 	}
 
 	.study__example {
@@ -193,7 +193,7 @@ $fields = [
 
 	@media (max-width: 40rem) {
 		.study__fields {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 			gap: 0.15rem;
 		}
 
