@@ -5,10 +5,13 @@ declare(strict_types=1);
 /**
  * Логотип Longevypedia: знак и текстовый вордмарк.
  *
- * Знак — зарезервированное место, а не готовая эмблема: простые окружности
- * читаются как «след» и не притворяются научной схемой. Когда появится
- * настоящий SVG-логотип, меняется только содержимое `.ui-wordmark__mark`,
- * разметка шапки и этот компонент остаются те же.
+ * Знак повторяет контур `public/favicon.svg` — тот же, что виден во вкладке, —
+ * но без подложки: в шапке квадрат не нужен, знак рисуется линиями прямо на
+ * фоне страницы. Поэтому весь рисунок в `currentColor` (то есть в цвете
+ * `--color-brand` из правила ниже) и одинаково читается в обеих темах.
+ * У фавикона подложка остаётся: там знак живёт на произвольном фоне браузера.
+ * Когда появится настоящий SVG-логотип, меняется только содержимое
+ * `.ui-wordmark__mark`; разметка шапки и этот компонент остаются те же.
  *
  * @var string $href адрес ссылки; null — логотип не ссылка
  * @var string $label видимое имя
@@ -27,11 +30,10 @@ $tag = $href !== null ? 'a' : 'span';
 ?>
 <<?= $tag ?><?= attrs($attrs, ['class' => clsx('ui-wordmark', 'ui-wordmark--' . $size)]) ?><?= $href !== null ? ' href="' . e($href) . '"' : '' ?>>
 	<span class="ui-wordmark__mark" aria-hidden="true">
-		<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<circle cx="16" cy="16" r="14" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.5"/>
-			<path d="M6 19c4-6 8-9 13-9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-			<path d="M13 24c5-4 8-8 9-13" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-			<circle cx="20" cy="12" r="2" fill="currentColor"/>
+		<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+			<circle cx="16" cy="16" r="9.5" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".45"/>
+			<path d="M16 6.5a9.5 9.5 0 0 1 0 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+			<circle cx="16" cy="16" r="3.4" fill="currentColor"/>
 		</svg>
 	</span>
 	<span class="ui-wordmark__text">
@@ -63,6 +65,7 @@ $tag = $href !== null ? 'a' : 'span';
 
 	.ui-wordmark__mark {
 		display: inline-flex;
+		flex: none;
 		width: 1.75rem;
 		height: 1.75rem;
 		color: var(--color-brand);
@@ -78,11 +81,14 @@ $tag = $href !== null ? 'a' : 'span';
 		height: 2.5rem;
 	}
 
+	/* Строки не должны соприкасаться: у Source Serif 4 выносные элементы
+	   (g, y, p) выходят за кегельную площадку, и при line-height 1.1 нижние
+	   хвосты названия налезали на капитель подписи. */
 	.ui-wordmark__text {
 		display: flex;
 		flex-direction: column;
-		gap: 0;
-		line-height: 1.1;
+		gap: 0.125rem;
+		line-height: 1.25;
 	}
 
 	.ui-wordmark__name {
@@ -102,6 +108,7 @@ $tag = $href !== null ? 'a' : 'span';
 		color: var(--color-text-subtle);
 		font-family: var(--font-ui);
 		font-size: 0.625rem;
+		line-height: 1.2;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 	}

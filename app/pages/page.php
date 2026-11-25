@@ -31,6 +31,9 @@ $this->layout('components::layout/site-layout', [
 	'description' => 'An open, structured and verifiable knowledge base about longevity, the biology of aging and healthspan. Every claim links to its sources and to the file it came from.',
 	'canonical' => '/',
 	'current' => '',
+	// Класс на <body>: главной нужен hero во всю ширину, примыкающий к шапке,
+	// поэтому поля .page__main снимаются только на этой странице.
+	'bodyClass' => 'page--home',
 ]);
 ?>
 <?php $this->start('page'); ?>
@@ -177,6 +180,29 @@ $this->layout('components::layout/site-layout', [
 <style lang="scss">
 	/* Плоская подложка вместо градиента: первый экран должен читаться как
 	   страница энциклопедии, а не как лендинг. Границей отделяем от остального. */
+	/* Главная примыкает к шапке: поля .page__main дали бы полосу фонового
+	   цвета между шапкой и тонированным hero — она читается как сбитый отступ.
+	   flex: none — потому что иначе main забирает часть свободной высоты окна
+	   и добавляет тот же воздух снизу. */
+	.page--home .page__main {
+		flex: none;
+		padding-block: 0;
+	}
+
+	/* У последней секции уже есть собственный нижний отступ, поэтому
+	   внешний отступ подвала здесь только удваивал пустоту. */
+	.page--home .site-footer {
+		margin-top: 0;
+	}
+
+	/* Растягивать страницу до высоты окна на главной не нужно: она всегда
+	   длиннее окна, а min-height: 100dvh отдавал остаток высоты .page__main
+	   и между «How we work» и подвалом вырастала полоса пустого фона в
+	   сотни пикселей — она читается как сбитый отступ. */
+	.page--home .page {
+		min-height: 0;
+	}
+
 	.home-hero {
 		border-bottom: 1px solid var(--color-border);
 		background: var(--color-surface-alt);
@@ -194,7 +220,7 @@ $this->layout('components::layout/site-layout', [
 	}
 
 	.home-hero__eyebrow {
-		margin: 0 0 0.75rem;
+		margin: 0 0 var(--space-3);
 		font-size: var(--text-xs);
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
@@ -203,7 +229,7 @@ $this->layout('components::layout/site-layout', [
 	}
 
 	.home-hero__title {
-		margin: 0 0 0.75rem;
+		margin: 0 0 var(--space-3);
 		font-family: var(--font-serif);
 		font-size: clamp(2.6rem, 1.8rem + 3.6vw, 4rem);
 		line-height: 1.05;
@@ -211,27 +237,27 @@ $this->layout('components::layout/site-layout', [
 	}
 
 	.home-hero__lead {
-		margin: 0 0 1.5rem;
+		margin: 0 0 var(--space-6);
 		font-size: var(--text-lg);
-		line-height: 1.55;
+		line-height: var(--leading-relaxed);
 		color: var(--color-text-muted);
 	}
 
 	.home-hero__search {
-		margin-bottom: 1.75rem;
+		margin-bottom: var(--space-6);
 	}
 
 	.home-hero__stats {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 2rem;
+		gap: var(--space-8);
 		margin: 0;
 	}
 
 	.home-hero__stat {
 		display: flex;
 		flex-direction: column-reverse;
-		gap: 0.1rem;
+		gap: 2px;
 
 		dt {
 			font-size: var(--text-xs);
@@ -248,16 +274,33 @@ $this->layout('components::layout/site-layout', [
 		}
 	}
 
-	.home-section {
-		padding-block: 2.5rem;
+	/* Вертикальный ритм держит контейнер, а не секции: если каждая секция
+	   приносит свой padding, соседние отступы складываются и просвет между
+	   блоками удваивается (96 px вместо 48). Один gap — один ритм. */
+	.home {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-12);
+	}
+
+	/* Поля .page__main на главной сняты, поэтому нижний воздух перед подвалом
+	   даёт сама страница, а не последняя секция. */
+	.page--home .home {
+		padding-block-end: var(--space-12);
+	}
+
+	/* Заголовок секции без обёртки .home-section__head иначе прилипал бы к
+	   содержимому: отступ даёт обёртка, а сам <h2> отступов не имеет. */
+	.home-section > .home-section__title {
+		margin-bottom: var(--space-4);
 	}
 
 	.home-section__head {
 		display: flex;
 		align-items: baseline;
 		justify-content: space-between;
-		gap: 1rem;
-		margin-bottom: 1rem;
+		gap: var(--space-4);
+		margin-bottom: var(--space-4);
 	}
 
 	.home-section__title {
@@ -273,7 +316,7 @@ $this->layout('components::layout/site-layout', [
 	}
 
 	.home-section__note {
-		margin: -0.5rem 0 1rem;
+		margin: calc(var(--space-1) * -1) 0 var(--space-4);
 		font-size: var(--text-xs);
 		color: var(--color-text-subtle);
 	}
@@ -281,14 +324,14 @@ $this->layout('components::layout/site-layout', [
 	.home-topics {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
-		gap: 0.85rem;
+		gap: var(--space-3);
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
 	.home-topic {
-		padding: 0.85rem 1rem;
+		padding: var(--space-3) var(--space-4);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-md);
 		background: var(--color-surface);
@@ -298,7 +341,7 @@ $this->layout('components::layout/site-layout', [
 		display: flex;
 		align-items: baseline;
 		justify-content: space-between;
-		gap: 0.5rem;
+		gap: var(--space-2);
 		color: var(--color-text);
 		text-decoration: none;
 
@@ -318,9 +361,9 @@ $this->layout('components::layout/site-layout', [
 	}
 
 	.home-topic__text {
-		margin: 0.35rem 0 0;
+		margin: var(--space-1) 0 0;
 		font-size: var(--text-xs);
-		line-height: 1.5;
+		line-height: var(--leading-normal);
 		color: var(--color-text-muted);
 	}
 
@@ -334,12 +377,12 @@ $this->layout('components::layout/site-layout', [
 		display: flex;
 		align-items: baseline;
 		justify-content: space-between;
-		gap: 0.5rem;
+		gap: var(--space-2);
 		color: var(--color-text-muted);
 	}
 
 	.home-topic__empty {
-		margin: 0.35rem 0 0;
+		margin: var(--space-1) 0 0;
 		font-size: var(--text-xs);
 		color: var(--color-text-subtle);
 	}
@@ -347,32 +390,32 @@ $this->layout('components::layout/site-layout', [
 	.home-columns {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
-		gap: 2rem;
+		gap: var(--space-8);
 	}
 
 	.home-list {
 		display: grid;
-		gap: 0.75rem;
+		gap: var(--space-3);
 	}
 
 	.home-principles__list {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-		gap: 1rem;
-		margin: 0 0 1.5rem;
+		gap: var(--space-4);
+		margin: 0 0 var(--space-6);
 		padding: 0;
 		list-style: none;
 	}
 
 	.home-principle {
-		padding: 1rem 1.1rem;
+		padding: var(--space-4) var(--space-5);
 		border-inline-start: 2px solid var(--color-accent);
 		background: var(--color-surface-alt);
 		border-radius: var(--radius-sm);
 	}
 
 	.home-principle__title {
-		margin: 0 0 0.35rem;
+		margin: 0 0 var(--space-1);
 		font-size: var(--text-base);
 		font-weight: 600;
 	}
@@ -380,21 +423,21 @@ $this->layout('components::layout/site-layout', [
 	.home-principle__text {
 		margin: 0;
 		font-size: var(--text-sm);
-		line-height: 1.55;
+		line-height: var(--leading-normal);
 		color: var(--color-text-muted);
 	}
 
 	.home-principles__actions {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-		gap: 0.85rem;
+		gap: var(--space-3);
 	}
 
 	.home-cta {
 		display: flex;
 		flex-direction: column;
-		gap: 0.2rem;
-		padding: 1rem 1.15rem;
+		gap: var(--space-1);
+		padding: var(--space-4) var(--space-5);
 		border-radius: var(--radius-md);
 		background: var(--color-accent-fill);
 		color: var(--color-on-accent);

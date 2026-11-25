@@ -201,6 +201,45 @@ final class DesignSystemTest extends TestCase
 		self::assertNotContains('search-icon', $names, 'суффикс -icon снимается: имя иконки — `search`');
 	}
 
+	/**
+	 * Знак в шапке повторяет контур фавикона: пользователь узнаёт один логотип
+	 * и во вкладке, и на странице. Тест держит геометрию синхронной — если
+	 * фавикон перерисуют, расхождение всплывёт здесь, а не в вёрстке.
+	 */
+	public function testWordmarkRepeatsTheFaviconContour(): void
+	{
+		$root = $this->projectRoot();
+		$favicon = (string) file_get_contents($root . '/public/favicon.svg');
+		$wordmark = (string) file_get_contents($root . '/app/components/ui/wordmark.php');
+
+		preg_match('/<path[^>]*\sd="([^"]+)"/', $favicon, $faviconPath);
+		preg_match('/<path[^>]*\sd="([^"]+)"/', $wordmark, $wordmarkPath);
+
+		self::assertNotEmpty($faviconPath[1] ?? '', 'В фавиконе не найден контур');
+		self::assertNotEmpty($wordmarkPath[1] ?? '', 'В знаке шапки не найден контур');
+		self::assertSame(
+			$faviconPath[1],
+			$wordmarkPath[1],
+			'Контур знака в шапке разошёлся с public/favicon.svg',
+		);
+	}
+
+	/**
+	 * В шапке знак живёт на фоне страницы, поэтому подложки нет — только
+	 * линии в currentColor. Литеральные цвета сломали бы тёмную тему.
+	 */
+	public function testWordmarkMarkHasNoPlateAndNoLiteralColours(): void
+	{
+		$wordmark = (string) file_get_contents($this->projectRoot() . '/app/components/ui/wordmark.php');
+
+		preg_match('/<span class="ui-wordmark__mark".*?<\/span>/s', $wordmark, $mark);
+
+		self::assertNotEmpty($mark[0] ?? '', 'Не найден знак вордмарка');
+		self::assertStringNotContainsString('<rect', $mark[0], 'У знака в шапке не должно быть подложки');
+		self::assertStringNotContainsString('var(--color-on-brand)', $mark[0], 'Знак рисуется в currentColor');
+		self::assertDoesNotMatchRegularExpression('/#[0-9a-f]{3,8}\b/i', $mark[0], 'В знаке не должно быть литеральных цветов');
+	}
+
 	public function testProjectIconsWinOverBuiltinOnes(): void
 	{
 		$icons = Icons::fromProject($this->projectRoot());
@@ -330,6 +369,27 @@ final class DesignSystemTest extends TestCase
 		}
 
 		self::assertSame([], $offenders, 'Акцент как цвет текста (нужен --color-accent-text): ' . implode(', ', $offenders));
+	}
+
+	public function testHomePageDoesNotStretchToViewportHeight(): void
+	{
+		$text = (string) file_get_contents($this->projectRoot() . '/app/pages/page.php');
+
+		// `.page { min-height: 100dvh }` + `.page__main { flex: 1 }` — это приём
+		// «подвал прижат к низу окна». На главной он давал полосу пустого фона
+		// между «How we work» и подвалом, которую видно на высоком окне.
+		self::assertStringContainsString('bodyClass', $text, 'главной нужен свой класс на body');
+		self::assertStringContainsString('page--home', $text);
+		self::assertMatchesRegularExpression(
+			'/\.page--home \.page \{[^}]*min-height:\s*0/',
+			$text,
+			'главная не должна растягиваться до высоты окна',
+		);
+		self::assertDoesNotMatchRegularExpression(
+			'/\.page--home \.site-footer \{[^}]*flex:\s*1/',
+			$text,
+			'растягивать подвал нельзя: он превращается в пустую плиту',
+		);
 	}
 
 	private function templateFiles(): array
