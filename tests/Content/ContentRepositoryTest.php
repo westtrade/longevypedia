@@ -251,6 +251,20 @@ final class ContentRepositoryTest extends TestCase
 		self::assertNotSame('', $hits[0]->snippet);
 	}
 
+	public function testSearchSnippetContainsNoMarkupGlyphs(): void
+	{
+		// Фрагмент собирается из HTML, поэтому значок-якорь заголовка (`#`)
+		// раньше попадал в текст подсказки, а границы блоков склеивались:
+		// «…and origin» + «Rapamycin…» давали «originRapamycin».
+		foreach (['rapamycin', 'autophagy', 'senesc'] as $query) {
+			foreach ($this->repository->search($query, ['locale' => 'en']) as $hit) {
+				self::assertStringNotContainsString('#', $hit->snippet);
+				self::assertStringNotContainsString('  ', $hit->snippet);
+				self::assertStringNotContainsString('originRapamycin', $hit->snippet);
+			}
+		}
+	}
+
 	public function testSearchSupportsPrefixes(): void
 	{
 		$hits = $this->repository->search('senesc', ['locale' => 'en']);

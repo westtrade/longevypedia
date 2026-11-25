@@ -200,7 +200,7 @@ final class NativeSearchEngine implements SearchEngine
      */
     private static function snippet(Document $document, array $tokens): string
     {
-        $text = trim((string) preg_replace('/\s+/u', ' ', strip_tags($document->html)));
+        $text = trim((string) preg_replace('/\s+/u', ' ', strip_tags(self::plainText($document->html))));
 
         if ($text === '') {
             return '';
@@ -232,6 +232,31 @@ final class NativeSearchEngine implements SearchEngine
         }
 
         return $snippet;
+    }
+
+    /**
+     * Разметка без служебных символов: подсказка не должна показывать `#`.
+     *
+     * `strip_tags()` склеивает соседние блоки («…and origin» + «Rapamycin…»
+     * дают «originRapamycin»), а значок-якорь у заголовка вообще не текст
+     * документа. Поэтому границы блоков становятся пробелом, а ссылка
+     * `heading-permalink` вырезается до `strip_tags()`.
+     */
+    private static function plainText(string $html): string
+    {
+        $html = (string) preg_replace(
+            '/<a\\b[^>]*class="[^"]*heading-permalink[^"]*"[^>]*>.*?<\/a>/su',
+            '',
+            $html,
+        );
+
+        $html = (string) preg_replace(
+            '/<\/(p|h[1-6]|li|td|th|blockquote|div|section|figcaption|dd|dt)>/iu',
+            '</$1> ',
+            $html,
+        );
+
+        return (string) preg_replace('/<br\b[^>]*>/iu', ' ', $html);
     }
 
     /**
