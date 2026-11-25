@@ -31,11 +31,20 @@ $this->layout('components::layout/site-layout', [
 			<h2 class="ui-kit-index__group-title"><?= e((string) ($group['title'] ?? '')) ?></h2>
 			<ul class="ui-kit-index__list">
 				<?php foreach (($group['items'] ?? []) as $item): ?>
+					<?php
+					// Плитка индекса — та же карточка набора: рамка, наведение,
+					// фокус и растянутая ссылка уже есть в `ui/card`, дублировать
+					// их здесь значило бы держать вторую копию стилей.
+					?>
 					<li class="ui-kit-index__item">
-						<a class="ui-kit-index__link" href="/ui-kit/<?= e((string) ($item['slug'] ?? '')) ?>">
-							<span class="ui-kit-index__name"><?= e((string) ($item['title'] ?? '')) ?></span>
-							<span class="ui-kit-index__note"><?= e((string) ($item['note'] ?? '')) ?></span>
-						</a>
+						<?= $this->insert('components::ui/card', [
+							'title' => (string) ($item['title'] ?? ''),
+							'meta' => (string) ($item['note'] ?? ''),
+							'href' => '/ui-kit/' . (string) ($item['slug'] ?? ''),
+							'variant' => 'default',
+							'titleTag' => 'h3',
+							'attrs' => ['class' => 'ui-kit-index__card'],
+						]) ?>
 					</li>
 				<?php endforeach ?>
 			</ul>
@@ -112,40 +121,9 @@ $this->layout('components::layout/site-layout', [
 		list-style: none;
 	}
 
-	.ui-kit-index__link {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-1);
+	/* Карточка тянется на высоту ряда, чтобы плитки в строке были одной высоты. */
+	.ui-kit-index__card {
 		height: 100%;
-		padding: var(--space-3) var(--space-4);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-md);
-		background: var(--color-surface);
-		color: inherit;
-		text-decoration: none;
-	}
-
-	.ui-kit-index__link:hover {
-		border-color: var(--color-brand);
-	}
-
-	.ui-kit-index__link:focus-visible {
-		outline: none;
-		box-shadow: var(--focus-ring);
-	}
-
-	.ui-kit-index__name {
-		color: var(--color-text);
-		font-family: var(--font-ui);
-		font-size: var(--text-base);
-		font-weight: var(--weight-semibold);
-	}
-
-	.ui-kit-index__note {
-		color: var(--color-text-muted);
-		font-family: var(--font-ui);
-		font-size: var(--text-sm);
-		line-height: var(--leading-normal);
 	}
 </style>
 <?php $this->end(); ?>

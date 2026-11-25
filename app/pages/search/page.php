@@ -75,13 +75,18 @@ $this->layout('components::layout/site-layout', [
 			<?php foreach ($hits as $hit): ?>
 				<?php $document = $hit->document; ?>
 				<li class="search-page__item">
-					<p class="search-page__meta">
-						<span class="search-page__type-label"><?= $this->e($document->typeLabel()) ?></span>
-						<?php if ($document->updated() !== null): ?>
-							<span class="search-page__dot" aria-hidden="true">·</span>
-							<span>updated <?= $this->e(longevypedia_date($document->updated())) ?></span>
-						<?php endif; ?>
-					</p>
+					<?php
+					// Та же строка метаданных, что и на странице документа:
+					// тип капителью, дата через точку. Разметка одна.
+					$metaItems = $document->updated() !== null
+						? [['label' => 'updated ' . longevypedia_date($document->updated())]]
+						: [];
+					?>
+					<?= $this->insert('components::ui/meta', [
+						'eyebrow' => $document->typeLabel(),
+						'items' => $metaItems,
+						'attrs' => ['class' => 'search-page__meta'],
+					]) ?>
 					<h2 class="search-page__name">
 						<a href="<?= $this->e($document->url) ?>"><?= $this->e($document->title()) ?></a>
 					</h2>
@@ -116,18 +121,18 @@ $this->layout('components::layout/site-layout', [
 
 <style lang="scss">
 	.search-page {
-		padding-block: 2rem 0;
+		padding-block: var(--space-8) 0;
 		max-width: 52rem;
 	}
 
 	.search-page__title {
-		margin: 0 0 1rem;
+		margin: 0 0 var(--space-4);
 		font-family: var(--font-serif);
 		font-size: clamp(1.8rem, 1.3rem + 1.8vw, 2.4rem);
 	}
 
 	.search-page__summary {
-		margin: 1rem 0 0;
+		margin: var(--space-4) 0 0;
 		font-size: var(--text-sm);
 		color: var(--color-text-muted);
 	}
@@ -135,8 +140,8 @@ $this->layout('components::layout/site-layout', [
 	.search-page__types {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.4rem;
-		margin: 1.5rem 0 1.25rem;
+		gap: var(--space-2);
+		margin: var(--space-6) 0 var(--space-5);
 	}
 
 	.search-page__list {
@@ -144,36 +149,19 @@ $this->layout('components::layout/site-layout', [
 		padding: 0;
 		list-style: none;
 		display: grid;
-		gap: 1.1rem;
+		gap: var(--space-4);
 	}
 
 	.search-page__item {
-		padding-bottom: 1.1rem;
+		padding-bottom: var(--space-4);
 		border-bottom: 1px solid var(--color-border);
 	}
 
-	.search-page__meta {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.35rem;
-		margin: 0 0 0.25rem;
-		font-size: var(--text-xs);
-		color: var(--color-text-subtle);
-	}
 
-	.search-page__type-label {
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-		font-weight: 600;
-		color: var(--color-accent-text);
-	}
 
-	.search-page__dot {
-		color: var(--color-border-strong);
-	}
 
 	.search-page__name {
-		margin: 0 0 0.3rem;
+		margin: 0 0 var(--space-1);
 		font-family: var(--font-serif);
 		font-size: var(--text-lg);
 		line-height: 1.3;
@@ -203,7 +191,7 @@ $this->layout('components::layout/site-layout', [
 	}
 
 	.search-page__hint {
-		margin-top: 1.5rem;
+		margin-top: var(--space-6);
 		font-size: var(--text-sm);
 		color: var(--color-text-muted);
 		line-height: 1.6;
