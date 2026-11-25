@@ -15,8 +15,8 @@ tests/Content/FrontmatterTest.php    10 тестов
 tests/Content/ContentRepositoryTest.php  26 тестов
 tests/Content/MarkdownRendererTest.php   13 тестов
 tests/Content/StudyDesignsTest.php    3 теста
-tests/Http/PagesTest.php             29 тестов
-tests/Design/DesignSystemTest.php    17 тестов
+tests/Http/PagesTest.php             30 тестов
+tests/Design/DesignSystemTest.php    19 тестов
 ```
 
 `phpunit.xml`:
@@ -132,7 +132,7 @@ Wikilink как внутренняя ссылка; без подписи — з�
 заголовков; id на заголовках; GFM-таблица; внешние ссылки с `rel`; небезопасные схемы
 (`javascript:`) вырезаются; сноски; инлайновый HTML сохраняется; обычный текст.
 
-### Дизайн-система (17)
+### Дизайн-система (19)
 
 `_tokens.scss` разбирается и содержит ожидаемые роли; тёмная тема переопределяет
 **каждый** цветовой токен; тёмный фон действительно тёмный (тема не является инверсией);
@@ -150,7 +150,8 @@ Wikilink как внутренняя ссылка; без подписи — з�
 акцентную или брендовую, обязано задать и цвет текста (иначе общее `a:hover` оставляет на
 коричневой заливке бирюзовый текст — 1.35:1); главная не растягивается до высоты окна
 (`.page--home .page { min-height: 0 }`), иначе на высоком окне между «How we work» и
-подвалом появляется полоса пустого фона.
+подвалом появляется полоса пустого фона; контролы в шапке — компоненты набора, а вне
+`app/components/ui/` нет собственных `<button>`, `<select>`, `<textarea>` и `<table>`.
 
 ### Страницы (27)
 
@@ -182,7 +183,7 @@ php vendor/bin/phpunit --no-coverage
 Ожидаемый результат на текущем корпусе:
 
 ```text
-OK (100 tests, 472 assertions)
+OK (102 tests, 479 assertions)
 ```
 
 Два сообщения `[router] файловая страница не найдена для "/..."` в выводе — это

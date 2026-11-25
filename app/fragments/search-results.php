@@ -27,10 +27,17 @@ $hits = array_slice($repository->search($q, ['locale' => $repository->defaultLoc
 $total = count($hits) === 6 ? '6+' : (string) count($hits);
 ?>
 <?php if ($hits === []): ?>
-	<div class="search-hits search-hits--empty">
-		<p class="search-hits__none">Nothing matches “<?= $this->e($q) ?>”.</p>
-		<p class="search-hits__hint">Try a broader term, or browse the <a href="/catalog">catalogue</a>.</p>
-	</div>
+	<?= $this->insert('components::ui/empty-state', [
+		'title' => 'Nothing matches “' . $this->e($q) . '”',
+		'text' => 'Try a broader term, or browse the catalogue.',
+		'icon' => 'search',
+		'action' => $this->fetch('components::ui/button', [
+			'label' => 'Open the catalogue',
+			'variant' => 'secondary',
+			'size' => 'sm',
+			'href' => '/catalog',
+		]),
+	]) ?>
 <?php else: ?>
 	<ul class="search-hits">
 		<?php foreach ($hits as $hit): ?>
@@ -117,18 +124,4 @@ $total = count($hits) === 6 ? '6+' : (string) count($hits);
 		color: var(--color-text-subtle);
 	}
 
-	.search-hits--empty {
-		padding: 0.85rem 0.9rem;
-	}
-
-	.search-hits__none {
-		margin: 0 0 0.25rem;
-		font-size: var(--text-sm);
-	}
-
-	.search-hits__hint {
-		margin: 0;
-		font-size: var(--text-xs);
-		color: var(--color-text-muted);
-	}
 </style>

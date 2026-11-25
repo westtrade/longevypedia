@@ -5,37 +5,67 @@ declare(strict_types=1);
 /**
  * Боковая навигация: содержание статьи, разделы страницы, список разделов.
  *
- * @var string|null $title заголовок блока
+ * Плоский режим (`items`) — содержание статьи и якоря. Режим групп (`groups`) —
+ * каталог разделов, где у каждой группы своя подпись: так устроено меню
+ * UI-набора, и отдельного компонента для него не нужно.
+ *
+ * @var string|null $title заголовок блока в плоском режиме
  * @var array<int, array{label: string, url: string, active?: bool, level?: int}> $items
+ * @var array<int, array{title?: string|null, items: array<int, array{label: string, url: string, active?: bool}>}> $groups
  * @var bool $sticky прилипает при прокрутке
  */
 
 $title ??= null;
 $items ??= [];
+$groups ??= [];
 $sticky ??= false;
 
-if ($items === []) {
+if ($groups !== []) {
+	$sections = array_values(array_filter(
+		array_map(static function (array $group): array {
+			return [
+				'title' => $group['title'] ?? null,
+				'items' => (array) ($group['items'] ?? []),
+			];
+		}, $groups),
+		static fn (array $group): bool => $group['items'] !== [],
+	));
+	$label = $title;
+} elseif ($items !== []) {
+	$sections = [['title' => $title, 'items' => $items]];
+	$label = $title;
+} else {
 	return;
 }
+
+if ($sections === []) {
+	return;
+}
+
+$isGrouped = $groups !== [];
 ?>
-<nav class="ui-sidebar-nav<?= $sticky ? ' ui-sidebar-nav--sticky' : '' ?>"<?= $title !== null ? ' aria-label="' . e($title) . '"' : '' ?>>
-	<?php if ($title !== null): ?>
-		<p class="ui-sidebar-nav__title"><?= e($title) ?></p>
-	<?php endif ?>
-	<ul class="ui-sidebar-nav__list">
-		<?php foreach ($items as $item): ?>
-			<?php
-			$isActive = (bool) ($item['active'] ?? false);
-			$level = max(0, (int) ($item['level'] ?? 0));
-			?>
-			<li class="ui-sidebar-nav__item">
-				<a class="ui-sidebar-nav__link<?= $isActive ? ' ui-sidebar-nav__link--active' : '' ?>"
-					href="<?= e((string) ($item['url'] ?? '#')) ?>"
-					style="--ui-sidebar-nav-level: <?= e((string) $level) ?>"
-					<?= $isActive ? 'aria-current="true"' : '' ?>><?= e((string) ($item['label'] ?? '')) ?></a>
-			</li>
-		<?php endforeach ?>
-	</ul>
+<nav class="ui-sidebar-nav<?= $sticky ? ' ui-sidebar-nav--sticky' : '' ?><?= $isGrouped ? ' ui-sidebar-nav--grouped' : '' ?>"<?= $label !== null ? ' aria-label="' . e($label) . '"' : '' ?>>
+	<?php foreach ($sections as $section): ?>
+		<div class="ui-sidebar-nav__group">
+			<?php if (($section['title'] ?? null) !== null): ?>
+				<p class="ui-sidebar-nav__title"><?= e((string) $section['title']) ?></p>
+			<?php endif ?>
+			<ul class="ui-sidebar-nav__list">
+				<?php foreach ($section['items'] as $item): ?>
+					<?php
+					$isActive = (bool) ($item['active'] ?? false);
+					$level = max(0, (int) ($item['level'] ?? 0));
+					?>
+					<li class="ui-sidebar-nav__item">
+						<a class="ui-sidebar-nav__link<?= $isActive ? ' ui-sidebar-nav__link--active' : '' ?>"
+							href="<?= e((string) ($item['url'] ?? '#')) ?>"
+							style="--ui-sidebar-nav-level: <?= e((string) $level) ?>"
+							<?= $isActive ? 'aria-current="true"' : '' ?>><?= e((string) ($item['label'] ?? '')) ?></a>
+					</li>
+				<?php endforeach ?>
+			</ul>
+		</div>
+	<?php endforeach ?>
 </nav>
 
 <style lang="scss">
@@ -55,6 +85,32 @@ if ($items === []) {
 		font-weight: var(--weight-semibold);
 		letter-spacing: var(--tracking-wide);
 		text-transform: uppercase;
+	}
+
+	/* Группы разделов: подпись + список, промежуток между группами больше,
+	   чем между пунктами внутри. */
+	.ui-sidebar-nav--grouped {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-5);
+	}
+
+	.ui-sidebar-nav--grouped .ui-sidebar-nav__list {
+		border-left: 0;
+	}
+
+	.ui-sidebar-nav--grouped .ui-sidebar-nav__link {
+		margin-left: 0;
+		border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+	}
+
+	.ui-sidebar-nav--grouped .ui-sidebar-nav__link--active {
+		background: var(--color-brand-subtle);
+	}
+
+	.ui-sidebar-nav--grouped .ui-sidebar-nav__link:hover {
+		background: var(--color-surface-alt);
+		border-left-color: transparent;
 	}
 
 	.ui-sidebar-nav__list {

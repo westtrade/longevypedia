@@ -69,41 +69,39 @@ $this->layout('components::layout/site-layout', [
 
 			<section class="kit-a11y__section">
 				<h2 class="kit-a11y__title">Контраст</h2>
-				<div class="kit-a11y__table-wrap">
-					<table class="kit-a11y__table">
-						<caption class="visually-hidden">Отношение контраста пар «текст на фоне» по темам</caption>
-						<thead>
-							<tr>
-								<th scope="col">Пара</th>
-								<th scope="col">Тема</th>
-								<th scope="col">Цвет текста</th>
-								<th scope="col">Фон</th>
-								<th scope="col" class="kit-a11y__num">Отношение</th>
-								<th scope="col" class="kit-a11y__num">Порог</th>
-								<th scope="col">Результат</th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php foreach ($rows as $row): ?>
-								<tr>
-									<th scope="row" class="kit-a11y__pair"><?= e($row['label']) ?></th>
-									<td><?= e($row['theme']) ?></td>
-									<td><code><?= e($row['fg']) ?></code></td>
-									<td><code><?= e($row['bg']) ?></code></td>
-									<td class="kit-a11y__num"><?= e(number_format($row['ratio'], 2)) ?>:1</td>
-									<td class="kit-a11y__num"><?= e(number_format($row['minimum'], 1)) ?>:1</td>
-									<td>
-										<?php if ($row['passes']): ?>
-											<?= $this->insert('components::ui/badge', ['label' => 'Проходит', 'variant' => 'success', 'size' => 'sm']) ?>
-										<?php else: ?>
-											<?= $this->insert('components::ui/badge', ['label' => 'Ниже порога', 'variant' => 'danger', 'size' => 'sm']) ?>
-										<?php endif ?>
-									</td>
-								</tr>
-							<?php endforeach ?>
-						</tbody>
-					</table>
-				</div>
+				<?php
+				$tableRows = [];
+
+				foreach ($rows as $row) {
+					$tableRows[] = [
+						'highlight' => !$row['passes'],
+						'cells' => [
+							'pair' => $this->e($row['label']),
+							'theme' => $this->e($row['theme']),
+							'fg' => '<code>' . $this->e($row['fg']) . '</code>',
+							'bg' => '<code>' . $this->e($row['bg']) . '</code>',
+							'ratio' => $this->e(number_format($row['ratio'], 2)) . ':1',
+							'minimum' => $this->e(number_format($row['minimum'], 1)) . ':1',
+							'result' => $this->fetch('components::ui/badge', $row['passes']
+								? ['label' => 'Проходит', 'variant' => 'success', 'size' => 'sm']
+								: ['label' => 'Ниже порога', 'variant' => 'danger', 'size' => 'sm']),
+						],
+					];
+				}
+				?>
+				<?= $this->insert('components::ui/data-table', [
+					'caption' => 'Отношение контраста пар «текст на фоне» по темам',
+					'columns' => [
+						['label' => 'Пара', 'key' => 'pair', 'rowHeader' => true],
+						['label' => 'Тема', 'key' => 'theme'],
+						['label' => 'Цвет текста', 'key' => 'fg'],
+						['label' => 'Фон', 'key' => 'bg'],
+						['label' => 'Отношение', 'key' => 'ratio', 'numeric' => true],
+						['label' => 'Порог', 'key' => 'minimum', 'numeric' => true],
+						['label' => 'Результат', 'key' => 'result'],
+					],
+					'rows' => $tableRows,
+				]) ?>
 			</section>
 
 			<section class="kit-a11y__section">
@@ -175,57 +173,6 @@ $this->layout('components::layout/site-layout', [
 				font-family: var(--font-serif);
 				font-size: var(--text-xl);
 				font-weight: var(--weight-semibold);
-			}
-
-			.kit-a11y__table-wrap {
-				overflow-x: auto;
-				border: 1px solid var(--color-border);
-				border-radius: var(--radius-md);
-			}
-
-			.kit-a11y__table {
-				width: 100%;
-				border-collapse: collapse;
-				font-family: var(--font-ui);
-				font-size: var(--text-sm);
-			}
-
-			.kit-a11y__table th,
-			.kit-a11y__table td {
-				padding: var(--space-2) var(--space-3);
-				border-bottom: 1px solid var(--color-border);
-				text-align: left;
-				vertical-align: middle;
-				white-space: nowrap;
-			}
-
-			.kit-a11y__table thead th {
-				background: var(--color-surface-alt);
-				color: var(--color-text-muted);
-				font-size: var(--text-xs);
-				font-weight: var(--weight-semibold);
-				letter-spacing: var(--tracking-wide);
-				text-transform: uppercase;
-			}
-
-			.kit-a11y__table tbody tr:last-child th,
-			.kit-a11y__table tbody tr:last-child td {
-				border-bottom: 0;
-			}
-
-			.kit-a11y__table code {
-				font-family: var(--font-mono);
-				font-size: var(--text-xs);
-			}
-
-			.kit-a11y__pair {
-				font-weight: var(--weight-regular);
-				white-space: normal;
-			}
-
-			.kit-a11y__num {
-				text-align: right;
-				font-variant-numeric: tabular-nums;
 			}
 
 			.kit-a11y__list {

@@ -101,7 +101,9 @@ final class PagesTest extends TestCase
 			->assertSee('doc__summary')
 			->assertSee('prose')
 			->assertSee('Rapamycin')
-			->assertSee('application/ld+json');
+			->assertSee('application/ld+json')
+			->assertSee('ui-meta__eyebrow')
+			->assertSee('min read');
 	}
 
 	public function testDocumentPageShowsSourcesAndHistory(): void

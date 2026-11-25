@@ -41,18 +41,28 @@ $this->layout('components::layout/site-layout', [
 	<p class="error-page__text"><?= $this->e($text) ?></p>
 
 	<ul class="error-page__actions">
-		<li><a href="/">Home</a></li>
-		<li><a href="/catalog">Knowledge base</a></li>
-		<li><a href="/research">Research</a></li>
-		<li><a href="/search">Search</a></li>
+		<?php foreach ([['/', 'Home'], ['/catalog', 'Knowledge base'], ['/research', 'Research'], ['/search', 'Search']] as [$href, $label]): ?>
+			<li>
+				<?= $this->insert('components::ui/button', [
+					'label' => $label,
+					'variant' => 'outline',
+					'href' => $href,
+				]) ?>
+			</li>
+		<?php endforeach; ?>
 	</ul>
 
 	<?php if ($exception !== null): ?>
-		<details class="error-page__details">
-			<summary>Debug details</summary>
-			<p class="error-page__exception"><?= $this->e($exception::class . ': ' . $exception->getMessage()) ?></p>
-			<pre class="error-page__trace"><?= $this->e($exception->getTraceAsString()) ?></pre>
-		</details>
+		<div class="error-page__debug">
+			<?= $this->insert('components::ui/accordion', [
+				'name' => 'error-debug',
+				'items' => [[
+					'title' => 'Debug details',
+					'content' => '<p class="error-page__exception">' . $this->e($exception::class . ': ' . $exception->getMessage()) . '</p>'
+						. '<pre class="error-page__trace">' . $this->e($exception->getTraceAsString()) . '</pre>',
+				]],
+			]) ?>
+		</div>
 	<?php endif; ?>
 </div>
 
@@ -85,20 +95,14 @@ $this->layout('components::layout/site-layout', [
 	.error-page__actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 1rem;
-		margin: 0 0 2rem;
+		gap: var(--space-3);
+		margin: 0 0 var(--space-8);
 		padding: 0;
 		list-style: none;
-		font-size: var(--text-sm);
 	}
 
-	.error-page__details {
+	.error-page__debug {
 		font-size: var(--text-xs);
-
-		summary {
-			cursor: pointer;
-			color: var(--color-text-subtle);
-		}
 	}
 
 	.error-page__exception {

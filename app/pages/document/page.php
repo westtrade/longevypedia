@@ -96,15 +96,23 @@ $this->start('page');
 	<div class="doc-page__grid">
 		<article class="doc">
 			<header class="doc__header">
-				<p class="doc__meta">
-					<span class="doc__type"><?= $this->e($document->typeLabel()) ?></span>
-					<?php if ($document->updated() !== null): ?>
-						<span class="doc__dot" aria-hidden="true">·</span>
-						<span>Updated <time datetime="<?= $this->e((string) $document->updated()) ?>"><?= $this->e(longevypedia_date($document->updated())) ?></time></span>
-					<?php endif; ?>
-					<span class="doc__dot" aria-hidden="true">·</span>
-					<span><?= $document->readingMinutes() ?> min read</span>
-				</p>
+				<?php
+				$metaItems = [];
+
+				if ($document->updated() !== null) {
+					$metaItems[] = [
+						'label' => 'Updated ' . longevypedia_date($document->updated()),
+						'datetime' => (string) $document->updated(),
+					];
+				}
+
+				$metaItems[] = ['label' => $document->readingMinutes() . ' min read'];
+				?>
+				<?= $this->insert('components::ui/meta', [
+					'eyebrow' => $document->typeLabel(),
+					'items' => $metaItems,
+					'attrs' => ['class' => 'doc__meta'],
+				]) ?>
 
 				<h1 class="doc__title"><?= $this->e($document->title()) ?></h1>
 
@@ -115,8 +123,11 @@ $this->start('page');
 				<?php if ($document->topics() !== []): ?>
 					<ul class="doc__topics">
 						<?php foreach ($document->topics() as $topic): ?>
-							<li class="doc__topic">
-								<a href="/catalog?topic=<?= rawurlencode($topic) ?>"><?= $this->e($repository->topics($locale)[$topic]['label'] ?? $topic) ?></a>
+							<li>
+								<?= $this->insert('components::ui/tag', [
+									'label' => $repository->topics($locale)[$topic]['label'] ?? $topic,
+									'href' => '/catalog?topic=' . rawurlencode($topic),
+								]) ?>
 							</li>
 						<?php endforeach; ?>
 					</ul>
@@ -167,11 +178,13 @@ $this->start('page');
 						<a class="doc__source-link" href="<?= $this->e($historyUrl) ?>" rel="noopener">
 							Change history
 						</a>
-						<span class="doc__dot" aria-hidden="true">·</span>
-						<span><?= $this->e((string) $document->license()) ?></span>
-						<span class="doc__dot" aria-hidden="true">·</span>
-						<span><?= $document->wordCount() ?> words</span>
 					</p>
+					<?= $this->insert('components::ui/meta', [
+						'items' => [
+							['label' => (string) $document->license()],
+							['label' => $document->wordCount() . ' words'],
+						],
+					]) ?>
 				</footer>
 			</div>
 		</article>
@@ -229,24 +242,7 @@ $this->start('page');
 	}
 
 	.doc__meta {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: baseline;
-		gap: 0.45rem;
-		margin: 0 0 0.6rem;
-		font-size: var(--text-xs);
-		color: var(--color-text-subtle);
-	}
-
-	.doc__type {
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		font-weight: 600;
-		color: var(--color-accent-text);
-	}
-
-	.doc__dot {
-		color: var(--color-border-strong);
+		margin: 0 0 var(--space-3);
 	}
 
 	.doc__title {
@@ -272,22 +268,6 @@ $this->start('page');
 		margin: 0;
 		padding: 0;
 		list-style: none;
-	}
-
-	.doc__topic a {
-		display: inline-block;
-		padding: 0.15rem 0.55rem;
-		border: 1px solid var(--color-border);
-		border-radius: 999px;
-		font-size: var(--text-xs);
-		color: var(--color-text-muted);
-		text-decoration: none;
-
-		&:hover {
-			color: var(--color-accent-text);
-			border-color: var(--color-accent);
-			background: var(--color-accent-subtle);
-		}
 	}
 
 	.doc .claim,

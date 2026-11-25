@@ -42,7 +42,12 @@ $text = implode("\n", $clean);
 <div class="code-block">
 	<div class="code-block__head">
 		<span class="code-block__lang"><?= e($lang) ?></span>
-		<button class="code-block__copy" type="button" data-copy-text="<?= e($text) ?>">Копировать</button>
+		<?= $this->insert('components::ui/button', [
+			'label' => 'Копировать',
+			'variant' => 'link',
+			'size' => 'sm',
+			'attrs' => ['class' => 'code-block__copy', 'data-copy-text' => $text],
+		]) ?>
 	</div>
 	<pre class="code-block__pre"><code class="code-block__code"><?= e($text) ?></code></pre>
 </div>
@@ -71,21 +76,6 @@ $text = implode("\n", $clean);
 		font-size: var(--text-xs);
 		letter-spacing: var(--tracking-wide);
 		text-transform: uppercase;
-	}
-
-	.code-block__copy {
-		padding: 0;
-		border: 0;
-		background: none;
-		color: var(--color-brand);
-		font-family: var(--font-ui);
-		font-size: var(--text-xs);
-		text-decoration: underline;
-		cursor: pointer;
-	}
-
-	.code-block__copy:hover {
-		color: var(--color-brand-hover);
 	}
 
 	.code-block__copy:focus-visible {

@@ -47,15 +47,16 @@ $navigation = [
 
 		<?= $this->insert('components::site/search-form', ['id' => 'site-search', 'compact' => true]) ?>
 
-		<button class="theme-toggle" type="button" data-theme-toggle aria-label="Change colour theme">
-			<span class="theme-toggle__icon theme-toggle__icon--sun"><?= $this->insert('bolt://ui-kit/icon', ['name' => 'sun', 'size' => 18]) ?></span>
-			<span class="theme-toggle__icon theme-toggle__icon--moon"><?= $this->insert('bolt://ui-kit/icon', ['name' => 'moon', 'size' => 18]) ?></span>
-		</button>
+		<?= $this->insert('components::ui/theme-toggle', ['attrs' => ['class' => 'site-header__theme']]) ?>
 
-		<a class="site-header__github" href="https://github.com/westtrade/longevypedia" rel="noopener">
-			<?= $this->insert('bolt://ui-kit/icon', ['name' => 'github', 'size' => 20]) ?>
-			<span class="visually-hidden">Source code on GitHub</span>
-		</a>
+		<?= $this->insert('components::ui/button', [
+			'label' => 'Source code on GitHub',
+			'variant' => 'ghost',
+			'icon' => 'github',
+			'iconOnly' => true,
+			'href' => 'https://github.com/westtrade/longevypedia',
+			'attrs' => ['class' => 'site-header__github', 'rel' => 'noopener'],
+		]) ?>
 
 		<?= $this->insert('components::ui/mobile-nav', [
 			'id' => 'site-mobile-nav',
@@ -120,62 +121,16 @@ $navigation = [
 		}
 	}
 
-	.theme-toggle {
-		display: inline-flex;
+	/* Кнопку рисует `components::ui/theme-toggle`; шапка задаёт только
+	   положение в ряду — сама кнопка живёт в наборе и на своей странице. */
+	.site-header__theme {
 		flex: none;
-		align-items: center;
-		justify-content: center;
-		width: 2.25rem;
-		height: 2.25rem;
-		padding: 0;
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-sm);
-		background: var(--color-surface);
-		color: var(--color-text-muted);
-		cursor: pointer;
-
-		&:hover {
-			color: var(--color-text);
-			border-color: var(--color-border-strong);
-		}
 	}
 
-	/* Иконка показывает, куда переключимся: в светлой теме — луна, в тёмной —
-	   солнце. Тема либо задана атрибутом, либо приходит из системы. */
-	.theme-toggle__icon {
-		display: inline-flex;
-	}
-
-	.theme-toggle__icon--sun {
-		display: none;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		:root:not([data-theme]) .theme-toggle__icon--sun {
-			display: inline-flex;
-		}
-
-		:root:not([data-theme]) .theme-toggle__icon--moon {
-			display: none;
-		}
-	}
-
-	:root[data-theme='dark'] .theme-toggle__icon--sun {
-		display: inline-flex;
-	}
-
-	:root[data-theme='dark'] .theme-toggle__icon--moon {
-		display: none;
-	}
-
+	/* Ссылка на исходники — та же кнопка набора, что и переключатель темы:
+	   иначе рядом стояли бы значок без полей и кнопка 40×40. */
 	.site-header__github {
-		display: inline-flex;
 		flex: none;
-		color: var(--color-text-muted);
-
-		&:hover {
-			color: var(--color-text);
-		}
 	}
 
 	/* На узком экране шапка переносится: бренд, тема и GitHub остаются в первой

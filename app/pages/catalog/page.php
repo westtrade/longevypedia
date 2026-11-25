@@ -175,7 +175,7 @@ $this->start('page');
 	</form>
 
 	<p class="catalog__pending" id="catalog-pending" role="status" aria-live="polite">
-		<span class="catalog__pending-spinner" aria-hidden="true"></span>
+		<?= $this->insert('bolt://ui-kit/icon', ['name' => 'spinner', 'size' => 16, 'class' => 'catalog__pending-spinner']) ?>
 		Updating results…
 	</p>
 
@@ -259,13 +259,11 @@ $this->start('page');
 		display: flex;
 	}
 
+	/* Значок тот же, что у кнопки в состоянии загрузки: рисовать второй
+	   кружок рядом с набором незачем. */
 	.catalog__pending-spinner {
-		width: 0.9rem;
-		height: 0.9rem;
-		border: 2px solid var(--color-border-strong);
-		border-top-color: var(--color-brand);
-		border-radius: var(--radius-full);
-		animation: catalog-spin 0.8s linear infinite;
+		flex: none;
+		animation: catalog-spin 800ms linear infinite;
 	}
 
 	@keyframes catalog-spin {

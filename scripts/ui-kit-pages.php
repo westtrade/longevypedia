@@ -19,10 +19,10 @@ $root = dirname(__DIR__);
 /** Группы каталога: порядок задаёт и меню, и индекс. */
 $groups = [
 	'Основы' => ['overview', 'tokens', 'icons', 'accessibility'],
-	'Действия' => ['button'],
+	'Действия' => ['button', 'theme-toggle'],
 	'Формы' => ['field', 'choice'],
 	'Навигация' => ['breadcrumbs', 'tabs', 'pagination', 'menu', 'mobile-nav', 'sidebar-nav'],
-	'Контент' => ['card', 'document-card', 'research-card', 'author-card', 'badge', 'tag', 'callout', 'quote', 'alert', 'divider', 'accordion', 'tooltip', 'empty-state'],
+	'Контент' => ['card', 'document-card', 'research-card', 'author-card', 'badge', 'tag', 'meta', 'callout', 'quote', 'alert', 'divider', 'accordion', 'tooltip', 'empty-state'],
 	'Данные' => ['data-table', 'key-value', 'stat', 'progress', 'chart'],
 	'Научные данные' => ['evidence', 'evidence-summary', 'claim-status', 'research-metadata', 'citation', 'source-list'],
 	'Обратная связь' => ['toast', 'skeleton'],
@@ -47,6 +47,14 @@ $pages = [
 			['Состояния', 'загрузка блокирует повторное нажатие и объявляется через aria-busy', "<?= \$this->insert('components::ui/button', ['label' => 'Недоступно', 'disabled' => true]) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Сохраняем', 'loading' => true]) ?>"],
 			['Иконки', 'у кнопки-иконки нет видимого текста — имя уходит в aria-label', "<?= \$this->insert('components::ui/button', ['label' => 'Найти', 'icon' => 'search']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Далее', 'iconRight' => 'arrow-right']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Настройки', 'icon' => 'cog', 'iconOnly' => true]) ?>"],
 			['Ширина', 'block — на всю ширину формы или панели', "<?= \$this->insert('components::ui/button', ['label' => 'Войти', 'block' => true]) ?>"],
+		],
+	],
+	'theme-toggle' => [
+		'title' => 'Переключатель темы',
+		'note' => 'Кнопка-значок из ui/button: те же размеры, фокус и состояния, что у остальных кнопок.',
+		'specimens' => [
+			['Основное', 'значок показывает следующий шаг: в светлой теме — луна, в тёмной — солнце', "<?= \$this->insert('components::ui/theme-toggle') ?>"],
+			['В ряду действий', 'высота и поля совпадают с соседними кнопками — отдельной вёрстки у переключателя нет', "<?= \$this->insert('components::ui/theme-toggle') ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Настройки', 'variant' => 'ghost', 'icon' => 'cog', 'iconOnly' => true]) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Оформить подписку']) ?>"],
 		],
 	],
 	'field' => [
@@ -159,6 +167,14 @@ $pages = [
 		'note' => 'Тематика материала: всегда ссылка в каталог, не украшение.',
 		'specimens' => [
 			['Основное', 'счётчик — сколько документов в теме', "<?= \$this->insert('components::ui/tag', ['label' => 'Механизмы старения', 'href' => '/catalog?topic=aging-mechanisms', 'count' => 4]) ?>\n<?= \$this->insert('components::ui/tag', ['label' => 'Вмешательства', 'href' => '/catalog?topic=interventions', 'count' => 2, 'active' => true]) ?>"],
+		],
+	],
+	'meta' => [
+		'title' => 'Строка метаданных',
+		'note' => 'Рубрика капителью и то, что о документе известно до чтения: дата, время чтения.',
+		'specimens' => [
+			['Основное', 'разделитель рисует компонент — точку в разметку не пишут', "<?= \$this->insert('components::ui/meta', ['eyebrow' => 'Соединение', 'items' => [['label' => 'Обновлено 20 ноября 2026', 'datetime' => '2026-11-20'], ['label' => '6 минут чтения']]]) ?>"],
+			['Только рубрика', 'когда даты ещё нет — новый документ', "<?= \$this->insert('components::ui/meta', ['eyebrow' => 'Гипотеза']) ?>"],
 		],
 	],
 	'callout' => [

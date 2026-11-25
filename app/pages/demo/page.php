@@ -41,11 +41,20 @@ $this->layout('components::layout/site-layout', [
 		<div class="demo__layout">
 			<article class="demo__article">
 				<header class="demo__header">
-					<div class="demo__meta">
-						<?= $this->insert('components::ui/badge', ['label' => 'Соединение', 'variant' => 'brand']) ?>
-						<?= $this->insert('components::ui/badge', ['label' => 'Обновлено 20 ноября 2026', 'variant' => 'neutral']) ?>
-						<span class="demo__reading">6 минут чтения</span>
-					</div>
+					<?php
+					// Та же строка метаданных, что на настоящей странице документа
+					// (`app/pages/document/page.php`): тип — надзаголовок, дальше дата и
+					// время чтения через точку. Бейдж в наборе означает состояние
+					// (статус, уверенность), а не рубрику, поэтому типа здесь нет.
+					?>
+					<?= $this->insert('components::ui/meta', [
+						'eyebrow' => 'Соединение',
+						'items' => [
+							['label' => 'Обновлено 20 ноября 2026'],
+							['label' => '6 минут чтения'],
+						],
+						'attrs' => ['class' => 'demo__meta'],
+					]) ?>
 
 					<h1 class="demo__title">Рапамицин</h1>
 
@@ -359,19 +368,6 @@ $this->layout('components::layout/site-layout', [
 		gap: var(--space-3);
 		padding-bottom: var(--space-5);
 		border-bottom: 1px solid var(--color-border);
-	}
-
-	.demo__meta {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--space-2);
-		align-items: center;
-	}
-
-	.demo__reading {
-		color: var(--color-text-muted);
-		font-family: var(--font-ui);
-		font-size: var(--text-xs);
 	}
 
 	.demo__title {

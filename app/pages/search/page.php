@@ -57,12 +57,17 @@ $this->layout('components::layout/site-layout', [
 
 	<?php if ($count > 0): ?>
 		<nav class="search-page__types" aria-label="Filter results by type">
-			<a class="search-page__type<?= $type === '' ? ' is-active' : '' ?>" href="/search?q=<?= rawurlencode($query) ?>">All</a>
+			<?= $this->insert('components::ui/tag', [
+				'label' => 'All',
+				'href' => '/search?q=' . rawurlencode($query),
+				'active' => $type === '',
+			]) ?>
 			<?php foreach ($repository->stats($locale)['byType'] as $availableType => $total): ?>
-				<a
-					class="search-page__type<?= $type === $availableType ? ' is-active' : '' ?>"
-					href="/search?q=<?= rawurlencode($query) ?>&type=<?= rawurlencode($availableType) ?>"
-				><?= $this->e(\Longevypedia\Content\DocumentTypes::plural($availableType)) ?></a>
+				<?= $this->insert('components::ui/tag', [
+					'label' => \Longevypedia\Content\DocumentTypes::plural($availableType),
+					'href' => '/search?q=' . rawurlencode($query) . '&type=' . rawurlencode($availableType),
+					'active' => $type === $availableType,
+				]) ?>
 			<?php endforeach; ?>
 		</nav>
 
@@ -93,7 +98,7 @@ $this->layout('components::layout/site-layout', [
 			'icon' => 'book',
 			'title' => 'Nothing in the catalogue matches that query',
 			'text' => 'Try a shorter term, or browse the catalogue and the study index.',
-			'action' => $this->insert('components::ui/button', [
+			'action' => $this->fetch('components::ui/button', [
 				'label' => 'Open the catalogue',
 				'variant' => 'secondary',
 				'href' => '/catalog',
@@ -132,27 +137,6 @@ $this->layout('components::layout/site-layout', [
 		flex-wrap: wrap;
 		gap: 0.4rem;
 		margin: 1.5rem 0 1.25rem;
-	}
-
-	.search-page__type {
-		padding: 0.25rem 0.6rem;
-		border: 1px solid var(--color-border);
-		border-radius: 999px;
-		font-size: var(--text-xs);
-		color: var(--color-text-muted);
-		text-decoration: none;
-
-		&:hover {
-			border-color: var(--color-accent);
-			color: var(--color-accent-text);
-		}
-
-		&.is-active {
-			background: var(--color-accent-subtle);
-			border-color: var(--color-accent);
-			color: var(--color-accent-text);
-			font-weight: 600;
-		}
 	}
 
 	.search-page__list {

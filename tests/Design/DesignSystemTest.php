@@ -429,6 +429,56 @@ final class DesignSystemTest extends TestCase
 		self::assertSame([], $offenders, 'Наведение меняет заливку, но не задаёт цвет текста: ' . implode(', ', $offenders));
 	}
 
+	public function testHeaderControlsAreKitButtons(): void
+	{
+		// Переключатель темы и ссылка на исходники стоят в шапке рядом с поиском.
+		// Раньше оба были свёрстаны вручную: кнопка 2.25rem со своей рамкой и
+		// значок без полей. Теперь это `components::ui/button`, иначе рядом с
+		// поиском оказывались три элемента разной высоты и разного фокуса.
+		$header = (string) file_get_contents($this->projectRoot() . '/app/components/layout/site-header.php');
+
+		self::assertStringContainsString("components::ui/theme-toggle", $header);
+		self::assertStringContainsString("components::ui/button", $header);
+		self::assertStringNotContainsString('class="theme-toggle"', $header);
+		self::assertStringNotContainsString('.theme-toggle {', $header);
+	}
+
+	public function testTemplatesDoNotHandRollButtons(): void
+	{
+		// Кнопка, селект, поле и таблица живут в наборе. Вне `app/components/ui`
+		// и `bolt://ui-kit` их разметку писать не нужно: иначе рядом с набором
+		// появляется второй размер, второй фокус и второй набор состояний.
+		$offenders = [];
+
+		foreach ($this->templateFiles() as $path) {
+			$relative = $this->shortPath($path);
+
+			if (!str_starts_with($relative, 'app/') || preg_match('/\.(php)$/', $relative) !== 1) {
+				continue;
+			}
+
+			if (str_starts_with($relative, 'app/components/ui/') || str_starts_with($relative, 'app/components/ui-kit/snippet')) {
+				continue;
+			}
+
+			$text = (string) file_get_contents($path);
+
+			if (preg_match('/<button\b/', $text) === 1) {
+				$offenders[] = $relative . ': <button>';
+			}
+
+			if (preg_match('/<(select|textarea)\b/', $text) === 1) {
+				$offenders[] = $relative . ': <select>/<textarea>';
+			}
+
+			if (preg_match('/<table\b/', $text) === 1) {
+				$offenders[] = $relative . ': <table>';
+			}
+		}
+
+		self::assertSame([], $offenders, 'Разметка контролов мимо набора: ' . implode(', ', $offenders));
+	}
+
 	private function templateFiles(): array
 	{
 		$files = [];

@@ -14,7 +14,7 @@ declare(strict_types=1);
  * состояние приходит из адреса, а не хранится в компоненте.
  *
  * @var string $caption подпись таблицы, читается скринридером
- * @var array<int, array{label: string, key: string, align?: string, numeric?: bool, sortable?: bool}> $columns
+ * @var array<int, array{label: string, key: string, align?: string, numeric?: bool, sortable?: bool, rowHeader?: bool}> $columns
  * @var array<int, array{cells: array<string, string>, href?: string|null, highlight?: bool}> $rows
  * @var string $density normal | compact
  * @var bool $sticky закрепить строку заголовков
@@ -79,10 +79,20 @@ $empty ??= null;
 							$key = (string) ($column['key'] ?? '');
 							$align = (string) ($column['align'] ?? 'start');
 							$numeric = (bool) ($column['numeric'] ?? false);
+							// Колонка-заголовок строки: у таблицы «уровень → значение»
+							// первая ячейка называет строку, и скринридер должен читать
+							// её как заголовок, а не как ещё одно значение.
+							$isRowHeader = (bool) ($column['rowHeader'] ?? false);
+							$cell = $isRowHeader ? 'th' : 'td';
+							$cellClass = clsx(
+								'ui-table__td',
+								'ui-table__td--' . $align,
+								['ui-table__td--row-header' => $isRowHeader, 'ui-table__td--numeric' => $numeric],
+							);
 							?>
-							<td class="ui-table__td ui-table__td--<?= e($align) ?><?= $numeric ? ' ui-table__td--numeric' : '' ?>">
+							<<?= $cell ?><?= $isRowHeader ? ' scope="row"' : '' ?> class="<?= e($cellClass) ?>">
 								<?= (string) ($row['cells'][$key] ?? '') ?>
-							</td>
+							</<?= $cell ?>>
 						<?php endforeach ?>
 					</tr>
 				<?php endforeach ?>
@@ -142,6 +152,13 @@ $empty ??= null;
 		vertical-align: top;
 	}
 
+	/* Ячейка-заголовок строки: вес обычного текста, а не жирный — иначе
+	   таблица «уровень → значение» читается как две колонки равного веса. */
+	.ui-table__td--row-header {
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+	}
+
 	.ui-table__row:last-child .ui-table__td {
 		border-bottom: 0;
 	}
@@ -157,6 +174,13 @@ $empty ??= null;
 	.ui-table--compact .ui-table__th,
 	.ui-table--compact .ui-table__td {
 		padding: var(--space-1) var(--space-3);
+	}
+
+	/* Ячейка-заголовок строки — это `<th>`, а у него браузерное выравнивание по
+	   центру: без явного `start` колонка «уровень» уезжает к середине. */
+	.ui-table__th--start,
+	.ui-table__td--start {
+		text-align: start;
 	}
 
 	.ui-table__th--numeric,

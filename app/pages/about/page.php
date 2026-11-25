@@ -36,17 +36,20 @@ $this->layout('components::layout/site-layout', [
 	</header>
 
 	<div class="about__grid">
-		<nav class="about__nav" aria-label="On this page">
-			<p class="about__nav-title">Sections</p>
-			<ol class="about__nav-list">
-				<li><a href="#purpose">Purpose</a></li>
-				<li><a href="#openness">Openness</a></li>
-				<li><a href="#method">Method</a></li>
-				<li><a href="#contributing">Contributing</a></li>
-				<li><a href="#format">Content format</a></li>
-				<li><a href="#license">Licensing</a></li>
-			</ol>
-		</nav>
+		<div class="about__nav">
+			<?= $this->insert('components::ui/sidebar-nav', [
+				'title' => 'Sections',
+				'sticky' => true,
+				'items' => [
+					['label' => 'Purpose', 'url' => '#purpose'],
+					['label' => 'Openness', 'url' => '#openness'],
+					['label' => 'Method', 'url' => '#method'],
+					['label' => 'Contributing', 'url' => '#contributing'],
+					['label' => 'Content format', 'url' => '#format'],
+					['label' => 'Licensing', 'url' => '#license'],
+				],
+			]) ?>
+		</div>
 
 		<div class="about__body">
 			<section class="about__section" id="purpose">
@@ -85,37 +88,20 @@ $this->layout('components::layout/site-layout', [
 					contested, or firmly contradicted, without the two judgements being mixed.
 				</p>
 
-				<table class="about__table">
-					<caption>Confidence levels used on claim pages</caption>
-					<thead>
-						<tr>
-							<th scope="col">Level</th>
-							<th scope="col">Meaning</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<th scope="row">Established</th>
-							<td>Reproduced across independent studies and populations; the effect direction is not in dispute.</td>
-						</tr>
-						<tr>
-							<th scope="row">Likely</th>
-							<td>Consistent evidence, but with important gaps — often a single model organism, or no human data.</td>
-						</tr>
-						<tr>
-							<th scope="row">Uncertain</th>
-							<td>Evidence exists but is weak, indirect or conflicting enough that the answer could change.</td>
-						</tr>
-						<tr>
-							<th scope="row">Contested</th>
-							<td>Credible studies point in different directions and the disagreement is unresolved.</td>
-						</tr>
-						<tr>
-							<th scope="row">Speculative</th>
-							<td>A hypothesis with a mechanistic rationale but no direct test.</td>
-						</tr>
-					</tbody>
-				</table>
+				<?= $this->insert('components::ui/data-table', [
+					'caption' => 'Confidence levels used on claim pages',
+					'columns' => [
+						['label' => 'Level', 'key' => 'level', 'rowHeader' => true],
+						['label' => 'Meaning', 'key' => 'meaning'],
+					],
+					'rows' => [
+						['cells' => ['level' => 'Established', 'meaning' => 'Reproduced across independent studies and populations; the effect direction is not in dispute.']],
+						['cells' => ['level' => 'Likely', 'meaning' => 'Consistent evidence, but with important gaps — often a single model organism, or no human data.']],
+						['cells' => ['level' => 'Uncertain', 'meaning' => 'Evidence exists but is weak, indirect or conflicting enough that the answer could change.']],
+						['cells' => ['level' => 'Contested', 'meaning' => 'Credible studies point in different directions and the disagreement is unresolved.']],
+						['cells' => ['level' => 'Speculative', 'meaning' => 'A hypothesis with a mechanistic rationale but no direct test.']],
+					],
+				]) ?>
 
 				<p>
 					Every claim states its <strong>scope</strong> — the species, population or
@@ -202,34 +188,7 @@ $this->layout('components::layout/site-layout', [
 	}
 
 	.about__nav {
-		position: sticky;
-		top: 5rem;
-		font-size: var(--text-sm);
-	}
-
-	.about__nav-title {
-		margin: 0 0 0.5rem;
-		font-size: var(--text-xs);
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--color-text-subtle);
-	}
-
-	.about__nav-list {
-		margin: 0;
-		padding-inline-start: 0.9rem;
-		display: grid;
-		gap: 0.3rem;
-		color: var(--color-text-muted);
-
-		a {
-			color: inherit;
-			text-decoration: none;
-
-			&:hover {
-				color: var(--color-accent-text);
-			}
-		}
+		min-width: 0;
 	}
 
 	.about__body {
@@ -263,42 +222,6 @@ $this->layout('components::layout/site-layout', [
 		margin: 0 0 0.75rem;
 		font-family: var(--font-serif);
 		font-size: var(--text-xl);
-	}
-
-	.about__table {
-		width: 100%;
-		border-collapse: collapse;
-		margin: 0 0 1rem;
-		font-size: var(--text-sm);
-
-		caption {
-			text-align: start;
-			font-size: var(--text-xs);
-			text-transform: uppercase;
-			letter-spacing: 0.06em;
-			color: var(--color-text-subtle);
-			padding-bottom: 0.4rem;
-		}
-
-		th,
-		td {
-			text-align: start;
-			padding: 0.45rem 0.6rem;
-			border-bottom: 1px solid var(--color-border);
-			vertical-align: top;
-		}
-
-		thead th {
-			font-size: var(--text-xs);
-			color: var(--color-text-subtle);
-			text-transform: uppercase;
-			letter-spacing: 0.05em;
-		}
-
-		tbody th {
-			white-space: nowrap;
-			font-weight: 600;
-		}
 	}
 
 	.about__disclaimer {

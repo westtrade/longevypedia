@@ -25,7 +25,8 @@ declare(strict_types=1);
  * @param bool        $loading   состояние загрузки: спиннер, aria-busy, блокировка
  * @param bool        $disabled
  * @param bool        $block     растянуть на всю ширину контейнера
- * @param mixed       $children  содержимое вместо label
+ * @param mixed       $children  содержимое вместо label; у кнопки-иконки оно
+ *                               заменяет значок (например, два значка темы)
  * @param array       $attrs     дополнительные атрибуты
  */
 
@@ -89,12 +90,10 @@ $iconSize = $size === 'sm' ? 16 : ($size === 'lg' ? 20 : 18);
 		<?= $this->insert('bolt://ui-kit/icon', ['name' => $icon, 'size' => $iconSize, 'class' => 'ui-button__icon']) ?>
 	<?php endif; ?>
 
-	<?php if (!$iconOnly): ?>
-		<?php if ($children !== null): ?>
-			<?php render($children); ?>
-		<?php else: ?>
-			<span class="ui-button__label"><?= $this->e((string) $label) ?></span>
-		<?php endif; ?>
+	<?php if ($children !== null): ?>
+		<?php render($children); ?>
+	<?php elseif (!$iconOnly): ?>
+		<span class="ui-button__label"><?= $this->e((string) $label) ?></span>
 	<?php endif; ?>
 
 	<?php if ($iconRight !== null && !$iconOnly): ?>
