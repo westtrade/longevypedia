@@ -145,6 +145,23 @@ $empty ??= null;
 		z-index: 1;
 	}
 
+	/* Прилипание работает только внутри своей прокручиваемой области:
+	   `overflow-x: auto` у обёртки уже делает её scroll-контейнером, и
+	   относительно окна заголовок в ней не прилипает. Поэтому у варианта
+	   `sticky` ограничена высота — таблица прокручивается сама, а заголовок
+	   остаётся на виду. `border-collapse: separate` нужен из-за Chrome: с
+	   `collapse` нижняя граница прилипшей ячейки уезжает вместе со строкой. */
+	.ui-table--sticky {
+		max-height: min(80vh, 44rem);
+		overflow: auto;
+		overscroll-behavior: contain;
+	}
+
+	.ui-table--sticky .ui-table__table {
+		border-collapse: separate;
+		border-spacing: 0;
+	}
+
 	.ui-table__td {
 		padding: var(--space-3) var(--space-4);
 		border-bottom: 1px solid var(--color-border);

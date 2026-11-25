@@ -84,12 +84,12 @@ $this->layout('components::layout/site-layout', [
 			'code' => <<<'HTML'
 				<?= $this->insert('components::ui/button', ['label' => 'Найти', 'icon' => 'search']) ?>
 				<?= $this->insert('components::ui/button', ['label' => 'Далее', 'iconRight' => 'arrow-right']) ?>
-				<?= $this->insert('components::ui/button', ['label' => 'Настройки', 'icon' => 'cog', 'iconOnly' => true]) ?>
+				<?= $this->insert('components::ui/button', ['label' => 'Скачать', 'icon' => 'download', 'iconOnly' => true]) ?>
 				HTML,
 			'body' => function (): void { ?>
 				<?= $this->insert('components::ui/button', ['label' => 'Найти', 'icon' => 'search']) ?>
 				<?= $this->insert('components::ui/button', ['label' => 'Далее', 'iconRight' => 'arrow-right']) ?>
-				<?= $this->insert('components::ui/button', ['label' => 'Настройки', 'icon' => 'cog', 'iconOnly' => true]) ?>
+				<?= $this->insert('components::ui/button', ['label' => 'Скачать', 'icon' => 'download', 'iconOnly' => true]) ?>
 			<?php },
 		]) ?>
 		<?= $this->insert('components::ui-kit/specimen', [

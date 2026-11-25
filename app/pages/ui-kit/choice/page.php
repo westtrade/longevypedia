@@ -57,6 +57,20 @@ $this->layout('components::layout/site-layout', [
 			<?php },
 		]) ?>
 		<?= $this->insert('components::ui-kit/specimen', [
+			'title' => 'Отмеченные',
+			'note' => 'знак по центру контрола: галочка, точка и кружок тумблера',
+			'code' => <<<'HTML'
+				<?= $this->insert('components::ui/choice', ['name' => 'published-checked', 'type' => 'checkbox', 'label' => 'Опубликовано', 'checked' => true]) ?>
+				<?= $this->insert('components::ui/choice', ['name' => 'status-checked', 'type' => 'radio', 'label' => 'Опубликовано', 'checked' => true]) ?>
+				<?= $this->insert('components::ui/choice', ['name' => 'theme-checked', 'type' => 'switch', 'label' => 'Тёмная тема', 'checked' => true]) ?>
+				HTML,
+			'body' => function (): void { ?>
+				<?= $this->insert('components::ui/choice', ['name' => 'published-checked', 'type' => 'checkbox', 'label' => 'Опубликовано', 'checked' => true]) ?>
+				<?= $this->insert('components::ui/choice', ['name' => 'status-checked', 'type' => 'radio', 'label' => 'Опубликовано', 'checked' => true]) ?>
+				<?= $this->insert('components::ui/choice', ['name' => 'theme-checked', 'type' => 'switch', 'label' => 'Тёмная тема', 'checked' => true]) ?>
+			<?php },
+		]) ?>
+		<?= $this->insert('components::ui-kit/specimen', [
 			'title' => 'Ошибка',
 			'note' => 'ошибка относится к группе, а не к одной метке',
 			'code' => <<<'HTML'

@@ -37,12 +37,12 @@ $this->layout('components::layout/site-layout', [
 			'note' => 'высота и поля совпадают с соседними кнопками — отдельной вёрстки у переключателя нет',
 			'code' => <<<'HTML'
 				<?= $this->insert('components::ui/theme-toggle') ?>
-				<?= $this->insert('components::ui/button', ['label' => 'Настройки', 'variant' => 'ghost', 'icon' => 'cog', 'iconOnly' => true]) ?>
+				<?= $this->insert('components::ui/button', ['label' => 'Скачать', 'variant' => 'ghost', 'icon' => 'download', 'iconOnly' => true]) ?>
 				<?= $this->insert('components::ui/button', ['label' => 'Оформить подписку']) ?>
 				HTML,
 			'body' => function (): void { ?>
 				<?= $this->insert('components::ui/theme-toggle') ?>
-				<?= $this->insert('components::ui/button', ['label' => 'Настройки', 'variant' => 'ghost', 'icon' => 'cog', 'iconOnly' => true]) ?>
+				<?= $this->insert('components::ui/button', ['label' => 'Скачать', 'variant' => 'ghost', 'icon' => 'download', 'iconOnly' => true]) ?>
 				<?= $this->insert('components::ui/button', ['label' => 'Оформить подписку']) ?>
 			<?php },
 		]) ?>

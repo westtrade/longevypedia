@@ -24,7 +24,9 @@ import 'htmx.org';
 import { initTheme } from './theme';
 import { initCatalogFilters } from './catalog-filters';
 import { initSearchSuggest } from './search-suggest';
+import { initCopyButtons } from './copy-code';
 
 initTheme();
 initCatalogFilters();
 initSearchSuggest();
+initCopyButtons();

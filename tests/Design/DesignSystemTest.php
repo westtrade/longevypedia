@@ -479,6 +479,33 @@ final class DesignSystemTest extends TestCase
 		self::assertSame([], $offenders, 'Разметка контролов мимо набора: ' . implode(', ', $offenders));
 	}
 
+	public function testChoiceSignIsDrawnByAnElementNotAClipPath(): void
+	{
+		// Галочка и точка рисуются отдельными элементами внутри контрола с
+		// `place-items: center`. Псевдоэлемент с `clip-path` считается от бокса
+		// целиком, поэтому треугольник галочки уезжает вниз, а точка с `inset`
+		// отступает от границы вместе с её толщиной — знак выглядел смещённым.
+		$choice = (string) file_get_contents($this->projectRoot() . '/app/components/ui/choice.php');
+
+		self::assertStringContainsString('ui-choice__tick', $choice);
+		self::assertStringContainsString('ui-choice__dot', $choice);
+		self::assertStringContainsString('place-items: center', $choice);
+		self::assertSame(
+			0,
+			preg_match('/^\s*clip-path\s*:/m', $choice),
+			'Знак выбора рисуется элементом, а не clip-path: псевдоэлемент считается от бокса целиком и смещает знак',
+		);
+	}
+
+	public function testSkeletonAlwaysGetsAWidth(): void
+	{
+		// Строки заглушки заданы процентами. У flex-элемента без явной ширины
+		// проценты считаются от нуля, и образец рисовал пустое место.
+		$skeleton = (string) file_get_contents($this->projectRoot() . '/app/components/ui/skeleton.php');
+
+		self::assertMatchesRegularExpression('/\.ui-skeleton\s*\{[^}]*width:\s*100%/', $skeleton);
+	}
+
 	private function templateFiles(): array
 	{
 		$files = [];

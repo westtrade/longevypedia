@@ -70,10 +70,13 @@ $plain ??= false;
 		font-size: var(--text-sm);
 	}
 
+	/* По верху, а не по центру: когда у одного поля появляется строка ошибки,
+	   оно становится выше соседа, и при `center` сосед съезжает вниз. В
+	   образце ничего не должно двигаться от смены состояния. */
 	.specimen__body {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: center;
+		align-items: flex-start;
 		gap: var(--space-3);
 		padding: var(--space-6);
 		border: 1px solid var(--color-border);

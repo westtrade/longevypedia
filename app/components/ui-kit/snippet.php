@@ -38,15 +38,27 @@ foreach ($lines as $line) {
 }
 
 $text = implode("\n", $clean);
+
+/* Идентификатор связывает кнопку с live-регионом: подпись кнопки скринридер
+   может не перечитать, а `role="status"` прочитает. */
+$id = 'code-' . substr(hash('xxh3', $text), 0, 8);
 ?>
 <div class="code-block">
 	<div class="code-block__head">
 		<span class="code-block__lang"><?= e($lang) ?></span>
+		<span class="visually-hidden" role="status" id="<?= e($id) ?>-status"></span>
 		<?= $this->insert('components::ui/button', [
 			'label' => 'Копировать',
 			'variant' => 'link',
 			'size' => 'sm',
-			'attrs' => ['class' => 'code-block__copy', 'data-copy-text' => $text],
+			'attrs' => [
+				'class' => 'code-block__copy',
+				'data-copy-text' => $text,
+				'data-copy-status' => $id . '-status',
+				'data-copy-label-idle' => 'Копировать',
+				'data-copy-label-copied' => 'Скопировано',
+				'data-copy-label-error' => 'Не удалось',
+			],
 		]) ?>
 	</div>
 	<pre class="code-block__pre"><code class="code-block__code"><?= e($text) ?></code></pre>
@@ -76,6 +88,18 @@ $text = implode("\n", $clean);
 		font-size: var(--text-xs);
 		letter-spacing: var(--tracking-wide);
 		text-transform: uppercase;
+	}
+
+	/* Состояние подтверждения: цвет меняется вместе с подписью, иначе на
+	   светлой кнопке-ссылке «Скопировано» легко не заметить. */
+	.code-block__copy[data-copy-state='copied'],
+	.code-block__copy[data-copy-state='copied']:hover {
+		color: var(--color-success-text);
+	}
+
+	.code-block__copy[data-copy-state='error'],
+	.code-block__copy[data-copy-state='error']:hover {
+		color: var(--color-danger-text);
 	}
 
 	.code-block__copy:focus-visible {

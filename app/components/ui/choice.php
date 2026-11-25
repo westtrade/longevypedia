@@ -62,7 +62,16 @@ $controlAttrs = array_merge($attrs, [
 <div class="ui-choice ui-choice--<?= $this->e((string) $type) ?><?= $hasError ? ' ui-choice--error' : '' ?>">
 	<input<?= attrs($controlAttrs) ?> class="ui-choice__input">
 	<label class="ui-choice__label" for="<?= $this->e($id) ?>">
-		<span class="ui-choice__control" aria-hidden="true"></span>
+		<?php /* Знак рисуется внутри контрола и центрируется сеткой: у
+		         clip-path и абсолютных inset'ов центр «на глаз», и галочка
+		         с точкой съезжают на пиксель-два. */ ?>
+		<span class="ui-choice__control" aria-hidden="true">
+			<?php if ($type === 'checkbox'): ?>
+				<?= $this->insert('bolt://ui-kit/icon', ['name' => 'check', 'size' => 12, 'class' => 'ui-choice__tick']) ?>
+			<?php elseif ($type === 'radio'): ?>
+				<span class="ui-choice__dot"></span>
+			<?php endif ?>
+		</span>
 		<span class="ui-choice__text">
 			<span class="ui-choice__title"><?= $this->e((string) $label) ?></span>
 			<?php if ($description !== ''): ?>
@@ -103,6 +112,8 @@ $controlAttrs = array_merge($attrs, [
 
 	.ui-choice__control {
 		position: relative;
+		display: grid;
+		place-items: center;
 		flex: none;
 		width: 1.125rem;
 		height: 1.125rem;
@@ -115,17 +126,21 @@ $controlAttrs = array_merge($attrs, [
 			border-color 120ms ease;
 	}
 
+	/* Знак лежит в контроле, а не рисуется clip-path'ом: так его центр задаёт
+	   сетка контрола, и он не съезжает при смене размера шрифта. */
+	.ui-choice__tick {
+		color: var(--color-on-brand);
+		opacity: 0;
+		transition: opacity 120ms ease;
+	}
+
+	.ui-choice__input:checked + .ui-choice__label .ui-choice__tick {
+		opacity: 1;
+	}
+
 	.ui-choice__input:checked + .ui-choice__label .ui-choice__control {
 		border-color: var(--color-brand);
 		background: var(--color-brand);
-	}
-
-	.ui-choice__input:checked + .ui-choice__label .ui-choice__control::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: var(--color-on-brand);
-		clip-path: polygon(18% 52%, 40% 72%, 82% 28%, 90% 38%, 40% 88%, 10% 60%);
 	}
 
 	.ui-choice__input:focus-visible + .ui-choice__label .ui-choice__control {
@@ -141,11 +156,17 @@ $controlAttrs = array_merge($attrs, [
 		border-radius: var(--radius-full);
 	}
 
-	.ui-choice--radio .ui-choice__input:checked + .ui-choice__label .ui-choice__control::after {
-		inset: 0.28rem;
+	.ui-choice__dot {
+		width: 0.5rem;
+		height: 0.5rem;
 		border-radius: var(--radius-full);
 		background: var(--color-on-brand);
-		clip-path: none;
+		opacity: 0;
+		transition: opacity 120ms ease;
+	}
+
+	.ui-choice--radio .ui-choice__input:checked + .ui-choice__label .ui-choice__dot {
+		opacity: 1;
 	}
 
 	.ui-choice__text {
@@ -177,16 +198,19 @@ $controlAttrs = array_merge($attrs, [
 		background: var(--color-surface-alt);
 	}
 
+	/* Кружок центрируется по треку через 50%: при фиксированном `top` он
+	   смещён на половину разницы высот трека и кружка. */
 	.ui-choice--switch .ui-choice__control::before {
 		content: '';
 		position: absolute;
-		top: 0.15rem;
+		top: 50%;
 		left: 0.15rem;
 		width: 0.85rem;
 		height: 0.85rem;
 		border-radius: var(--radius-full);
 		background: var(--color-surface);
 		box-shadow: var(--shadow-sm);
+		transform: translateY(-50%);
 		transition: transform 140ms ease;
 	}
 
@@ -195,7 +219,7 @@ $controlAttrs = array_merge($attrs, [
 	}
 
 	.ui-choice--switch .ui-choice__input:checked + .ui-choice__label .ui-choice__control::before {
-		transform: translateX(1rem);
+		transform: translateY(-50%) translateX(1rem);
 		background: var(--color-on-brand);
 	}
 

@@ -101,6 +101,7 @@ $this->layout('components::layout/site-layout', [
 						['label' => 'Результат', 'key' => 'result'],
 					],
 					'rows' => $tableRows,
+					'sticky' => true,
 				]) ?>
 			</section>
 

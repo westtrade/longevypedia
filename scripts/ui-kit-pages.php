@@ -45,7 +45,7 @@ $pages = [
 			['Виды', 'вид отвечает за вес действия, а не за цвет бренда', "<?= \$this->insert('components::ui/button', ['label' => 'Основное', 'variant' => 'primary']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Вторичное', 'variant' => 'secondary']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Контур', 'variant' => 'outline']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Тихое', 'variant' => 'ghost']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Удалить', 'variant' => 'danger']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Ссылка', 'variant' => 'link'])?>"],
 			['Размеры', 'sm — в таблице и тулбаре, md — обычный, lg — первый экран', "<?= \$this->insert('components::ui/button', ['label' => 'Маленькая', 'size' => 'sm']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Обычная', 'size' => 'md']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Крупная', 'size' => 'lg']) ?>"],
 			['Состояния', 'загрузка блокирует повторное нажатие и объявляется через aria-busy', "<?= \$this->insert('components::ui/button', ['label' => 'Недоступно', 'disabled' => true]) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Сохраняем', 'loading' => true]) ?>"],
-			['Иконки', 'у кнопки-иконки нет видимого текста — имя уходит в aria-label', "<?= \$this->insert('components::ui/button', ['label' => 'Найти', 'icon' => 'search']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Далее', 'iconRight' => 'arrow-right']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Настройки', 'icon' => 'cog', 'iconOnly' => true]) ?>"],
+			['Иконки', 'у кнопки-иконки нет видимого текста — имя уходит в aria-label', "<?= \$this->insert('components::ui/button', ['label' => 'Найти', 'icon' => 'search']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Далее', 'iconRight' => 'arrow-right']) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Скачать', 'icon' => 'download', 'iconOnly' => true]) ?>"],
 			['Ширина', 'block — на всю ширину формы или панели', "<?= \$this->insert('components::ui/button', ['label' => 'Войти', 'block' => true]) ?>"],
 		],
 	],
@@ -54,7 +54,7 @@ $pages = [
 		'note' => 'Кнопка-значок из ui/button: те же размеры, фокус и состояния, что у остальных кнопок.',
 		'specimens' => [
 			['Основное', 'значок показывает следующий шаг: в светлой теме — луна, в тёмной — солнце', "<?= \$this->insert('components::ui/theme-toggle') ?>"],
-			['В ряду действий', 'высота и поля совпадают с соседними кнопками — отдельной вёрстки у переключателя нет', "<?= \$this->insert('components::ui/theme-toggle') ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Настройки', 'variant' => 'ghost', 'icon' => 'cog', 'iconOnly' => true]) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Оформить подписку']) ?>"],
+			['В ряду действий', 'высота и поля совпадают с соседними кнопками — отдельной вёрстки у переключателя нет', "<?= \$this->insert('components::ui/theme-toggle') ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Скачать', 'variant' => 'ghost', 'icon' => 'download', 'iconOnly' => true]) ?>\n<?= \$this->insert('components::ui/button', ['label' => 'Оформить подписку']) ?>"],
 		],
 	],
 	'field' => [
@@ -76,6 +76,7 @@ $pages = [
 			['Флажок', 'для независимых параметров', "<?= \$this->insert('components::ui/choice', ['name' => 'published', 'type' => 'checkbox', 'label' => 'Опубликовано', 'description' => 'Видно в каталоге и поиске.']) ?>"],
 			['Переключатель', 'для взаимоисключающего выбора', "<?= \$this->insert('components::ui/choice', ['name' => 'status', 'type' => 'radio', 'label' => 'Черновик']) ?>\n<?= \$this->insert('components::ui/choice', ['name' => 'status', 'type' => 'radio', 'label' => 'На проверке']) ?>\n<?= \$this->insert('components::ui/choice', ['name' => 'status', 'type' => 'radio', 'label' => 'Опубликовано']) ?>"],
 			['Тумблер', 'мгновенное переключение настройки', "<?= \$this->insert('components::ui/choice', ['name' => 'theme', 'type' => 'switch', 'label' => 'Тёмная тема', 'description' => 'Следует за системной, пока не выбран вручную.']) ?>"],
+			['Отмеченные', 'знак по центру контрола: галочка, точка и кружок тумблера', "<?= \$this->insert('components::ui/choice', ['name' => 'published-checked', 'type' => 'checkbox', 'label' => 'Опубликовано', 'checked' => true]) ?>\n<?= \$this->insert('components::ui/choice', ['name' => 'status-checked', 'type' => 'radio', 'label' => 'Опубликовано', 'checked' => true]) ?>\n<?= \$this->insert('components::ui/choice', ['name' => 'theme-checked', 'type' => 'switch', 'label' => 'Тёмная тема', 'checked' => true]) ?>"],
 			['Ошибка', 'ошибка относится к группе, а не к одной метке', "<?= \$this->insert('components::ui/choice', ['name' => 'license', 'type' => 'checkbox', 'label' => 'Согласен с лицензией CC BY-SA 4.0', 'error' => 'Без согласия правку нельзя опубликовать.']) ?>"],
 		],
 	],

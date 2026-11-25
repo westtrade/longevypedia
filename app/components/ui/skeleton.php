@@ -35,10 +35,14 @@ $label ??= 'Loading';
 </div>
 
 <style lang="scss">
+	/* Ширина обязательна: строки внутри заданы процентами, а у flex-элемента
+	   без ширины проценты считаются от нуля — заглушка схлопывалась в пустое
+	   место и в образце выглядела как «ничего не нарисовано». */
 	.ui-skeleton {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-2);
+		width: 100%;
 	}
 
 	.ui-skeleton__line,
@@ -54,6 +58,12 @@ $label ??= 'Loading';
 		);
 		background-size: 200% 100%;
 		animation: ui-skeleton-shimmer 1.4s ease-in-out infinite;
+	}
+
+	/* Карточка — не полоса во всю ширину: у настоящей карточки есть свой предел,
+	   и заглушка обязана повторять её силуэт, а не растягиваться на страницу. */
+	.ui-skeleton--card {
+		max-width: 22rem;
 	}
 
 	.ui-skeleton__line {
