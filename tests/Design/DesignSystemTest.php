@@ -392,6 +392,43 @@ final class DesignSystemTest extends TestCase
 		);
 	}
 
+	public function testHoverOnFilledSurfaceRestatesTheTextColour(): void
+	{
+		// Общее правило `a:hover { color: var(--color-brand-hover) }` из базового
+		// слоя по специфичности (0,1,1) перебивает одиночный класс (0,1,0).
+		// Если правило наведения меняет заливку на акцентную или брендовую, но не
+		// задаёт цвет текста, ссылка получает тёмно-бирюзовый текст на коричневой
+		// заливке — 1.35:1, то есть не читается вообще.
+		$fills = '/background(-color)?\s*:\s*var\(--color-(accent|accent-fill|accent-fill-hover|brand|brand-hover|danger|success)\)/';
+		$offenders = [];
+
+		foreach ($this->templateFiles() as $path) {
+			$text = (string) file_get_contents($path);
+
+			if (preg_match_all('/([^{}]*:hover[^{}]*)\{([^{}]*)\}/', $text, $blocks, PREG_SET_ORDER) === 0) {
+				continue;
+			}
+
+			foreach ($blocks as $block) {
+				$declarations = array_filter(array_map('trim', explode(';', $block[2])));
+
+				$hasFill = false;
+				$hasColour = false;
+
+				foreach ($declarations as $declaration) {
+					$hasFill = $hasFill || preg_match($fills, $declaration) === 1;
+					$hasColour = $hasColour || preg_match('/^color\s*:/', $declaration) === 1;
+				}
+
+				if ($hasFill && !$hasColour) {
+					$offenders[] = $this->shortPath($path) . ': ' . trim(explode('\n', $block[1])[count(explode('\n', $block[1])) - 1]);
+				}
+			}
+		}
+
+		self::assertSame([], $offenders, 'Наведение меняет заливку, но не задаёт цвет текста: ' . implode(', ', $offenders));
+	}
+
 	private function templateFiles(): array
 	{
 		$files = [];

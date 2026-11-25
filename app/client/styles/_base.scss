@@ -198,6 +198,12 @@ blockquote {
 	top: var(--space-3);
 }
 
+/* Общее `a:hover` перебивает одиночный класс и покрасило бы текст в
+   --color-brand-hover поверх --color-brand — это почти тот же тон. */
+.skip-link:hover {
+	color: var(--color-on-brand);
+}
+
 .external-link::after {
 	content: '↗';
 	display: inline-block;

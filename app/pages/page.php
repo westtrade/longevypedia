@@ -444,8 +444,13 @@ $this->layout('components::layout/site-layout', [
 		text-decoration: none;
 		font-weight: 600;
 
-		&:hover {
+		/* Цвет текста задаётся здесь же: общее правило `a:hover` из базового слоя
+		   перебивает по специфичности одиночный класс и красит текст в
+		   --color-brand-hover — на акцентной заливке он нечитаем. */
+		&:hover,
+		&:focus-visible {
 			background: var(--color-accent-fill-hover);
+			color: var(--color-on-accent);
 		}
 	}
 
@@ -459,6 +464,15 @@ $this->layout('components::layout/site-layout', [
 		background: var(--color-surface);
 		color: var(--color-text);
 		border: 1px solid var(--color-border);
+
+		/* Светлая карточка не должна заливаться акцентным цветом при наведении:
+		   заливка — признак главного действия, у второй ссылки её нет. */
+		&:hover,
+		&:focus-visible {
+			background: var(--color-surface-alt);
+			color: var(--color-text);
+			border-color: var(--color-brand);
+		}
 	}
 </style>
 <?php $this->stop('page'); ?>
