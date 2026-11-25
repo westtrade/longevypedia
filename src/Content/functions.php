@@ -29,6 +29,30 @@ function longevypedia_content(): ContentRepository
 }
 
 /**
+ * Подпись тематики для интерфейса: `aging-mechanisms` → `Aging mechanisms`.
+ *
+ * Слаг — значение фронтматтера, а не текст для читателя. В карточке каталога он
+ * выглядел машинным кодом рядом с фильтром, где та же тематика подписана
+ * человеческим именем. Неизвестная тематика возвращается как есть: таксономия
+ * должна быть видна как недоработка, а не молча исчезать.
+ */
+function longevypedia_topic_label(string $slug, ?string $locale = null): string
+{
+	static $cache = [];
+
+	$locale ??= longevypedia_content()->defaultLocale();
+
+	if (!isset($cache[$locale])) {
+		$cache[$locale] = array_map(
+			static fn (array $topic): string => (string) $topic['label'],
+			longevypedia_content()->topics($locale),
+		);
+	}
+
+	return $cache[$locale][$slug] ?? $slug;
+}
+
+/**
  * Дата для интерфейса: `2026-11-20` → `20 Nov 2026`.
  *
  * Отдельная функция, потому что даты в шаблонах нужны в нескольких местах, а

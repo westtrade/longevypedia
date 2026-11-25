@@ -24,12 +24,7 @@ $attrs ??= [];
 
 $tag = $href !== null ? 'a' : 'span';
 ?>
-<<?= $tag ?><?= attrs($attrs, ['class' => clsx('ui-tag', ['ui-tag--active' => (bool) $active]), 'href' => $href]) ?>>
-	<?= $this->e((string) $label) ?>
-	<?php if ($count !== null): ?>
-		<span class="ui-tag__count"><?= $this->e((string) $count) ?></span>
-	<?php endif; ?>
-</<?= $tag ?>>
+<<?= $tag ?><?= attrs($attrs, ['class' => clsx('ui-tag', ['ui-tag--active' => (bool) $active]), 'href' => $href]) ?>><?= $this->e((string) $label) ?><?php if ($count !== null): ?><span class="ui-tag__count"><?= $this->e((string) $count) ?></span><?php endif; ?></<?= $tag ?>>
 
 <style lang="scss">
 	.ui-tag {

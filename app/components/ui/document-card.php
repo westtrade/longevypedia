@@ -9,6 +9,10 @@ declare(strict_types=1);
  * @var bool                           $showType
  * @var bool                           $showSummary
  * @var bool                           $showTopics
+ *
+ * Подвал карточки прижат к низу: карточки стоят в сетке одной высоты, и без
+ * `margin-top: auto` теги висели бы сразу под текстом — на разной высоте в
+ * соседних карточках, потому что summary занимает две или три строки.
  */
 
 $showType ??= true;
@@ -38,13 +42,18 @@ $updated = $document->updated();
 	<?php endif; ?>
 
 	<?php if ($showTopics && $document->topics() !== []): ?>
-		<ul class="doc-card__topics">
-			<?php foreach ($document->topics() as $topic): ?>
-				<li class="doc-card__topic">
-					<a href="/catalog?topic=<?= rawurlencode($topic) ?>"><?= $this->e($topic) ?></a>
-				</li>
-			<?php endforeach; ?>
-		</ul>
+		<footer class="doc-card__footer">
+			<ul class="doc-card__topics">
+				<?php foreach ($document->topics() as $topic): ?>
+					<li>
+						<?= $this->insert('components::ui/tag', [
+							'label' => longevypedia_topic_label($topic, $document->locale),
+							'href' => '/catalog?topic=' . rawurlencode($topic),
+						]) ?>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		</footer>
 	<?php endif; ?>
 </article>
 
@@ -53,8 +62,8 @@ $updated = $document->updated();
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: 0.35rem;
-		padding: 1rem 1.1rem;
+		gap: var(--space-1);
+		padding: var(--space-4);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-md);
 		background: var(--color-surface);
@@ -67,7 +76,7 @@ $updated = $document->updated();
 	.doc-card__meta {
 		display: flex;
 		align-items: baseline;
-		gap: 0.6rem;
+		gap: var(--space-2);
 		margin: 0;
 		font-size: var(--text-xs);
 		color: var(--color-text-subtle);
@@ -75,8 +84,8 @@ $updated = $document->updated();
 
 	.doc-card__type {
 		text-transform: uppercase;
-		letter-spacing: 0.07em;
-		font-weight: 600;
+		letter-spacing: var(--tracking-wide);
+		font-weight: var(--weight-semibold);
 		color: var(--color-accent-text);
 	}
 
@@ -84,8 +93,8 @@ $updated = $document->updated();
 		margin: 0;
 		font-family: var(--font-serif);
 		font-size: var(--text-lg);
-		font-weight: 600;
-		line-height: 1.25;
+		font-weight: var(--weight-semibold);
+		line-height: var(--leading-snug);
 	}
 
 	.doc-card__link {
@@ -109,26 +118,33 @@ $updated = $document->updated();
 		margin: 0;
 		font-size: var(--text-sm);
 		color: var(--color-text-muted);
-		line-height: 1.55;
+		line-height: var(--leading-normal);
 	}
 
+	/* Подвал: `margin-top: auto` прижимает его к низу карточки, поэтому теги
+	   стоят на одной линии во всём ряду, сколько бы строк ни заняло описание. */
+	.doc-card__footer {
+		position: relative;
+		z-index: 1;
+		margin-top: auto;
+		padding-top: var(--space-3);
+		border-top: 1px solid var(--color-border);
+
+		/* Подвал лежит выше ссылки карточки, иначе клик по тегу уводил бы в
+		   документ. Пустое место подвала при этом остаётся частью карточки:
+		   без `pointer-events` клик по нему перестал бы открывать документ. */
+		pointer-events: none;
+	}
+
+	.doc-card__footer a {
+		pointer-events: auto;
+	}
 	.doc-card__topics {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.35rem;
-		margin: 0.25rem 0 0;
+		gap: var(--space-1);
+		margin: 0;
 		padding: 0;
 		list-style: none;
-	}
-
-	.doc-card__topic a {
-		font-size: var(--text-xs);
-		color: var(--color-text-subtle);
-		text-decoration: none;
-		border-bottom: 1px dotted var(--color-border-strong);
-
-		&:hover {
-			color: var(--color-accent-text);
-		}
 	}
 </style>

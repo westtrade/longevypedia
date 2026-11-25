@@ -95,6 +95,29 @@ final class PagesTest extends TestCase
 			->assertSee('catalog__chip');
 	}
 
+	public function testCatalogCardKeepsTopicsInTheFooter(): void
+	{
+		// Карточки в сетке одной высоты, а описание занимает две или три строки.
+		// Пока теги шли сразу за описанием, они висели на разной высоте, и ряд
+		// читался рвано. Теперь теги — подвал карточки с `margin-top: auto`.
+		$body = $this->client()->get('/catalog')->assertOk()->body();
+
+		self::assertStringContainsString('doc-card__footer', $body);
+		// Стили карточки вынесены в сборку, поэтому прижатие проверяется по
+		// исходнику компонента, а не по ответу страницы.
+		self::assertStringContainsString(
+			'margin-top: auto',
+			(string) file_get_contents(dirname(__DIR__, 2) . '/app/components/ui/document-card.php'),
+		);
+
+		// Тег — ссылка в каталог по тематике, и подпись у него человеческая:
+		// слаг `aging-mechanisms` рядом с фильтром, где та же тематика названа
+		// «Aging mechanisms», выглядел машинным кодом.
+		self::assertStringContainsString('href="/catalog?topic=aging-mechanisms"', $body);
+		self::assertStringContainsString('>Aging mechanisms<', $body);
+		self::assertStringNotContainsString('>aging-mechanisms<', $body);
+	}
+
 	public function testCatalogFiltersByType(): void
 	{
 		$body = $this->client()->get('/catalog', ['type' => 'gene'])->assertOk()->body();

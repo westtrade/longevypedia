@@ -56,7 +56,7 @@ $attrs ??= [];
 
 ### Функции и методы
 
-- Функции — `snake_case`: `longevypedia_content()`, `longevypedia_date()`.
+- Функции — `snake_case`: `longevypedia_content()`, `longevypedia_date()`, `longevypedia_topic_label()`.
 - Методы — `camelCase`: `backlinksOf()`, `isPublished()`.
 - Глобальные функции — только с префиксом `longevypedia_` и только в
   `src/Content/functions.php` / `src/Design/functions.php` (они подключены через
