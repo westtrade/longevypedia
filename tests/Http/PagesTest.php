@@ -86,6 +86,31 @@ final class PagesTest extends TestCase
 		);
 	}
 
+	public function testHomeTopicCardIsClickableAsAWhole(): void
+	{
+		$body = $this->client()->get('/')->assertOk()->body();
+
+		// Кликабельна вся карточка, а не только заголовок: ссылка растянута
+		// псевдоэлементом. Без этого описание рядом с заголовком — мёртвая зона,
+		// хотя карточка выглядит единым блоком.
+		self::assertStringContainsString('class="home-topic__link"', $body);
+
+		// Стили страницы уходят в сборку, поэтому растяжение проверяется по
+		// исходнику страницы, а не по ответу.
+		$source = (string) file_get_contents(dirname(__DIR__, 2) . '/app/pages/page.php');
+
+		self::assertMatchesRegularExpression(
+			'~\\.home-topic\\s*\\{[^}]*position:\\s*relative~s',
+			$source,
+			'Растянутой ссылке нужен якорь: у карточки нет `position: relative`',
+		);
+		self::assertMatchesRegularExpression(
+			'~\\.home-topic__link\\s*\\{.*?&::after\\s*\\{[^}]*inset:\\s*0~s',
+			$source,
+			'Ссылка тематики должна растягиваться на всю карточку',
+		);
+	}
+
 	public function testCatalogListsDocuments(): void
 	{
 		$response = $this->client()->get('/catalog')->assertOk();

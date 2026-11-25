@@ -331,6 +331,8 @@ $this->layout('components::layout/site-layout', [
 	}
 
 	.home-topic {
+		/* Ссылка внутри растягивается на всю карточку — ей нужен якорь. */
+		position: relative;
 		padding: var(--space-3) var(--space-4);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-md);
@@ -347,6 +349,33 @@ $this->layout('components::layout/site-layout', [
 
 		&:hover {
 			color: var(--color-accent-text);
+		}
+
+		/* Ссылка растягивается на карточку, как в карточке документа: иначе
+		   нажать можно только на заголовок, а описание рядом с ним — нет.
+		   Рамку наведения рисует сама растянутая область: у карточки нет
+		   состояния «наведена», а `:has()` ради одной рамки не нужен. */
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border: 1px solid transparent;
+			border-radius: var(--radius-md);
+		}
+
+		&:hover::after {
+			border-color: var(--color-accent);
+		}
+
+		/* Фокус с клавиатуры обводит карточку, а не строку заголовка: нажать
+		   можно всю площадь, значит и видно должно быть всю площадь. */
+		&:focus-visible {
+			box-shadow: none;
+
+			&::after {
+				border-color: var(--color-brand);
+				box-shadow: var(--focus-ring);
+			}
 		}
 	}
 
