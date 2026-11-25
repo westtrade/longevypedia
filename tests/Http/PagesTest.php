@@ -331,6 +331,17 @@ final class PagesTest extends TestCase
 		self::assertStringContainsString('ui-button', $body);
 	}
 
+	public function testUiKitShowsHiddenComponentsInPreview(): void
+	{
+		// Мобильное меню на широком экране скрыто по назначению, и без `preview`
+		// страница компонента показывала пустое место вместо примера.
+		$body = $this->client()->get('/ui-kit/mobile-nav')->assertOk()->body();
+
+		self::assertStringContainsString('ui-mobile-nav--preview', $body);
+		self::assertStringContainsString('ui-mobile-nav__toggle', $body);
+		self::assertStringContainsString('Knowledge', $body);
+	}
+
 	public function testUiKitAccessibilityPageReportsPassingPairs(): void
 	{
 		$body = $this->client()->get('/ui-kit/accessibility')->assertOk()->body();

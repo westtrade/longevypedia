@@ -119,7 +119,8 @@ $pages = [
 		'title' => 'Мобильная навигация',
 		'note' => 'Меню для узкого экрана: раскрывается без JavaScript, закрывается повторным нажатием.',
 		'specimens' => [
-			['Основное', 'видно только на узком экране; в документации показано всегда', "<?= \$this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav', 'label' => 'Основная навигация', 'current' => 'catalog', 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>"],
+			['Закрытое', 'на узком экране стоит в шапке рядом с логотипом; здесь показано на широком через `preview`', "<?= \$this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav', 'label' => 'Основная навигация', 'current' => 'catalog', 'preview' => true, 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>", ['stack' => true]],
+			['Открытое', 'панель раскрывается без JavaScript; текущий раздел помечен aria-current', "<?= \$this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav-open', 'label' => 'Основная навигация', 'current' => 'catalog', 'open' => true, 'preview' => true, 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>", ['stack' => true]],
 		],
 	],
 	'card' => [
@@ -421,10 +422,18 @@ foreach ($pages as $slug => $page) {
 	$out .= "\t'lead' => " . var_export($note, true) . ",\n";
 	$out .= "\t'body' => function (): void { ?>\n";
 
-	foreach ($page['specimens'] as [$specTitle, $specNote, $code]) {
+	foreach ($page['specimens'] as $spec) {
+		[$specTitle, $specNote, $code] = $spec;
+		$specOptions = (array) ($spec[3] ?? []);
+
 		$out .= "\t\t<?= \$this->insert('components::ui-kit/specimen', [\n";
 		$out .= "\t\t\t'title' => " . var_export($specTitle, true) . ",\n";
 		$out .= "\t\t\t'note' => " . var_export($specNote, true) . ",\n";
+
+		foreach ($specOptions as $optionName => $optionValue) {
+			$out .= "\t\t\t" . var_export($optionName, true) . ' => ' . var_export($optionValue, true) . ",\n";
+		}
+
 		$out .= "\t\t\t'code' => <<<'HTML'\n";
 
 		foreach (explode("\n", (string) $code) as $line) {

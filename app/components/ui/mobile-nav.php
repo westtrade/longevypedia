@@ -14,18 +14,22 @@ declare(strict_types=1);
  * @param array<int, array{label: string, url: string, key?: string}> $items пункты меню
  * @param string $current ключ текущего раздела
  * @param string $id идентификатор `<details>`, чтобы панель можно было связать с кнопкой
+ * @param bool $open панель раскрыта сразу
+ * @param bool $preview показать на широком экране (только для UI-набора)
  */
 
 $label ??= 'Menu';
 $items ??= [];
 $current ??= '';
 $id ??= 'mobile-nav';
+$open ??= false;
+$preview ??= false;
 
 if ($items === []) {
 	return;
 }
 ?>
-<details class="ui-mobile-nav" id="<?= e($id) ?>">
+<details class="ui-mobile-nav<?= $preview ? ' ui-mobile-nav--preview' : '' ?>" id="<?= e($id) ?>"<?= $open ? ' open' : '' ?>>
 	<summary class="ui-mobile-nav__toggle">
 		<?= $this->insert('bolt://ui-kit/icon', ['name' => 'burger', 'size' => 20]) ?>
 		<span class="visually-hidden"><?= e($label) ?></span>
@@ -127,5 +131,26 @@ if ($items === []) {
 			display: block;
 			flex: none;
 		}
+	}
+
+	/* Образец в UI-наборе: на широком экране компонент скрыт по назначению, и
+	   без этого правила страница компонента показывала пустое место вместо
+	   примера. Панель в образце встаёт в поток — иначе она накрыла бы
+	   исходник под примером. */
+	.ui-mobile-nav--preview {
+		display: block;
+		/* Ширина телефона: на всю ширину образца кнопка-бургер выглядела бы
+		   одинокой в пустом поле, а панель — растянутой на 900px. */
+		max-width: 22rem;
+	}
+
+	.ui-mobile-nav--preview .ui-mobile-nav__panel {
+		position: static;
+		box-shadow: none;
+		border-top: 1px solid var(--color-border);
+	}
+
+	.ui-mobile-nav--preview .ui-mobile-nav__list {
+		padding-inline: 0;
 	}
 </style>

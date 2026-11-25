@@ -23,13 +23,25 @@ $this->layout('components::layout/site-layout', [
 	'lead' => 'Меню для узкого экрана: раскрывается без JavaScript, закрывается повторным нажатием.',
 	'body' => function (): void { ?>
 		<?= $this->insert('components::ui-kit/specimen', [
-			'title' => 'Основное',
-			'note' => 'видно только на узком экране; в документации показано всегда',
+			'title' => 'Закрытое',
+			'note' => 'на узком экране стоит в шапке рядом с логотипом; здесь показано на широком через `preview`',
+			'stack' => true,
 			'code' => <<<'HTML'
-				<?= $this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav', 'label' => 'Основная навигация', 'current' => 'catalog', 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>
+				<?= $this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav', 'label' => 'Основная навигация', 'current' => 'catalog', 'preview' => true, 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>
 				HTML,
 			'body' => function (): void { ?>
-				<?= $this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav', 'label' => 'Основная навигация', 'current' => 'catalog', 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>
+				<?= $this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav', 'label' => 'Основная навигация', 'current' => 'catalog', 'preview' => true, 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>
+			<?php },
+		]) ?>
+		<?= $this->insert('components::ui-kit/specimen', [
+			'title' => 'Открытое',
+			'note' => 'панель раскрывается без JavaScript; текущий раздел помечен aria-current',
+			'stack' => true,
+			'code' => <<<'HTML'
+				<?= $this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav-open', 'label' => 'Основная навигация', 'current' => 'catalog', 'open' => true, 'preview' => true, 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>
+				HTML,
+			'body' => function (): void { ?>
+				<?= $this->insert('components::ui/mobile-nav', ['id' => 'kit-mobile-nav-open', 'label' => 'Основная навигация', 'current' => 'catalog', 'open' => true, 'preview' => true, 'items' => [['key' => 'catalog', 'label' => 'Knowledge', 'url' => '/catalog'], ['key' => 'research', 'label' => 'Research', 'url' => '/research'], ['key' => 'about', 'label' => 'About', 'url' => '/about']]]) ?>
 			<?php },
 		]) ?>
 	<?php },
