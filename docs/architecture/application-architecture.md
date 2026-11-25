@@ -217,8 +217,9 @@ $this->layout('components::layout/site-layout', [
 - skip-link на `#main`, шапку, `<main id="main">`, подвал.
 
 `site-header.php` содержит навигацию (`catalog`, `research`, `about`) с `aria-current`,
-компактный поиск, переключатель темы `[data-theme-toggle]` и ссылку на GitHub. Шапка
-липкая, фон — `color-mix(in oklch, var(--color-bg) 88%, transparent)` с backdrop blur.
+компактный поиск, переключатель темы `[data-theme-switch]` и ссылку на GitHub; два
+последних собраны в группу `.site-header__tools`. Шапка липкая, фон —
+`color-mix(in oklch, var(--color-bg) 88%, transparent)` с backdrop blur.
 
 `site-footer.php` — три колонки ссылок и юридический блок: CC BY-SA 4.0 для текста, MIT
 для кода, «not medical advice».

@@ -27,6 +27,24 @@ final class PagesTest extends TestCase
 		self::assertGreaterThan(4000, strlen($response->body()));
 	}
 
+	public function testHeaderThemeSwitchOffersThreeStates(): void
+	{
+		// Тема выбирается списком, а не перебором по кругу: в ответе должны быть
+		// все три пункта и признак выбранного, иначе состояние снова придётся
+		// угадывать по значку.
+		$body = $this->client()->get('/')->assertOk()->body();
+
+		self::assertStringContainsString('data-theme-switch', $body);
+		self::assertStringContainsString('data-theme-choice="auto"', $body);
+		self::assertStringContainsString('data-theme-choice="light"', $body);
+		self::assertStringContainsString('data-theme-choice="dark"', $body);
+		// Без скрипта тема системная, поэтому `auto` отмечен уже в разметке;
+		// подпись с выбранным состоянием дописывает `app/client/theme.ts`.
+		self::assertStringContainsString('aria-pressed="true"', $body);
+		self::assertSame(3, substr_count($body, 'data-theme-choice="'));
+		self::assertSame(1, substr_count($body, 'aria-pressed="true"'));
+	}
+
 	public function testHomePageLinksToCatalogAndResearch(): void
 	{
 		$body = $this->client()->get('/')->assertOk()->body();

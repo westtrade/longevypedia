@@ -1,8 +1,9 @@
 /**
  * Переключатель темы.
  *
- * Attachment к готовой разметке: кнопку рисует шаблон, модуль только меняет
- * `data-theme` на `<html>` и запоминает выбор. Цвета выбирает CSS
+ * Attachment к готовой разметке: список состояний рисует шаблон
+ * (`components::ui/theme-toggle`), модуль только меняет `data-theme` на
+ * `<html>`, отмечает выбранный пункт и запоминает выбор. Цвета выбирает CSS
  * (`light-dark()`), поэтому скрипт не знает ни одного цвета — и не может
  * разойтись с оформлением.
  *
@@ -15,7 +16,11 @@ const STORAGE_KEY = 'longevypedia.theme';
 
 export type Theme = 'auto' | 'light' | 'dark';
 
-const ORDER: Theme[] = ['auto', 'light', 'dark'];
+const LABELS: Record<Theme, string> = {
+	auto: 'system',
+	light: 'light',
+	dark: 'dark',
+};
 
 export function currentTheme(): Theme {
 	const stored = document.documentElement.dataset.theme;
@@ -40,25 +45,60 @@ function apply(theme: Theme): void {
 		// Приватный режим и запрет хранилища: тема просто не запомнится.
 	}
 
-	for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
-		button.setAttribute('aria-label', `Theme: ${theme === 'auto' ? 'system' : theme}. Change theme`);
-		button.dataset.themeState = theme;
+	for (const switcher of document.querySelectorAll<HTMLElement>('[data-theme-switch]')) {
+		// `data-theme-state` показывает текущее состояние в триггере: значок,
+		// подпись для скринридера и галочку у выбранного пункта.
+		switcher.dataset.themeState = theme;
+
+		const summary = switcher.querySelector<HTMLElement>('summary');
+
+		if (summary !== null) {
+			summary.setAttribute('aria-label', `Colour theme: ${LABELS[theme]}`);
+		}
+
+		for (const option of switcher.querySelectorAll<HTMLElement>('[data-theme-choice]')) {
+			option.setAttribute('aria-pressed', option.dataset.themeChoice === theme ? 'true' : 'false');
+		}
 	}
 }
 
-export function initTheme(): void {
-	const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+function close(switcher: HTMLDetailsElement): void {
+	switcher.open = false;
+	switcher.querySelector<HTMLElement>('summary')?.focus();
+}
 
-	if (buttons.length === 0) {
+export function initTheme(): void {
+	const switchers = document.querySelectorAll<HTMLDetailsElement>('[data-theme-switch]');
+
+	if (switchers.length === 0) {
 		return;
 	}
 
 	apply(currentTheme());
 
-	for (const button of buttons) {
-		button.addEventListener('click', () => {
-			const next = ORDER[(ORDER.indexOf(currentTheme()) + 1) % ORDER.length];
-			apply(next);
+	for (const switcher of switchers) {
+		for (const option of switcher.querySelectorAll<HTMLElement>('[data-theme-choice]')) {
+			option.addEventListener('click', () => {
+				apply((option.dataset.themeChoice as Theme) ?? 'auto');
+				// Выбор сделан — список закрывается и возвращает фокус на триггер,
+				// иначе он остаётся висеть поверх страницы.
+				close(switcher);
+			});
+		}
+
+		switcher.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && switcher.open) {
+				event.preventDefault();
+				close(switcher);
+			}
+		});
+
+		document.addEventListener('click', (event) => {
+			const target = event.target as Node | null;
+
+			if (switcher.open && target !== null && !switcher.contains(target)) {
+				switcher.open = false;
+			}
 		});
 	}
 }

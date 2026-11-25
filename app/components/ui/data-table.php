@@ -17,22 +17,36 @@ declare(strict_types=1);
  * @var array<int, array{label: string, key: string, align?: string, numeric?: bool, sortable?: bool, rowHeader?: bool}> $columns
  * @var array<int, array{cells: array<string, string>, href?: string|null, highlight?: bool}> $rows
  * @var string $density normal | compact
+ * @var string $variant bordered | plain
  * @var bool $sticky закрепить строку заголовков
  * @var array{key?: string, direction?: string}|null $sort текущая сортировка
  * @var callable(string, string): string|null $sortUrl адрес сортировки по колонке
  * @var mixed $empty состояние «нет строк»
+ * @var array $attrs дополнительные атрибуты обёртки
  */
 
 $caption ??= '';
 $columns ??= [];
 $rows ??= [];
 $density ??= 'normal';
+$variant ??= 'bordered';
 $sticky ??= false;
 $sort ??= null;
 $sortUrl ??= null;
 $empty ??= null;
+$attrs ??= [];
+
+/* Класс вызывающего добавляется к классу набора: таблица внутри карточки
+   должна получить свою роль в разметке страницы (например, отступ от
+   предыдущего блока), не теряя классы `ui-table`. */
+$wrapperAttrs = $attrs;
+$wrapperAttrs['class'] = clsx(
+	'ui-table',
+	['ui-table--compact' => $density === 'compact', 'ui-table--plain' => $variant === 'plain', 'ui-table--sticky' => $sticky],
+	$attrs['class'] ?? null,
+);
 ?>
-<div class="ui-table<?= $density === 'compact' ? ' ui-table--compact' : '' ?><?= $sticky ? ' ui-table--sticky' : '' ?>">
+<div<?= attrs($wrapperAttrs) ?>>
 	<table class="ui-table__table">
 		<?php if ($caption !== ''): ?>
 			<caption class="ui-table__caption"><?= e($caption) ?></caption>
@@ -108,6 +122,26 @@ $empty ??= null;
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-md);
 		background: var(--color-surface);
+	}
+
+	/* Без рамки: таблица стоит внутри карточки, у которой рамка уже есть.
+	   Двойная рамка вокруг таблицы исходов читалась как отдельный блок, хотя
+	   это продолжение паспорта исследования. Отступы по горизонтали тоже
+	   снимаются — карточка даёт их сама. */
+	.ui-table--plain {
+		border: 0;
+		border-radius: 0;
+		background: none;
+	}
+
+	.ui-table--plain .ui-table__caption {
+		padding-inline: 0;
+		border-bottom: 0;
+	}
+
+	.ui-table--plain .ui-table__th,
+	.ui-table--plain .ui-table__td {
+		padding-inline: 0;
 	}
 
 	.ui-table__table {

@@ -107,7 +107,13 @@ foreach ($outcomes as $outcome) {
 		]) ?>
 	<?php endif ?>
 
-	<?= $this->insert('components::ui/key-value', ['items' => $items, 'density' => 'compact']) ?>
+	<?= $this->insert('components::ui/key-value', [
+		'items' => $items,
+		'density' => 'compact',
+		// Карточка уже даёт рамку: линии списка добавляли вторую, и блок
+		// «Design / Species / …» читался как таблица в таблице.
+		'dividers' => false,
+	]) ?>
 
 	<?php if ($rows !== []): ?>
 		<?= $this->insert('components::ui/data-table', [
@@ -115,6 +121,9 @@ foreach ($outcomes as $outcome) {
 			'columns' => $columns,
 			'rows' => $rows,
 			'density' => 'compact',
+			// Исходы — продолжение паспорта исследования, а не отдельный блок:
+			// своя рамка внутри карточки давала двойную.
+			'variant' => 'plain',
 			'attrs' => ['class' => 'ui-research-meta__outcomes'],
 		]) ?>
 	<?php endif ?>
@@ -140,6 +149,12 @@ foreach ($outcomes as $outcome) {
 
 	.ui-research-meta__example {
 		margin: 0;
+	}
+
+	/* Паспорт и исходы разделены воздухом, а не линиями: внутри карточки
+	   достаточно одной границы — её собственной. */
+	.ui-research-meta__outcomes {
+		margin-block-start: var(--space-1);
 	}
 
 	/* Направление исхода — не оценка качества доказательств: цвет здесь

@@ -10,17 +10,19 @@ declare(strict_types=1);
  * @var string|null $title заголовок блока
  * @var array<int, array{label: string, value: string, hint?: string|null}> $items значения — готовая разметка
  * @var string $density normal | compact
+ * @var bool $dividers рисовать линии между строками
  */
 
 $title ??= null;
 $items ??= [];
 $density ??= 'normal';
+$dividers ??= true;
 
 if ($items === []) {
 	return;
 }
 ?>
-<section class="ui-kv<?= $density === 'compact' ? ' ui-kv--compact' : '' ?>">
+<section class="ui-kv<?= $density === 'compact' ? ' ui-kv--compact' : '' ?><?= $dividers ? '' : ' ui-kv--plain' ?>">
 	<?php if ($title !== null): ?>
 		<h2 class="ui-kv__title"><?= e($title) ?></h2>
 	<?php endif ?>
@@ -91,6 +93,19 @@ if ($items === []) {
 
 	.ui-kv--compact .ui-kv__row {
 		padding: var(--space-1) 0;
+	}
+
+	/* Без линий: блок стоит внутри карточки, у которой уже есть рамка. Две
+	   горизонтальные линии сверху и снизу читались как вторая рамка вокруг
+	   четырёх строк — вместо «поле: значение» получалась таблица в таблице.
+	   Ряды разделяет отступ, а не граница. */
+	.ui-kv--plain .ui-kv__list {
+		border-top: 0;
+	}
+
+	.ui-kv--plain .ui-kv__row {
+		border-bottom: 0;
+		padding-block: var(--space-1);
 	}
 
 	@media (max-width: $bp-sm) {

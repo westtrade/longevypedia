@@ -506,6 +506,61 @@ final class DesignSystemTest extends TestCase
 		self::assertMatchesRegularExpression('/\.ui-skeleton\s*\{[^}]*width:\s*100%/', $skeleton);
 	}
 
+	public function testThemeSwitchOffersAllThreeStates(): void
+	{
+		// Раньше кнопка темы просто перебирала три состояния по кругу: какое
+		// сейчас — видно только по значку, а вернуться к «как в системе» можно
+		// было лишь нажав дважды. Теперь это список с явным выбором, поэтому
+		// в разметке обязаны быть все три варианта и признак выбранного.
+		$toggle = (string) file_get_contents($this->projectRoot() . '/app/components/ui/theme-toggle.php');
+		$script = (string) file_get_contents($this->projectRoot() . '/app/client/theme.ts');
+
+		self::assertStringContainsString('data-theme-switch', $toggle);
+		self::assertStringContainsString('aria-pressed', $toggle);
+
+		// Пункты списка строятся циклом, поэтому в шаблоне проверяется сам
+		// перечень состояний, а не готовая разметка. Разметку проверяет
+		// `PagesTest::testHeaderThemeSwitchOffersThreeStates` на живом ответе.
+		foreach (['auto', 'light', 'dark'] as $value) {
+			self::assertStringContainsString(
+				"'value' => '{$value}'",
+				$toggle,
+				"В переключателе темы нет состояния {$value}",
+			);
+		}
+
+		self::assertStringContainsString('aria-pressed', $script);
+		self::assertStringContainsString('themeState', $script);
+	}
+
+	public function testDataTableKeepsCallerAttributes(): void
+	{
+		// Обёртка таблицы собирается из `attrs()`. Пока класс был записан в
+		// шаблоне строкой, `attrs` из вызова молча терялись: таблица исходов
+		// получала свои `ui-table`, но не отступ, который передавала карточка.
+		$table = (string) file_get_contents($this->projectRoot() . '/app/components/ui/data-table.php');
+
+		self::assertMatchesRegularExpression('/\$attrs\s*\?\?=\s*\[\]/', $table);
+		self::assertStringContainsString('attrs($wrapperAttrs)', $table);
+		self::assertStringNotContainsString('class="ui-table<?=', $table);
+	}
+
+	public function testNestedBlocksDoNotDrawTheirOwnFrame(): void
+	{
+		// Внутри карточки исследования живут список «поле — значение» и таблица
+		// исходов. Оба рисовали свою рамку и свои линии, поэтому блок читался
+		// как три вложенных прямоугольника. Вложенному блоку нужен вариант без
+		// границ, а карточка передаёт его явно.
+		$kv = (string) file_get_contents($this->projectRoot() . '/app/components/ui/key-value.php');
+		$table = (string) file_get_contents($this->projectRoot() . '/app/components/ui/data-table.php');
+		$meta = (string) file_get_contents($this->projectRoot() . '/app/components/ui/research-metadata.php');
+
+		self::assertStringContainsString('ui-kv--plain', $kv);
+		self::assertStringContainsString('ui-table--plain', $table);
+		self::assertStringContainsString("'dividers' => false", $meta);
+		self::assertStringContainsString("'variant' => 'plain'", $meta);
+	}
+
 	private function templateFiles(): array
 	{
 		$files = [];

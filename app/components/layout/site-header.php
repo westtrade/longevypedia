@@ -47,16 +47,18 @@ $navigation = [
 
 		<?= $this->insert('components::site/search-form', ['id' => 'site-search', 'compact' => true]) ?>
 
-		<?= $this->insert('components::ui/theme-toggle', ['attrs' => ['class' => 'site-header__theme']]) ?>
+		<div class="site-header__tools">
+			<?= $this->insert('components::ui/theme-toggle', ['attrs' => ['class' => 'site-header__theme']]) ?>
 
-		<?= $this->insert('components::ui/button', [
-			'label' => 'Source code on GitHub',
-			'variant' => 'ghost',
-			'icon' => 'github',
-			'iconOnly' => true,
-			'href' => 'https://github.com/westtrade/longevypedia',
-			'attrs' => ['class' => 'site-header__github', 'rel' => 'noopener'],
-		]) ?>
+			<?= $this->insert('components::ui/button', [
+				'label' => 'Source code on GitHub',
+				'variant' => 'ghost',
+				'icon' => 'github',
+				'iconOnly' => true,
+				'href' => 'https://github.com/westtrade/longevypedia',
+				'attrs' => ['class' => 'site-header__github', 'rel' => 'noopener'],
+			]) ?>
+		</div>
 
 		<?= $this->insert('components::ui/mobile-nav', [
 			'id' => 'site-mobile-nav',
@@ -121,14 +123,20 @@ $navigation = [
 		}
 	}
 
-	/* Кнопку рисует `components::ui/theme-toggle`; шапка задаёт только
-	   положение в ряду — сама кнопка живёт в наборе и на своей странице. */
-	.site-header__theme {
+	/* Служебные кнопки стоят одной группой: между значками 4px, а не общий
+	   зазор шапки. Кнопки набора имеют внутренние поля по 8px, поэтому при
+	   общем зазоре 20px между самими значками получалось 36px — они читались
+	   как два разных элемента, а не как один блок управления. */
+	.site-header__tools {
+		display: flex;
+		align-items: center;
 		flex: none;
+		gap: var(--space-1);
 	}
 
-	/* Ссылка на исходники — та же кнопка набора, что и переключатель темы:
-	   иначе рядом стояли бы значок без полей и кнопка 40×40. */
+	/* Переключатель темы — `components::ui/theme-toggle`, ссылка на исходники —
+	 * `ui/button`: шапка задаёт только положение в группе. */
+	.site-header__theme,
 	.site-header__github {
 		flex: none;
 	}
