@@ -40,6 +40,7 @@ $this->layout('components::layout/site-layout', [
 			<?= $this->insert('components::ui/sidebar-nav', [
 				'title' => 'Sections',
 				'sticky' => true,
+				'headings' => true,
 				'items' => [
 					['label' => 'Purpose', 'url' => '#purpose'],
 					['label' => 'Openness', 'url' => '#openness'],
@@ -183,12 +184,16 @@ $this->layout('components::layout/site-layout', [
 	.about__grid {
 		display: grid;
 		grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
-		gap: 2.5rem;
-		align-items: start;
+		gap: var(--space-10);
+		/* Ключевое: ряд не по высоте содержимого каждой колонки, а по высоте
+		   самой высокой. Липкой панели нужен запас хода внутри колонки —
+		   если колонка кончается на самой панели, ехать негде. */
+		align-items: stretch;
 	}
 
 	.about__nav {
 		min-width: 0;
+		align-self: stretch;
 	}
 
 	.about__body {
@@ -235,13 +240,13 @@ $this->layout('components::layout/site-layout', [
 	@media (max-width: $bp-lg) {
 		.about__grid {
 			grid-template-columns: minmax(0, 1fr);
-			gap: 1rem;
+			gap: var(--space-4);
 		}
 
+		/* В одну колонку липнуть некуда: панель стоит над текстом, а не сбоку. */
 		.about__nav {
-			position: static;
 			border-bottom: 1px solid var(--color-border);
-			padding-bottom: 1rem;
+			padding-bottom: var(--space-4);
 		}
 	}
 </style>

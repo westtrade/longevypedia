@@ -13,12 +13,14 @@ declare(strict_types=1);
  * @var array<int, array{label: string, url: string, active?: bool, level?: int}> $items
  * @var array<int, array{title?: string|null, items: array<int, array{label: string, url: string, active?: bool}>}> $groups
  * @var bool $sticky прилипает при прокрутке
+ * @var bool $headings подсвечивать текущий раздел при прокрутке (нужны якоря этой страницы)
  */
 
 $title ??= null;
 $items ??= [];
 $groups ??= [];
 $sticky ??= false;
+$headings ??= false;
 
 if ($groups !== []) {
 	$sections = array_values(array_filter(
@@ -43,8 +45,28 @@ if ($sections === []) {
 }
 
 $isGrouped = $groups !== [];
+
+/* Подсветка по прокрутке имеет смысл только для оглавления самой страницы:
+   курсор «где я сейчас» определён лишь тогда, когда все пункты — якоря на
+   этой же странице. У меню набора ссылки ведут на другие страницы. */
+$tracksHeadings = $headings && !$isGrouped;
+
+if ($tracksHeadings) {
+	foreach ($sections as $section) {
+		foreach ($section['items'] as $item) {
+			if (!str_starts_with((string) ($item['url'] ?? ''), '#')) {
+				$tracksHeadings = false;
+				break 2;
+			}
+		}
+	}
+}
+
+$navAttrs = '';
+$navAttrs .= $sticky ? ' data-sticky' : '';
+$navAttrs .= $tracksHeadings ? ' data-heading-nav' : '';
 ?>
-<nav class="ui-sidebar-nav<?= $sticky ? ' ui-sidebar-nav--sticky' : '' ?><?= $isGrouped ? ' ui-sidebar-nav--grouped' : '' ?>"<?= $label !== null ? ' aria-label="' . e($label) . '"' : '' ?>>
+<nav class="ui-sidebar-nav<?= $sticky ? ' ui-sidebar-nav--sticky' : '' ?><?= $isGrouped ? ' ui-sidebar-nav--grouped' : '' ?><?= $tracksHeadings ? ' ui-sidebar-nav--headings' : '' ?>"<?= $label !== null ? ' aria-label="' . e($label) . '"' : '' ?><?= $navAttrs ?>>
 	<?php foreach ($sections as $section): ?>
 		<div class="ui-sidebar-nav__group">
 			<?php if (($section['title'] ?? null) !== null): ?>
@@ -69,12 +91,18 @@ $isGrouped = $groups !== [];
 </nav>
 
 <style lang="scss">
+	/* Липнет сам компонент, но не его родитель. У `position: sticky` нет
+	   запаса хода внутри собственного бокса: если элемент стоит в колонке
+	   сетки равной его высоте, он просто уедет вверх вместе с колонкой.
+	   Поэтому колонка страницы растягивается на высоту ряда, а липнет
+	   ребёнок — здесь. */
 	.ui-sidebar-nav--sticky {
 		position: sticky;
 		top: calc(var(--layout-header) + var(--space-4));
 		align-self: start;
 		max-height: calc(100vh - var(--layout-header) - var(--space-8));
 		overflow-y: auto;
+		overscroll-behavior: contain;
 	}
 
 	.ui-sidebar-nav__title {
@@ -138,7 +166,7 @@ $isGrouped = $groups !== [];
 
 	.ui-sidebar-nav__link:hover {
 		border-left-color: var(--color-border-strong);
-		color: var(--color-text);
+		color: var(--color-brand-text);
 	}
 
 	.ui-sidebar-nav__link--active {
@@ -151,4 +179,106 @@ $isGrouped = $groups !== [];
 		outline: none;
 		box-shadow: var(--focus-ring);
 	}
+
+	/* Оглавление страницы: подпись «Sections» над пунктами полезна, но при
+	   липкой панели она съедает место; активный пункт читается и без неё. */
+	.ui-sidebar-nav--headings .ui-sidebar-nav__list {
+		border-left: 1px solid var(--color-border);
+	}
+
+	.ui-sidebar-nav--headings .ui-sidebar-nav__link {
+		transition: border-color 120ms ease, color 120ms ease;
+	}
 </style>
+
+<?php if ($tracksHeadings): ?>
+	<?php /* `inline` обязателен: AssetExtractingEngine вырезает любой <script>
+	   без него, как и <style>. */ ?>
+	<script type="module" inline>
+		/**
+		 * Подсветка текущего раздела по прокрутке.
+		 *
+		 * Считаем позиции напрямую, а не через IntersectionObserver: у страницы
+		 * включена плавная прокрутка, и наблюдатель во время неё отдаёт события
+		 * пачками — активная строка успевает мигнуть на промежуточных разделах.
+		 * Прямой расчёт даёт ровно один активный пункт в любой момент.
+		 */
+		const nav = document.querySelector('.ui-sidebar-nav--headings');
+
+		if (nav) {
+			const links = [...nav.querySelectorAll('.ui-sidebar-nav__link')];
+			const targets = links
+				.map((link) => {
+					const id = (link.getAttribute('href') || '').slice(1);
+					const section = id ? document.getElementById(id) : null;
+					return section ? { link, section } : null;
+				})
+				.filter(Boolean);
+
+			let current = null;
+
+			const headerOffset = () => {
+				const header = document.querySelector('.site-header');
+				return header ? header.getBoundingClientRect().height : 0;
+			};
+
+			const update = () => {
+				if (targets.length === 0) {
+					return;
+				}
+
+				const limit = headerOffset() + 8;
+				let active = targets[0];
+
+				for (const target of targets) {
+					if (target.section.getBoundingClientRect().top - limit <= 0) {
+						active = target;
+					}
+				}
+
+				/* Дно страницы: последний раздел читают до конца, хотя его
+				   заголовок уже ушёл выше линии. Без этого активным оставался
+				   бы предпоследний пункт. */
+				if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+					active = targets[targets.length - 1];
+				}
+
+				if (active === current) {
+					return;
+				}
+
+				current = active;
+
+				for (const target of targets) {
+					const isActive = target === active;
+					target.link.classList.toggle('ui-sidebar-nav__link--active', isActive);
+					if (isActive) {
+						target.link.setAttribute('aria-current', 'true');
+					} else {
+						target.link.removeAttribute('aria-current');
+					}
+				}
+			};
+
+			let scheduled = false;
+			const schedule = () => {
+				if (scheduled) {
+					return;
+				}
+				scheduled = true;
+				requestAnimationFrame(() => {
+					scheduled = false;
+					update();
+				});
+			};
+
+			/* Скроллится документ, а событие при прокрутке всплывает до
+			   window: слушаем capture на document, чтобы поймать и вложенные
+			   контейнеры, если они появятся. */
+			window.addEventListener('scroll', schedule, { passive: true });
+			document.addEventListener('scroll', schedule, { passive: true, capture: true });
+			window.addEventListener('resize', schedule, { passive: true });
+			update();
+		}
+	</script>
+<?php endif ?>

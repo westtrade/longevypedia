@@ -246,6 +246,35 @@ final class PagesTest extends TestCase
 		self::assertStringContainsString('MIT', $body);
 	}
 
+	public function testAboutPageNavigationSticksAndHighlightsTheCurrentSection(): void
+	{
+		$body = $this->client()->get('/about')->assertOk()->body();
+
+		// Липнет и подсвечивает: обе вещи живут в одном компоненте.
+		self::assertStringContainsString('ui-sidebar-nav--sticky', $body);
+		self::assertStringContainsString('ui-sidebar-nav--headings', $body);
+		self::assertStringContainsString('data-heading-nav', $body);
+
+		// Пункты — якоря этой же страницы, иначе подсветке нечего отслеживать.
+		self::assertStringContainsString('href="#method"', $body);
+		self::assertStringContainsString('id="method"', $body);
+
+		// Скрипт обязан доехать до страницы: AssetExtractingEngine вырезает
+		// любой <script> без атрибута `inline`, и подсветка молча не работает.
+		// В сам HTML атрибут не попадает — движок его снимает.
+		self::assertStringContainsString("document.querySelector('.ui-sidebar-nav--headings')", $body);
+		$component = (string) file_get_contents(__DIR__ . '/../../app/components/ui/sidebar-nav.php');
+		self::assertMatchesRegularExpression('/<script type="module" inline>/', $component);
+	}
+
+	public function testHeadingTrackingIsNotShippedToOtherPages(): void
+	{
+		foreach (['/', '/catalog', '/search'] as $url) {
+			$body = $this->client()->get($url)->assertOk()->body();
+			self::assertStringNotContainsString('ui-sidebar-nav--headings', $body, $url);
+		}
+	}
+
 	public function testUiKitIndexListsComponents(): void
 	{
 		$body = $this->client()->get('/ui-kit')->assertOk()->body();
