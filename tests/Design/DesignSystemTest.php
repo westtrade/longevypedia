@@ -228,6 +228,28 @@ final class DesignSystemTest extends TestCase
 	 * В шапке знак живёт на фоне страницы, поэтому подложки нет — только
 	 * линии в currentColor. Литеральные цвета сломали бы тёмную тему.
 	 */
+	public function testWordmarkMarkMatchesTheNameInDarkTheme(): void
+	{
+		// В тёмной теме бирюзовый знак рядом со светлым названием читался как
+		// вторая ссылка. Цвет знака — отдельный токен, и в тёмной теме он
+		// совпадает с цветом текста.
+		$tokens = (string) file_get_contents($this->projectRoot() . '/app/client/styles/_tokens.scss');
+
+		preg_match('/@mixin dark-tokens\s*\{(.*?)\n\}/s', $tokens, $dark);
+		self::assertNotEmpty($dark[1] ?? '', 'Не найден блок тёмной темы');
+
+		preg_match('/--color-text:\s*(#[0-9a-fA-F]{6})/', $dark[1], $text);
+		preg_match('/--color-wordmark-mark:\s*(#[0-9a-fA-F]{6})/', $dark[1], $mark);
+
+		self::assertNotEmpty($text[1] ?? '', 'В тёмной теме нет --color-text');
+		self::assertNotEmpty($mark[1] ?? '', 'В тёмной теме нет --color-wordmark-mark');
+		self::assertSame(
+			strtolower($text[1]),
+			strtolower($mark[1]),
+			'В тёмной теме знак логотипа должен быть того же цвета, что и название',
+		);
+	}
+
 	public function testWordmarkMarkHasNoPlateAndNoLiteralColours(): void
 	{
 		$wordmark = (string) file_get_contents($this->projectRoot() . '/app/components/ui/wordmark.php');

@@ -41,6 +41,9 @@
 	--color-brand-subtle: #14302c;
 	--color-brand-text: #8fd0c7;
 	--color-on-brand: #0b1a18;
+	/* Знак логотипа: в тёмной теме он в цвет названия, а не в брендовый —
+	   бирюзовый рядом со светлым текстом читается как вторая ссылка. */
+	--color-wordmark-mark: #e7efec;
 
 	--color-accent: #d99a68;
 	--color-accent-text: #e2ab7f;
@@ -175,6 +178,7 @@
 	--color-brand-subtle: #e8f2f0;
 	--color-brand-text: #125a56;
 	--color-on-brand: #ffffff;
+	--color-wordmark-mark: #176b67;
 
 	--color-accent: #c47a45;
 	--color-accent-text: #9a5a2e;
