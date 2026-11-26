@@ -189,7 +189,7 @@ php vendor/bin/phpunit --no-coverage
 Ожидаемый результат на текущем корпусе:
 
 ```text
-OK (120 tests, 635 assertions)
+OK (120 tests, 637 assertions)
 ```
 
 Два сообщения `[router] файловая страница не найдена для "/..."` в выводе — это

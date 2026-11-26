@@ -130,10 +130,15 @@ final class PagesTest extends TestCase
 		self::assertStringContainsString('doc-card__footer', $body);
 		// Стили карточки вынесены в сборку, поэтому прижатие проверяется по
 		// исходнику компонента, а не по ответу страницы.
-		self::assertStringContainsString(
-			'margin-top: auto',
-			(string) file_get_contents(dirname(__DIR__, 2) . '/app/components/ui/document-card.php'),
-		);
+		$card = (string) file_get_contents(dirname(__DIR__, 2) . '/app/components/ui/document-card.php');
+
+		self::assertStringContainsString('margin-top: auto', $card);
+
+		// Разделительной линии над тегами нет: карточка уже обведена рамкой, и
+		// вторая линия читалась как рамка внутри рамки.
+		self::assertMatchesRegularExpression('/\.doc-card__footer\s*\{([^}]*)\}/', $card);
+		preg_match('/\.doc-card__footer\s*\{([^}]*)\}/', $card, $footer);
+		self::assertStringNotContainsString('border', $footer[1]);
 
 		// Тег — ссылка в каталог по тематике, и подпись у него человеческая:
 		// слаг `aging-mechanisms` рядом с фильтром, где та же тематика названа
