@@ -118,7 +118,7 @@ export function initHoverMenus(): void {
 				event.preventDefault();
 				cancelClose();
 				menu.open = false;
-				summary.focus();
+				summary.focus({ preventScroll: true });
 			}
 		});
 

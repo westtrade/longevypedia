@@ -28,7 +28,9 @@
 .prose h4 {
 	position: relative;
 	margin-block: 2em 0.55em;
-	scroll-margin-top: calc(var(--layout-header) + var(--space-6));
+	/* `scroll-margin-top` здесь НЕ задаём: отступ уже даёт
+	   `scroll-padding-top` на `html`. Два правила складываются, и якорь
+	   вставал в 176px от верха — на 88px ниже, чем нужно. */
 }
 
 .prose h2 {

@@ -216,10 +216,23 @@ $navAttrs .= $tracksHeadings ? ' data-heading-nav' : '';
 				.filter(Boolean);
 
 			let current = null;
+			let trailing = 0;
 
 			const headerOffset = () => {
 				const header = document.querySelector('.site-header');
 				return header ? header.getBoundingClientRect().height : 0;
+			};
+
+			/* Линия, на которой раздел считается текущим. Ориентироваться
+			   только на шапку нельзя: якорь встаёт на `scroll-padding-top`,
+			   то есть ниже шапки, и раздел, к которому только что перешли,
+			   формально «ещё не достигнут» — подсветка оставалась на
+			   предыдущем пункте. Поэтому линия — не меньше отступа якоря. */
+			const readingLine = () => {
+				const padding = Number.parseFloat(
+					getComputedStyle(document.documentElement).scrollPaddingTop,
+				);
+				return Math.max(headerOffset(), Number.isFinite(padding) ? padding : 0) + 8;
 			};
 
 			const update = () => {
@@ -227,7 +240,7 @@ $navAttrs .= $tracksHeadings ? ' data-heading-nav' : '';
 					return;
 				}
 
-				const limit = headerOffset() + 8;
+				const limit = readingLine();
 				let active = targets[0];
 
 				for (const target of targets) {
@@ -260,16 +273,20 @@ $navAttrs .= $tracksHeadings ? ' data-heading-nav' : '';
 				}
 			};
 
-			let scheduled = false;
+			/* Считаем сразу, без `requestAnimationFrame`. Кадр может не
+			   прийти (фоновая вкладка, скрытый iframe), а флаг «уже
+			   запланировано» остался бы поднятым навсегда — и подсветка
+			   замирала бы на первом пункте до перезагрузки. Замеров здесь
+			   столько же, сколько разделов: дешевле, чем залипшее состояние. */
 			const schedule = () => {
-				if (scheduled) {
-					return;
-				}
-				scheduled = true;
-				requestAnimationFrame(() => {
-					scheduled = false;
-					update();
-				});
+				update();
+				/* Второй замер после прокрутки: событие приходит, пока
+				   позиция ещё меняется (плавная прокрутка по якорю), и
+				   одиночного чтения не хватает — активным оставался
+				   предыдущий раздел. `setTimeout` вместо кадра: таймер
+				   срабатывает и в фоновой вкладке. */
+				window.clearTimeout(trailing);
+				trailing = window.setTimeout(update, 140);
 			};
 
 			/* Скроллится документ, а событие при прокрутке всплывает до
@@ -278,6 +295,14 @@ $navAttrs .= $tracksHeadings ? ' data-heading-nav' : '';
 			window.addEventListener('scroll', schedule, { passive: true });
 			document.addEventListener('scroll', schedule, { passive: true, capture: true });
 			window.addEventListener('resize', schedule, { passive: true });
+
+			/* Переход по якорю и прыжок по адресу с `#раздел` могут не дать
+			   события прокрутки — тогда подсветка осталась бы на первом
+			   пункте. `hashchange` закрывает клик по содержанию, `load` —
+			   открытие страницы сразу с якорем. */
+			window.addEventListener('hashchange', schedule);
+			window.addEventListener('load', schedule);
+
 			update();
 		}
 	</script>

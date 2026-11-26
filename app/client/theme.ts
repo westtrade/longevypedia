@@ -68,7 +68,11 @@ function apply(theme: Theme): void {
 
 function close(switcher: HTMLDetailsElement): void {
 	switcher.open = false;
-	switcher.querySelector<HTMLElement>('summary')?.focus();
+	/* `preventScroll` обязателен: у липкой шапки макетная позиция — начало
+	   страницы, и обычный focus() уводил страницу к самому верху. Заметно
+	   это было на длинном документе: выбрал тему на середине — и потерял
+	   место чтения. */
+	switcher.querySelector<HTMLElement>('summary')?.focus({ preventScroll: true });
 }
 
 /**

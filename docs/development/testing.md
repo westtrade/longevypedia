@@ -15,7 +15,7 @@ tests/Content/FrontmatterTest.php    10 тестов
 tests/Content/ContentRepositoryTest.php  28 тестов
 tests/Content/MarkdownRendererTest.php   13 тестов
 tests/Content/StudyDesignsTest.php    3 теста
-tests/Http/PagesTest.php             36 тестов
+tests/Http/PagesTest.php             38 тестов
 tests/Design/DesignSystemTest.php    29 тестов
 ```
 
@@ -156,7 +156,7 @@ Wikilink как внутренняя ссылка; без подписи — з�
 с `clip-path` (иначе галочка и точка смещены); у `ui/skeleton` задана ширина — иначе
 проценты строк считаются от нуля и заглушка пустая.
 
-### Страницы (40)
+### Страницы (42)
 
 Главная (hero и счётчики, ссылки на каталог и исследования); каталог (список, фильтр по
 типу, маршрут `/concepts`); документ (Markdown и метаданные, источники и история,
@@ -189,7 +189,7 @@ php vendor/bin/phpunit --no-coverage
 Ожидаемый результат на текущем корпусе:
 
 ```text
-OK (123 tests, 669 assertions)
+OK (125 tests, 679 assertions)
 ```
 
 Два сообщения `[router] файловая страница не найдена для "/..."` в выводе — это

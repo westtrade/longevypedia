@@ -297,6 +297,42 @@ final class PagesTest extends TestCase
 		self::assertMatchesRegularExpression('/<script type="module" inline>/', $component);
 	}
 
+	public function testDocumentPageTableOfContentsHighlightsTheCurrentSection(): void
+	{
+		// Оглавление статьи собирается из заголовков документа, и без
+		// `headings` компонент рисовал список без подсветки: пользователь
+		// видел «On this page», но не видел, где он находится.
+		$body = $this->client()->get('/research/harrison-2009-rapamycin-mice/')->assertOk()->body();
+
+		self::assertStringContainsString('ui-sidebar-nav--headings', $body);
+		self::assertStringContainsString('data-heading-nav', $body);
+		self::assertStringContainsString('On this page', $body);
+
+		// Пункты и заголовки — одни и те же идентификаторы.
+		self::assertStringContainsString('href="#design"', $body);
+		self::assertStringContainsString('id="design"', $body);
+	}
+
+	public function testReadingLineMatchesTheAnchorOffset(): void
+	{
+		// Два отступа складывались: `scroll-padding-top` на `html` и
+		// `scroll-margin-top` у заголовков. Якорь вставал вдвое ниже нужного,
+		// а раздел, к которому только что перешли, формально оставался
+		// «не достигнутым» — подсветка показывала предыдущий пункт.
+		$prose = (string) file_get_contents(__DIR__ . '/../../app/client/styles/_prose.scss');
+		// Ищем объявление, а не упоминание: в комментарии оно объяснено.
+		self::assertDoesNotMatchRegularExpression('/^\s*scroll-margin-top\s*:/m', $prose);
+
+		$base = (string) file_get_contents(__DIR__ . '/../../app/client/styles/_base.scss');
+		self::assertMatchesRegularExpression('/scroll-padding-top:\s*calc\(var\(--layout-header\)/', $base);
+
+		// Линия чтения не может быть ниже отступа якоря, иначе активным
+		// считается раздел, до которого ещё не доехали.
+		$nav = (string) file_get_contents(__DIR__ . '/../../app/components/ui/sidebar-nav.php');
+		self::assertStringContainsString('scrollPaddingTop', $nav);
+		self::assertMatchesRegularExpression('/Math\.max\(headerOffset\(\),/', $nav);
+	}
+
 	public function testHeadingTrackingIsNotShippedToOtherPages(): void
 	{
 		foreach (['/', '/catalog', '/search'] as $url) {

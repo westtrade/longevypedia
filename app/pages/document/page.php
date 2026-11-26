@@ -203,6 +203,9 @@ $this->start('page');
 				'title' => 'On this page',
 				'items' => $tocItems,
 				'sticky' => true,
+				// `headings` включает подсветку текущего раздела: все пункты —
+				// якоря этой же страницы, поэтому «где я сейчас» определено.
+				'headings' => true,
 			]) ?>
 
 			<?php if ($document->aliases() !== []): ?>
@@ -224,7 +227,10 @@ $this->start('page');
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 16rem);
 		gap: 2.5rem;
-		align-items: start;
+		/* stretch, а не start: у `position: sticky` нет хода внутри бокса
+		   высотой в собственное содержимое. Колонка растягивается на высоту
+		   статьи, а липнет содержимое — оглавление. */
+		align-items: stretch;
 		margin-top: 1rem;
 	}
 
@@ -294,11 +300,14 @@ $this->start('page');
 		color: var(--color-text-muted);
 	}
 
+	/* Сама колонка не липнет: липнет оглавление внутри неё. Вложенный
+	   sticky в sticky-боксе высотой в своё содержимое не двигается вовсе. */
 	.doc-page__aside {
-		position: sticky;
-		top: 5rem;
 		display: grid;
 		gap: 1.5rem;
+		align-content: start;
+		align-self: stretch;
+		min-width: 0;
 		font-size: var(--text-sm);
 	}
 
@@ -328,6 +337,14 @@ $this->start('page');
 			order: 1;
 			border-top: 1px solid var(--color-border);
 			padding-top: 1rem;
+		}
+
+		/* Оглавление стоит под статьёй — липнуть ему негде, а липкий
+		   список в конце страницы дёргается на последних экранах. */
+		.doc-page__aside .ui-sidebar-nav--sticky {
+			position: static;
+			max-height: none;
+			overflow: visible;
 		}
 	}
 </style>
