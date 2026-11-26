@@ -10,6 +10,10 @@
  * Три состояния, как в системных настройках: `auto` (по системе), `light`,
  * `dark`. Начальное значение ставит инлайновый скрипт в `<head>` — до первой
  * отрисовки, иначе страница мигнёт светлым на тёмной системе.
+ *
+ * Раскрытие по наведению и закрытие по Escape/клику мимо — общий модуль
+ * `app/client/hover-menu.ts`: он же обслуживает `ui/menu`, чтобы поведение
+ * выпадающих меню не расходилось.
  */
 
 const STORAGE_KEY = 'longevypedia.theme';
@@ -86,19 +90,7 @@ export function initTheme(): void {
 			});
 		}
 
-		switcher.addEventListener('keydown', (event) => {
-			if (event.key === 'Escape' && switcher.open) {
-				event.preventDefault();
-				close(switcher);
-			}
-		});
-
-		document.addEventListener('click', (event) => {
-			const target = event.target as Node | null;
-
-			if (switcher.open && target !== null && !switcher.contains(target)) {
-				switcher.open = false;
-			}
-		});
+		// Escape и клик мимо закрывает `app/client/hover-menu.ts` — там же, где
+		// меню открывается наведением. Здесь остаётся только выбор пункта.
 	}
 }

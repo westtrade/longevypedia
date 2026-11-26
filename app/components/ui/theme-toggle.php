@@ -15,7 +15,8 @@ declare(strict_types=1);
  *
  * `<details>` вместо кнопки: раскрытие работает без JavaScript, а скрипт
  * `app/client/theme.ts` только меняет `data-theme` на `<html>` и отмечает
- * выбранный пункт. Триггер — `<summary>` с классами `ui-button`, а не
+ * выбранный пункт. Меню раскрывается при наведении и закрывается выбором
+ * пункта — это `app/client/hover-menu.ts` вместе с `theme.ts`. Триггер — `<summary>` с классами `ui-button`, а не
  * `components::ui/button`: кнопка набора рендерит `<button>`, а открыть
  * `<details>` умеет только `<summary>`. Классы те же, поэтому размер, фокус и
  * наведение совпадают с соседними кнопками.
@@ -36,6 +37,9 @@ $options = [
 $attributes = $attrs;
 $attributes['class'] = clsx('ui-theme-toggle', $attrs['class'] ?? null);
 $attributes['data-theme-switch'] = true;
+// Раскрытие по наведению включает `app/client/hover-menu.ts`. Без скрипта
+// меню открывается кликом по `<summary>` — как обычный `<details>`.
+$attributes['data-hover-menu'] = true;
 ?>
 <details<?= attrs($attributes) ?>>
 	<summary class="ui-button ui-button--ghost ui-button--md ui-button--icon-only ui-theme-toggle__summary"

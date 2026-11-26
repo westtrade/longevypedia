@@ -89,7 +89,9 @@ $template = $this;
 	   выталкивает кнопку за рамку. */
 	.search .ui-field__control {
 		gap: var(--space-1);
-		padding-inline-end: var(--space-1);
+		/* Кнопка прижата к правому краю: она заливается на наведении, и зазор
+		   между заливкой и рамкой поля читался как небрежность. */
+		padding-inline-end: 0;
 		border: 1px solid var(--color-control-border);
 		border-radius: var(--radius-sm);
 		background: var(--color-surface);
@@ -113,8 +115,16 @@ $template = $this;
 		box-shadow: none;
 	}
 
-	.search__submit {
+	/* Кнопка поиска — сегмент поля, а не отдельная кнопка внутри него.
+	   Заливка на наведении доходит до рамки со всех сторон, а скругление
+	   повторяет скругление поля (минус его граница). */
+	.search .search__submit {
 		flex: none;
+		align-self: stretch;
+		min-height: 0;
+		margin: 0;
+		padding-inline: var(--space-2);
+		border-radius: 0 calc(var(--radius-sm) - 1px) calc(var(--radius-sm) - 1px) 0;
 	}
 
 	.search--compact {

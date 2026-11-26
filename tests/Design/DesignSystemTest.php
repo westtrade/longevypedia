@@ -555,6 +555,27 @@ final class DesignSystemTest extends TestCase
 		self::assertStringContainsString('themeState', $script);
 	}
 
+	public function testDropdownsOpenOnHoverAndCloseOnChoice(): void
+	{
+		// Меню раскрывается при наведении, но закрывается не «когда увели
+		// курсор», а выбором пункта: между триггером и панелью есть зазор, и
+		// закрытие по уходу заставляет меню мигать на пути к пункту.
+		$script = (string) file_get_contents($this->projectRoot() . '/app/client/hover-menu.ts');
+		$main = (string) file_get_contents($this->projectRoot() . '/app/client/main.ts');
+		$toggle = (string) file_get_contents($this->projectRoot() . '/app/components/ui/theme-toggle.php');
+		$menu = (string) file_get_contents($this->projectRoot() . '/app/components/ui/menu.php');
+
+		self::assertStringContainsString('[data-hover-menu]', $script);
+		self::assertStringContainsString("addEventListener('pointerenter'", $script);
+		self::assertStringContainsString('initHoverMenus', $main);
+		self::assertStringContainsString('data-hover-menu', $toggle);
+		self::assertStringContainsString('data-hover-menu', $menu);
+
+		// Закрытия по уходу курсора быть не должно.
+		self::assertStringNotContainsString('pointerleave', $script);
+		self::assertStringNotContainsString('pointerout', $script);
+	}
+
 	public function testDataTableKeepsCallerAttributes(): void
 	{
 		// Обёртка таблицы собирается из `attrs()`. Пока класс был записан в

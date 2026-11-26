@@ -5,6 +5,10 @@ declare(strict_types=1);
 /**
  * Раскрывающееся меню на `<details>`: без JavaScript и без потери клавиатуры.
  *
+ * Раскрывается при наведении (`app/client/hover-menu.ts`), закрывается выбором
+ * пункта, Escape или кликом мимо. Без скрипта остаётся обычный `<details>`:
+ * клик по подписи открывает и закрывает.
+ *
  * @var string $label подпись кнопки
  * @var array<int, array{label: string, url: string, description?: string|null}> $items
  * @var string $align выравнивание панели: start | end
@@ -18,7 +22,7 @@ if ($items === []) {
 	return;
 }
 ?>
-<details class="ui-menu ui-menu--<?= e($align) ?>">
+<details class="ui-menu ui-menu--<?= e($align) ?>" data-hover-menu>
 	<summary class="ui-menu__summary"><?= e($label) ?></summary>
 	<ul class="ui-menu__list">
 		<?php foreach ($items as $item): ?>

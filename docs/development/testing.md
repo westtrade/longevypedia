@@ -16,7 +16,7 @@ tests/Content/ContentRepositoryTest.php  28 тестов
 tests/Content/MarkdownRendererTest.php   13 тестов
 tests/Content/StudyDesignsTest.php    3 теста
 tests/Http/PagesTest.php             36 тестов
-tests/Design/DesignSystemTest.php    25 тестов
+tests/Design/DesignSystemTest.php    26 тестов
 ```
 
 `phpunit.xml`:
@@ -132,7 +132,7 @@ Wikilink как внутренняя ссылка; без подписи — з�
 заголовков; id на заголовках; GFM-таблица; внешние ссылки с `rel`; небезопасные схемы
 (`javascript:`) вырезаются; сноски; инлайновый HTML сохраняется; обычный текст.
 
-### Дизайн-система (25)
+### Дизайн-система (26)
 
 `_tokens.scss` разбирается и содержит ожидаемые роли; тёмная тема переопределяет
 **каждый** цветовой токен; тёмный фон действительно тёмный (тема не является инверсией);
@@ -187,7 +187,7 @@ php vendor/bin/phpunit --no-coverage
 Ожидаемый результат на текущем корпусе:
 
 ```text
-OK (115 tests, 592 assertions)
+OK (116 tests, 599 assertions)
 ```
 
 Два сообщения `[router] файловая страница не найдена для "/..."` в выводе — это

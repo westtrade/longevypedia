@@ -21,11 +21,13 @@ import '../../.bolt/client/generated/main/index';
 // фиксируется в package.json, а `htmx.org` кладёт себя в `window.htmx`.
 import 'htmx.org';
 
+import { initHoverMenus } from './hover-menu';
 import { initTheme } from './theme';
 import { initCatalogFilters } from './catalog-filters';
 import { initSearchSuggest } from './search-suggest';
 import { initCopyButtons } from './copy-code';
 
+initHoverMenus();
 initTheme();
 initCatalogFilters();
 initSearchSuggest();
