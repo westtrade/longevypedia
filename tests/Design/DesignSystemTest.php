@@ -613,6 +613,55 @@ final class DesignSystemTest extends TestCase
 		self::assertStringContainsString("'variant' => 'plain'", $meta);
 	}
 
+	public function testClientBehaviourIsReinitialisedAfterHtmxSwap(): void
+	{
+		// HTMX подменяет часть страницы, и вместе с разметкой приходят новые
+		// узлы без обработчиков. Пока инициализация вызывалась один раз,
+		// поведение жило только до первой подмены: переключатель темы, меню и
+		// кнопка копирования, приехавшие с фрагментом, оставались мёртвыми.
+		$main = (string) file_get_contents($this->projectRoot() . '/app/client/main.ts');
+
+		self::assertMatchesRegularExpression('/function initInteractivity\(\): void \{/', $main);
+		self::assertStringContainsString("document.addEventListener('htmx:after:swap', initInteractivity)", $main);
+
+		// Повторный вызов не должен вешать обработчики дважды, иначе меню
+		// закрывалось бы само с собой. Модули помнят обработанные узлы.
+		foreach (['hover-menu', 'theme', 'copy-code'] as $module) {
+			$script = (string) file_get_contents($this->projectRoot() . "/app/client/{$module}.ts");
+
+			self::assertStringContainsString('new WeakSet<', $script, "{$module}.ts: нет памяти об обработанных узлах");
+			self::assertStringContainsString('bound.has(', $script, "{$module}.ts: обработчик повесится дважды");
+		}
+
+		// У подсказок поиска обработчики висят на документе: там нужен флаг, а
+		// список обязан искаться в момент события — подставленный фрагментом
+		// список захваченный при инициализации NodeList уже не содержит.
+		$suggest = (string) file_get_contents($this->projectRoot() . '/app/client/search-suggest.ts');
+
+		self::assertStringContainsString('let bound = false;', $suggest);
+		self::assertMatchesRegularExpression(
+			"/addEventListener\('keydown'[\s\S]{0,400}querySelectorAll<HTMLElement>\('\[data-search-suggest\]'\)/",
+			$suggest,
+			'список подсказок должен искаться заново на каждое событие',
+		);
+	}
+
+	public function testAlpineIsNotShipped(): void
+	{
+		// Alpine ехал в бандле мёртвым грузом: единственный импорт — встроенная
+		// модалка Bolt, а `Alpine.start()` в проекте не вызывался ни разу.
+		// 69 КБ из 96 приходились на рантайм, который ни разу не запускался.
+		$package = json_decode((string) file_get_contents($this->projectRoot() . '/package.json'), true);
+		$vite = (string) file_get_contents($this->projectRoot() . '/vite.config.js');
+
+		self::assertIsArray($package);
+		self::assertArrayNotHasKey('alpinejs', $package['dependencies'] ?? []);
+
+		// Встроенный набор Bolt в сборку не сканируется: его скрипт тянет
+		// Alpine. Компоненты набора при этом остаются доступны как PHP.
+		self::assertStringContainsString('uiKit: false', $vite);
+	}
+
 	private function templateFiles(): array
 	{
 		$files = [];

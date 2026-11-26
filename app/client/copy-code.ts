@@ -82,14 +82,21 @@ function setState(button: HTMLButtonElement, state: State): void {
 	}
 }
 
+/**
+ * Кнопки, на которые уже повешен обработчик. WeakSet, а не флаг в разметке:
+ * кнопка может прийти из HTMX-фрагмента, и тогда это новый узел.
+ */
+const bound = new WeakSet<HTMLButtonElement>();
+
+/** Можно звать повторно: уже обработанные кнопки пропускаются. */
 export function initCopyButtons(): void {
-	const buttons = document.querySelectorAll<HTMLButtonElement>('[data-copy-text]');
+	for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy-text]')) {
+		if (bound.has(button)) {
+			continue;
+		}
 
-	if (buttons.length === 0) {
-		return;
-	}
+		bound.add(button);
 
-	buttons.forEach((button) => {
 		let timer: number | undefined;
 
 		button.addEventListener('click', () => {
@@ -103,5 +110,5 @@ export function initCopyButtons(): void {
 				}, COPIED_MS);
 			})();
 		});
-	});
+	}
 }

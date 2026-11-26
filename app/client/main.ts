@@ -27,8 +27,31 @@ import { initCatalogFilters } from './catalog-filters';
 import { initSearchSuggest } from './search-suggest';
 import { initCopyButtons } from './copy-code';
 
-initHoverMenus();
-initTheme();
-initCatalogFilters();
-initSearchSuggest();
-initCopyButtons();
+/**
+ * Всё поведение страницы разом.
+ *
+ * Модули идемпотентны: каждый помнит, на какие узлы уже повесил обработчики
+ * (`WeakSet`) или какие слушатели документа уже поставил. Поэтому функцию
+ * можно звать повторно — новые узлы получат поведение, старые не получат
+ * второго.
+ */
+function initInteractivity(): void {
+	initHoverMenus();
+	initTheme();
+	initCatalogFilters();
+	initSearchSuggest();
+	initCopyButtons();
+}
+
+initInteractivity();
+
+/**
+ * HTMX подменяет часть страницы, и вместе с разметкой приходят новые узлы —
+ * без обработчиков. Пока в проекте нет `hx-boost`, подменяются только фрагменты
+ * (результаты каталога, подсказки поиска), но полагаться на это нельзя: с
+ * `hx-boost` так приезжает и шапка, а значит переключатель темы, меню и кнопка
+ * копирования. Один и тот же обработчик закрывает оба случая.
+ *
+ * Событие то же, что слушает `catalog-filters.ts`, — `htmx:after:swap`.
+ */
+document.addEventListener('htmx:after:swap', initInteractivity);

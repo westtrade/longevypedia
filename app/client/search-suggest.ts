@@ -5,21 +5,38 @@
  * здесь только поведение, которого нет в CSS. Показ и скрытие пустого списка
  * делает CSS через `:empty`, поэтому JS не трогает видимость напрямую.
  */
-export function initSearchSuggest(): void {
-	const lists = document.querySelectorAll<HTMLElement>('[data-search-suggest]');
+/**
+ * Обработчики висят на документе, поэтому ставятся один раз: повторный вызов
+ * после подмены фрагмента не должен удваивать их.
+ */
+let bound = false;
 
-	if (lists.length === 0) {
+/** Списки спрашиваются в момент события, а не при инициализации. */
+function clearLists(): void {
+	for (const list of document.querySelectorAll<HTMLElement>('[data-search-suggest]')) {
+		list.replaceChildren();
+	}
+}
+
+/**
+ * Можно звать повторно (в том числе после подмены фрагмента HTMX): сами
+ * обработчики ставятся однажды, а списки ищутся заново на каждое событие.
+ * Иначе подсказки, подставленные фрагментом, Escape уже не закрывал бы —
+ * захваченный при инициализации список к тому моменту отсоединён от страницы.
+ */
+export function initSearchSuggest(): void {
+	if (bound) {
 		return;
 	}
+
+	bound = true;
 
 	document.addEventListener('keydown', (event: KeyboardEvent) => {
 		if (event.key !== 'Escape') {
 			return;
 		}
 
-		lists.forEach((list) => {
-			list.replaceChildren();
-		});
+		clearLists();
 	});
 
 	document.addEventListener('click', (event: MouseEvent) => {
@@ -29,16 +46,16 @@ export function initSearchSuggest(): void {
 			return;
 		}
 
-		lists.forEach((list) => {
+		for (const list of document.querySelectorAll<HTMLElement>('[data-search-suggest]')) {
 			const form = list.closest('form');
 
 			// Клик внутри своей формы (в том числе по подсказке) список не закрывает:
 			// ссылка ещё должна успеть сработать.
 			if (form !== null && form.contains(target)) {
-				return;
+				continue;
 			}
 
 			list.replaceChildren();
-		});
+		}
 	});
 }

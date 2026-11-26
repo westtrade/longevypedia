@@ -23,19 +23,34 @@
  */
 const CLOSE_DELAY_MS = 260;
 
+/**
+ * Меню, которые уже обработаны. WeakSet, а не флаг в разметке: элементы
+ * приходят и уходят с HTMX-фрагментами, и мусор в атрибутах остался бы в DOM,
+ * а здесь старые узлы просто забываются сборщиком.
+ */
+const bound = new WeakSet<HTMLDetailsElement>();
+
+/** Общий обработчик клика мимо ставится один раз на документ, не на меню. */
+let outsideBound = false;
+
+/**
+ * Поведение вешается на каждое новое меню, поэтому функцию можно звать
+ * сколько угодно раз — в том числе после каждой подмены фрагмента HTMX
+ * (`app/client/main.ts`). Уже обработанные меню пропускаются.
+ */
 export function initHoverMenus(): void {
-	const menus = document.querySelectorAll<HTMLDetailsElement>('[data-hover-menu]');
+	for (const menu of document.querySelectorAll<HTMLDetailsElement>('[data-hover-menu]')) {
+		if (bound.has(menu)) {
+			continue;
+		}
 
-	if (menus.length === 0) {
-		return;
-	}
-
-	for (const menu of menus) {
 		const summary = menu.querySelector<HTMLElement>('summary');
 
 		if (summary === null) {
 			continue;
 		}
+
+		bound.add(menu);
 
 		let closeTimer: number | null = null;
 
@@ -116,6 +131,12 @@ export function initHoverMenus(): void {
 		});
 	}
 
+	if (outsideBound) {
+		return;
+	}
+
+	outsideBound = true;
+
 	document.addEventListener('click', (event) => {
 		const target = event.target as Node | null;
 
@@ -123,7 +144,9 @@ export function initHoverMenus(): void {
 			return;
 		}
 
-		for (const menu of menus) {
+		// Список спрашивается заново: меню, подставленное фрагментом, тоже
+		// должно закрываться кликом мимо.
+		for (const menu of document.querySelectorAll<HTMLDetailsElement>('[data-hover-menu]')) {
 			if (menu.open && !menu.contains(target)) {
 				menu.open = false;
 			}

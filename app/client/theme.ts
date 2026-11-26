@@ -71,17 +71,28 @@ function close(switcher: HTMLDetailsElement): void {
 	switcher.querySelector<HTMLElement>('summary')?.focus();
 }
 
+/**
+ * Пункты, на которые уже повешен обработчик. WeakSet, а не флаг в разметке:
+ * переключатель может прийти из HTMX-фрагмента, и тогда это новые узлы.
+ */
+const bound = new WeakSet<HTMLElement>();
+
+/**
+ * Можно звать повторно: уже обработанные пункты пропускаются, а состояние
+ * (`data-theme-state`, `aria-pressed`, подпись триггера) выставляется заново
+ * для всех переключателей — в том числе для только что подставленных.
+ */
 export function initTheme(): void {
-	const switchers = document.querySelectorAll<HTMLDetailsElement>('[data-theme-switch]');
-
-	if (switchers.length === 0) {
-		return;
-	}
-
 	apply(currentTheme());
 
-	for (const switcher of switchers) {
+	for (const switcher of document.querySelectorAll<HTMLDetailsElement>('[data-theme-switch]')) {
 		for (const option of switcher.querySelectorAll<HTMLElement>('[data-theme-choice]')) {
+			if (bound.has(option)) {
+				continue;
+			}
+
+			bound.add(option);
+
 			option.addEventListener('click', () => {
 				apply((option.dataset.themeChoice as Theme) ?? 'auto');
 				// Выбор сделан — список закрывается и возвращает фокус на триггер,
