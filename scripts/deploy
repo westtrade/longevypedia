@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Выкладка сайта на хостинг бандлом `bolt-deploy`.
+#
+# Клиент собирается здесь же (Vite), поэтому выкладка идёт без `--no-build`:
+# на сервере нет ни bun, ни node_modules. Доступы и адрес сайта — `deploy.env`
+# в корне проекта (шаблон — `deploy.env.example`), остальное передаётся
+# аргументами: `./scripts/deploy --dry-run`.
+#
+# Проверять `.htaccess` и раскладку по живым адресам умеет он же:
+# `./scripts/deploy --verify-only`.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+# `--verify-only` и `--dry-run` сборку не требуют: первый проверяет живой
+# сайт, второй только печатает список файлов.
+case " ${*:-} " in
+	*" --verify-only "* | *" --dry-run "*) ;;
+	*) ./node_modules/.bin/vite build ;;
+esac
+
+exec php ../bolt-deploy/bin/deploy --no-build "$@"

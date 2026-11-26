@@ -1,0 +1,47 @@
+# Раскладка на сервере повторяет рабочее дерево: корень проекта совпадает с
+# docroot, а фронт-контроллер лежит в `public/`. Этот файл разводит чистые URL
+# по `public/` и закрывает код, конфиг и состояние.
+#
+# Почему не «положить содержимое public/ в корень»: пути к шрифтам, манифесту
+# Vite и спрайту иконок считаются от корня приложения, и плоская раскладка
+# ломает их все сразу.
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteBase /
+
+	# Существующий файл в public/ отдаём по чистому URL: `/build/…`,
+	# `/fonts/…`, `/favicon.svg`. Условие идёт по REQUEST_URI, а не по `$1`:
+	# внутри RewriteCond группа из шаблона правила не подставляется, и условие
+	# молча не срабатывает — статика отдаёт 404.
+	#
+	# Редиректа с `/public/…` на чистый URL здесь сознательно нет: внутренняя
+	# подстановка `public/index.php` проходит эти правила заново, и такой
+	# редирект ловил бы сам себя.
+	RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+	RewriteRule ^(.*)$ public/$1 [L]
+
+	# Всё остальное — фронт-контроллер BOLT. Условие по REQUEST_FILENAME
+	# нужно, чтобы подстановка `public/index.php` не проходила правила по кругу.
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(.*)$ public/index.php [L]
+</IfModule>
+
+# Код, конфиг и состояние не отдаются по HTTP. `var/` — записываемый каталог
+# BOLT: там лежит собранный спрайт иконок.
+RedirectMatch 404 ^/(app|src|content|schemas|taxonomy|data|scripts|vendor|var|tests|tmp|node_modules|docs)(/|$)
+RedirectMatch 404 ^/(config\.php|composer\.(json|lock)|phpunit\.xml|package(-lock)?\.json|bun\.lock|vite\.config\.js|deploy\.env.*|\.env.*|\.git.*)$
+
+AddDefaultCharset UTF-8
+
+# Статика меняется только вместе с именем файла (Vite кладёт в имя хеш),
+# поэтому кеш можно держать долго.
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresByType text/css "access plus 7 days"
+	ExpiresByType application/javascript "access plus 7 days"
+	ExpiresByType image/svg+xml "access plus 7 days"
+	ExpiresByType font/woff2 "access plus 30 days"
+</IfModule>

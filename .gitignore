@@ -13,6 +13,12 @@
 /var/
 /tmp/
 
+# --- выкладка ---
+# deploy.env содержит пароль FTP; шаблон — deploy.env.example.
+/deploy.env
+/deploy.env.*
+!/deploy.env.example
+
 # --- окружение и секреты ---
 # `.env` в проекте нет; если появится — он локальный и не публикуется.
 /.env
