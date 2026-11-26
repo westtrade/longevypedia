@@ -42,7 +42,7 @@
    `docs/specifications/methodology.md`.
 5. **Не медицинская рекомендация.** Энциклопедия описывает исследования, а не назначает
    лечение.
-6. **Никаких внешних запросов.** Шрифты лежат в `public/fonts/`, иконки — локальные SVG,
+6. **Никаких внешних запросов.** Шрифты лежат в `app/client/fonts/`, иконки — локальные SVG,
    CDN не используется.
 
 ## Быстрый старт
@@ -204,7 +204,7 @@ sources:
 `composer.json` и `package.json`, полный текст — в [`LICENSE`](LICENSE).
 
 **Шрифты** Inter и Source Serif 4 — SIL Open Font License 1.1, подмножества лежат
-локально в `public/fonts/`. Подробности — в [`docs/development/fonts.md`](docs/development/fonts.md).
+локально в `app/client/fonts/`. Подробности — в [`docs/development/fonts.md`](docs/development/fonts.md).
 
 ## Как участвовать
 

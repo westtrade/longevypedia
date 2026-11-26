@@ -1,6 +1,6 @@
 # Шрифты
 
-Проект использует два семейства, оба лежат локально в `public/fonts/` и раздаются с
+Проект использует два семейства, оба лежат локально в `app/client/fonts/` и раздаются с
 домена проекта. Внешних запросов (Google Fonts, CDN) нет.
 
 | Роль | Семейство | Токен | Где применяется |
@@ -16,7 +16,7 @@ Menlo, Consolas, 'Liberation Mono', monospace`. Для кода в энцикл�
 ## Файлы
 
 ```
-public/fonts/
+app/client/fonts/
 ├── LICENSE.md                           текст лицензии и upstream-ссылки
 ├── inter-latin.woff2                    48 256 B
 ├── inter-cyrillic.woff2                 18 748 B
@@ -38,6 +38,20 @@ public/fonts/
 `app/client/styles/_fonts.scss` содержит шесть `@font-face` и подключается из
 `_base.scss` (`@use 'fonts'`), а `main.scss` импортирует `base`. То есть шрифты входят в
 общий CSS-бандл и не требуют отдельного `<link>` в layout.
+
+**Пути — относительные (`url('../fonts/inter-latin.woff2')`), а не корневые.** Это не
+стилистическая прихоть: `base` сборки — `/build/`, и Vite переписывает корневой
+`url('/fonts/…')` в `/build/fonts/…`, тогда как каталог `public/` в сборку не копируется
+(`copyPublicDir: false`). В dev-режиме (`base: '/'`) такой путь работает, поэтому ошибка
+видна только в собранной версии: шрифты молча падали на системные фолбэки, а в консоли
+висели два 404 на `inter-latin.woff2` и `source-serif-4-latin.woff2`.
+
+Относительный путь Vite превращает в адрес с хешем содержимого рядом с остальными
+ассетами — `/build/assets/inter-latin-<hash>.woff2`, — и файл попадает в сборку сам.
+Проверяется тестом `testFontFacesPointAtRealFiles` в `tests/Design/DesignSystemTest.php`.
+
+Шрифты, которые браузер не запрашивал, в сборке всё равно лежат: `unicode-range`
+разделяет подмножества, но адреса известны заранее.
 
 Каждое правило:
 
@@ -71,7 +85,7 @@ Inter и Source Serif 4 распространяются под **SIL Open Font 
 использовать, изменять и распространять шрифты, в том числе в составе сайта, при
 условии сохранения уведомления о лицензии и нераздельной продажи самих шрифтов.
 
-Условия и upstream-ссылки зафиксированы в `public/fonts/LICENSE.md`:
+Условия и upstream-ссылки зафиксированы в `app/client/fonts/LICENSE.md`:
 
 - Inter — [github.com/rsms/inter](https://github.com/rsms/inter);
 - Source Serif 4 и Source Serif 4 Italic —
@@ -101,7 +115,7 @@ Inter и Source Serif 4 распространяются под **SIL Open Font 
 
 1. Скачайте woff2-подмножества нужного семейства (Google Fonts отдаёт woff2 по
    `unicode-range`; альтернатива — `@fontsource/*` в npm).
-2. Положите файлы в `public/fonts/` по схеме `<family>-<subset>.woff2` и
+2. Положите файлы в `app/client/fonts/` по схеме `<family>-<subset>.woff2` и
    `<family>-italic-<subset>.woff2` — так имена остаются предсказуемыми.
 3. Добавьте `@font-face` в `_fonts.scss` с тем же `unicode-range`, что у соседних
    файлов того же подмножества, и `font-display: swap`.

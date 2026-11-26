@@ -662,6 +662,32 @@ final class DesignSystemTest extends TestCase
 		self::assertStringContainsString('uiKit: false', $vite);
 	}
 
+	public function testFontFacesPointAtRealFiles(): void
+	{
+		// Шрифты были подключены корневыми путями (`url('/fonts/…')`), а `base`
+		// сборки — `/build/`: Vite переписывал адрес в `/build/fonts/…`, хотя
+		// `public/` в сборку не копируется. В dev-режиме всё работало, на
+		// выкладке браузер получал два 404 и молча брал системные фолбэки.
+		$styles = $this->projectRoot() . '/app/client/styles';
+		$scss = (string) file_get_contents($styles . '/_fonts.scss');
+
+		preg_match_all("/url\('([^']+\\.woff2)'\)/", $scss, $matches);
+
+		self::assertNotSame([], $matches[1], 'в _fonts.scss нет ни одного @font-face с url()');
+
+		foreach ($matches[1] as $url) {
+			self::assertStringStartsWith(
+				'../fonts/',
+				$url,
+				"корневой путь {$url} в собранном CSS получит префикс /build/: public/ в сборку не копируется",
+			);
+
+			$file = realpath($styles . '/' . $url);
+			self::assertNotFalse($file, "файла шрифта нет по пути {$url}");
+			self::assertGreaterThan(0, (int) filesize($file), "файл шрифта пуст: {$url}");
+		}
+	}
+
 	private function templateFiles(): array
 	{
 		$files = [];
