@@ -555,11 +555,11 @@ final class DesignSystemTest extends TestCase
 		self::assertStringContainsString('themeState', $script);
 	}
 
-	public function testDropdownsOpenOnHoverAndCloseOnChoice(): void
+	public function testDropdownsOpenOnHoverAndCloseWhenThePointerLeaves(): void
 	{
-		// Меню раскрывается при наведении, но закрывается не «когда увели
-		// курсор», а выбором пункта: между триггером и панелью есть зазор, и
-		// закрытие по уходу заставляет меню мигать на пути к пункту.
+		// Меню раскрывается при наведении и закрывается, когда курсор ушёл.
+		// Закрытие отложено: между триггером и панелью есть зазор, и без
+		// задержки меню закрывалось бы ровно на пути к пункту.
 		$script = (string) file_get_contents($this->projectRoot() . '/app/client/hover-menu.ts');
 		$main = (string) file_get_contents($this->projectRoot() . '/app/client/main.ts');
 		$toggle = (string) file_get_contents($this->projectRoot() . '/app/components/ui/theme-toggle.php');
@@ -567,15 +567,24 @@ final class DesignSystemTest extends TestCase
 
 		self::assertStringContainsString('[data-hover-menu]', $script);
 		self::assertStringContainsString("addEventListener('pointerenter'", $script);
+		self::assertStringContainsString("addEventListener('pointerleave'", $script);
 		self::assertStringContainsString('initHoverMenus', $main);
 		self::assertStringContainsString('data-hover-menu', $toggle);
 		self::assertStringContainsString('data-hover-menu', $menu);
 
-		// Закрытия по уходу курсора быть не должно.
-		self::assertStringNotContainsString('pointerleave', $script);
-		self::assertStringNotContainsString('pointerout', $script);
-	}
+		// Отложенное закрытие, а не мгновенное: зазор между триггером и
+		// панелью проходится за время задержки, а `pointerenter` её отменяет.
+		self::assertMatchesRegularExpression('/const CLOSE_DELAY_MS = \\d+;/', $script);
+		self::assertStringContainsString('cancelClose();', $script);
 
+		// Только мышь: на сенсорном экране `pointerleave` приходит после
+		// касания и закрывал бы меню в момент выбора.
+		self::assertMatchesRegularExpression(
+			"/pointerleave'[\\s\\S]{0,240}pointerType !== 'mouse'/",
+			$script,
+			'закрытие по уходу должно проверять pointerType',
+		);
+	}
 	public function testDataTableKeepsCallerAttributes(): void
 	{
 		// Обёртка таблицы собирается из `attrs()`. Пока класс был записан в
