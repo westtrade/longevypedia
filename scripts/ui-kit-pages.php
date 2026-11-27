@@ -241,10 +241,9 @@ $pages = [
 	],
 	'key-value' => [
 		'title' => 'Поля и значения',
-		'note' => 'Паспорт объекта: идентификаторы, параметры исследования, свойства. Подпись идёт капителью в узкой колонке, значение — обычным текстом.',
+		'note' => 'Паспорт объекта: идентификаторы, параметры исследования, свойства. Подпись идёт капителью в узкой колонке, значение — обычным текстом. Список плоский: порядок полей задаёт вызывающий.',
 		'specimens' => [
 			['Основное', 'значение — готовая разметка, ссылки на внешние базы внутри; `code` печатает машинный код рядом с переводом', "<?= \$this->insert('components::ui/key-value', ['title' => 'Идентификаторы', 'items' => [['label' => 'HGNC', 'value' => 'HGNC:3942'], ['label' => 'UniProt', 'value' => 'P42345'], ['label' => 'Тип', 'value' => 'Ингибитор', 'code' => 'inhibitor'], ['label' => 'MeSH', 'value' => 'D020123', 'hint' => 'Sirolimus']]]) ?>"],
-			['Группы и две колонки', '`groups` делит паспорт на смысловые части, `wide` отдаёт прозаическое поле на всю ширину', "<?= \$this->insert('components::ui/key-value', ['columns' => 2, 'groups' => [['title' => 'Кто и как', 'items' => [['label' => 'Design', 'value' => 'Animal experiment', 'code' => 'animal_experiment'], ['label' => 'Species', 'value' => 'mouse (Mus musculus)'], ['label' => 'Population', 'value' => 'Genetically heterogeneous UM-HET3 mice of both sexes, housed at three independent test sites.', 'wide' => true]]], ['title' => 'Что делали', 'items' => [['label' => 'Intervention', 'value' => 'Encapsulated rapamycin in the diet at 14 mg per kg of food.', 'wide' => true], ['label' => 'Duration', 'value' => 'Lifelong']]]]]) ?>"],
 			['В карточке', '`dividers => false` — карточка уже даёт рамку, вложенному блоку своя не нужна', "<?= \$this->insert('components::ui/key-value', ['items' => [['label' => 'HGNC', 'value' => 'HGNC:3942'], ['label' => 'UniProt', 'value' => 'P42345']], 'dividers' => false, 'density' => 'compact']) ?>"],
 		],
 	],

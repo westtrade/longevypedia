@@ -624,36 +624,57 @@ final class DesignSystemTest extends TestCase
 		self::assertMatchesRegularExpression('/\.ui-kv__label\s*\{[^}]*font-weight:\s*var\(--weight-medium\)/', $kv);
 	}
 
-	public function testKeyValueSupportsGroupsColumnsAndCode(): void
+	public function testKeyValuePrintsMachineCodeWithoutAPlate(): void
 	{
-		// Три возможности появились вместе с переделкой паспорта исследования:
-		// группы делят восемь полей на смысловые части, `columns` ставит
-		// короткие поля парами, `wide` отдаёт прозаическое поле на всю ширину,
-		// `code` печатает машинный код рядом с переводом.
+		// Машинный код печатает сам компонент, а не вызывающий: иначе каждый
+		// вызов повторял бы разметку и забывал `data-code`. Плашка глобального
+		// `code` снимается — рядом с тегами страницы она читалась бы как ещё
+		// один бейдж.
 		$kv = (string) file_get_contents($this->projectRoot() . '/app/components/ui/key-value.php');
-		$meta = (string) file_get_contents($this->projectRoot() . '/app/components/ui/research-metadata.php');
 
-		self::assertStringContainsString('$groups ??= [];', $kv);
-		self::assertStringContainsString('$columns ??= 1;', $kv);
-		self::assertStringContainsString('ui-kv__group-title', $kv);
-		self::assertStringContainsString('ui-kv__row--wide', $kv);
-		self::assertStringContainsString('ui-kv__code', $kv);
-
-		// Заголовок группы — `<h3>`: раздел карточки уже занимает `<h2>`,
-		// и второй `<h2>` сломал бы порядок заголовков.
-		self::assertStringContainsString('<h3 class="ui-kv__group-title">', $kv);
-
-		// Плашка глобального `code` снимается: рядом с тегами страницы она
-		// читалась бы как ещё один бейдж.
+		self::assertStringContainsString('data-code="<?= e($code) ?>"', $kv);
 		self::assertMatchesRegularExpression(
 			'/\.ui-kv__code\s*\{[^}]*border:\s*0/',
 			$kv,
 			'машинный код не должен рисовать плашку',
 		);
+	}
 
-		self::assertStringContainsString("'groups' => \$groups", $meta);
-		self::assertStringContainsString("'columns' => 2", $meta);
-		self::assertStringContainsString("'wide' => true", $meta);
+	public function testPassportStaysFlat(): void
+	{
+		// Заголовки групп пробовали и убрали: в маленькой карточке они давали
+		// третий этаж подписей («Study» → «Design and population» → «DESIGN»)
+		// и читались как мешанина. Паспорт — один плоский список полей.
+		$kv = (string) file_get_contents($this->projectRoot() . '/app/components/ui/key-value.php');
+		$meta = (string) file_get_contents($this->projectRoot() . '/app/components/ui/research-metadata.php');
+
+		self::assertStringNotContainsString('ui-kv__group-title', $kv);
+		self::assertStringNotContainsString('ui-kv--columns', $kv);
+		self::assertStringNotContainsString('$groups', $kv);
+		self::assertStringNotContainsString("'groups'", $meta);
+		self::assertStringNotContainsString("'columns' => 2", $meta);
+		self::assertStringContainsString("'items' => \$items", $meta);
+	}
+
+	public function testNestedTableCaptionIsNotASecondHeading(): void
+	{
+		// Капитель в паспорте принадлежит подписям полей. Заголовок вложенной
+		// таблицы набирался той же капителью, что и подписи, и в карточке
+		// стояли две почти одинаковые строки — «REPORTED OUTCOMES» и «OUTCOME».
+		$table = (string) file_get_contents($this->projectRoot() . '/app/components/ui/data-table.php');
+
+		self::assertMatchesRegularExpression(
+			'/\.ui-table--plain \.ui-table__caption\s*\{[^}]*text-transform:\s*none/',
+			$table,
+			'заголовок вложенной таблицы не должен набираться капителью',
+		);
+
+		// Шапка вложенной таблицы без серой плашки: внутри карточки она
+		// читается как вклеенный виджет.
+		self::assertMatchesRegularExpression(
+			'/\.ui-table--plain \.ui-table__th\s*\{[^}]*background:\s*none/',
+			$table,
+		);
 	}
 
 	public function testNestedBlocksDoNotDrawTheirOwnFrame(): void

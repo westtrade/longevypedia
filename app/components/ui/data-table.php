@@ -139,17 +139,29 @@ $wrapperAttrs['class'] = clsx(
 	   У отдельно стоящей таблицы подпись остаётся фразой: там она поясняет
 	   содержимое («Confidence levels used on claim pages»), и капитель на
 	   целом предложении читалась бы криком. */
+	/* Заголовок вложенной таблицы — как заголовок группы в паспорте: обычный
+	   регистр, основной цвет. Капитель остаётся подписям полей и шапке
+	   столбцов, иначе в карточке появляется третья почти одинаковая строка. */
 	.ui-table--plain .ui-table__caption {
 		padding: 0 0 var(--space-2);
 		border-bottom: 0;
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
 		font-weight: var(--weight-semibold);
-		letter-spacing: var(--tracking-wide);
-		text-transform: uppercase;
+		letter-spacing: normal;
+		text-transform: none;
 	}
 
 	.ui-table--plain .ui-table__th,
 	.ui-table--plain .ui-table__td {
 		padding-inline: 0;
+	}
+
+	/* Шапка вложенной таблицы — без серой плашки: внутри карточки плашка
+	   читается как отдельный виджет, вклеенный в паспорт. Шапку держит линия
+	   под ней и капитель, а не фон. */
+	.ui-table--plain .ui-table__th {
+		background: none;
 	}
 
 	.ui-table__table {
