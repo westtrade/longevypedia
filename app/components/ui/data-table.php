@@ -134,9 +134,17 @@ $wrapperAttrs['class'] = clsx(
 		background: none;
 	}
 
+	/* Подпись вложенной таблицы — не описание, а название раздела внутри
+	   карточки: капителью и полужирным, как заголовки групп в `ui/key-value`.
+	   У отдельно стоящей таблицы подпись остаётся фразой: там она поясняет
+	   содержимое («Confidence levels used on claim pages»), и капитель на
+	   целом предложении читалась бы криком. */
 	.ui-table--plain .ui-table__caption {
-		padding-inline: 0;
+		padding: 0 0 var(--space-2);
 		border-bottom: 0;
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-wide);
+		text-transform: uppercase;
 	}
 
 	.ui-table--plain .ui-table__th,
@@ -225,6 +233,16 @@ $wrapperAttrs['class'] = clsx(
 	.ui-table--compact .ui-table__th,
 	.ui-table--compact .ui-table__td {
 		padding: var(--space-1) var(--space-3);
+	}
+
+	/* На узком экране плотная таблица не влезает в 14px: «Median lifespan»
+	   рвалось на три строки посреди слова. Мелкий кегль оставляет ячейке
+	   воздух по горизонтали — читается ровнее, чем перенос через каждые два
+	   слова. */
+	@media (max-width: $bp-sm) {
+		.ui-table--compact .ui-table__td {
+			font-size: var(--text-xs);
+		}
 	}
 
 	/* Ячейка-заголовок строки — это `<th>`, а у него браузерное выравнивание по

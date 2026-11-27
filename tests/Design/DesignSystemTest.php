@@ -597,6 +597,65 @@ final class DesignSystemTest extends TestCase
 		self::assertStringNotContainsString('class="ui-table<?=', $table);
 	}
 
+	public function testKeyValueLabelsDoNotTakeAThirdOfTheCard(): void
+	{
+		// Колонка подписей раздувалась до `minmax(8rem, 14rem)`: 224px при
+		// самой длинной подписи около 90px. Значение начиналось на 261px от
+		// края карточки, и между подписью и значением оставалась пустая полоса.
+		$kv = (string) file_get_contents($this->projectRoot() . '/app/components/ui/key-value.php');
+
+		self::assertStringContainsString('grid-template-columns: minmax(6rem, 8rem) minmax(0, 1fr)', $kv);
+		// Старое значение осталось в объяснении, поэтому ищем объявление, а не
+		// упоминание: строка комментария начинается со `*`, объявление — нет.
+		self::assertDoesNotMatchRegularExpression(
+			'/^\s*grid-template-columns:\s*minmax\(8rem, 14rem\)/m',
+			$kv,
+			'колонка подписей снова растянута до 14rem',
+		);
+
+		// Подпись — имя поля, а не текст: капитель, мелкий кегль, средний вес.
+		// Без этого подпись и значение различались только цветом.
+		self::assertMatchesRegularExpression(
+			'/\.ui-kv__label\s*\{[^}]*font-size:\s*var\(--text-xs\)/',
+			$kv,
+			'подпись поля должна быть мельче значения',
+		);
+		self::assertMatchesRegularExpression('/\.ui-kv__label\s*\{[^}]*text-transform:\s*uppercase/', $kv);
+		self::assertMatchesRegularExpression('/\.ui-kv__label\s*\{[^}]*font-weight:\s*var\(--weight-medium\)/', $kv);
+	}
+
+	public function testKeyValueSupportsGroupsColumnsAndCode(): void
+	{
+		// Три возможности появились вместе с переделкой паспорта исследования:
+		// группы делят восемь полей на смысловые части, `columns` ставит
+		// короткие поля парами, `wide` отдаёт прозаическое поле на всю ширину,
+		// `code` печатает машинный код рядом с переводом.
+		$kv = (string) file_get_contents($this->projectRoot() . '/app/components/ui/key-value.php');
+		$meta = (string) file_get_contents($this->projectRoot() . '/app/components/ui/research-metadata.php');
+
+		self::assertStringContainsString('$groups ??= [];', $kv);
+		self::assertStringContainsString('$columns ??= 1;', $kv);
+		self::assertStringContainsString('ui-kv__group-title', $kv);
+		self::assertStringContainsString('ui-kv__row--wide', $kv);
+		self::assertStringContainsString('ui-kv__code', $kv);
+
+		// Заголовок группы — `<h3>`: раздел карточки уже занимает `<h2>`,
+		// и второй `<h2>` сломал бы порядок заголовков.
+		self::assertStringContainsString('<h3 class="ui-kv__group-title">', $kv);
+
+		// Плашка глобального `code` снимается: рядом с тегами страницы она
+		// читалась бы как ещё один бейдж.
+		self::assertMatchesRegularExpression(
+			'/\.ui-kv__code\s*\{[^}]*border:\s*0/',
+			$kv,
+			'машинный код не должен рисовать плашку',
+		);
+
+		self::assertStringContainsString("'groups' => \$groups", $meta);
+		self::assertStringContainsString("'columns' => 2", $meta);
+		self::assertStringContainsString("'wide' => true", $meta);
+	}
+
 	public function testNestedBlocksDoNotDrawTheirOwnFrame(): void
 	{
 		// Внутри карточки исследования живут список «поле — значение» и таблица

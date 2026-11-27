@@ -12,9 +12,17 @@ declare(strict_types=1);
  * Подписи дизайна берутся из `StudyDesigns::LABELS` — единого словаря со
  * схемой `research.schema.json`. Машинный код остаётся в разметке рядом с
  * переводом: подпись читает человек, `data-code` — тест, экспорт или фильтр.
+ * Печатает его `ui/key-value` (моноширинным, рядом со значением), поэтому
+ * здесь едет только пара «подпись — код».
+ *
+ * Поля разделены на две группы: «кто и как изучали» и «что делали и с чем
+ * сравнивали». Группы читаются быстрее, чем восемь строк подряд, а `wide`
+ * отдаёт прозаические поля («Population», «Intervention») на всю ширину —
+ * в двухколоночном режиме они иначе рвутся на пять строк.
  *
  * Пустые поля не печатаются: строка «Sample size: —» создаёт впечатление, что
- * данные есть, но не внесены.
+ * данные есть, но не внесены. Группа, в которой не осталось полей, тоже не
+ * печатается.
  *
  * @var array<string, mixed> $study поля `study` из фронтматтера
  * @var bool $isExample демонстрационная запись, а не публикация
@@ -44,31 +52,50 @@ $directions = [
 
 $designLabel = $design !== '' ? \Longevypedia\Content\StudyDesigns::label($design) : '';
 
-// Значение дизайна — готовая разметка (key-value печатает её как есть), поэтому
-// машинный код едет вместе с переводом, а не вместо него.
-$designValue = $design !== ''
-	? '<span data-code="' . e($design) . '">' . e($designLabel) . '</span>'
-	: '';
+// Значение дизайна приходит парой: подпись для человека и машинный код рядом.
+$designValue = $design !== '' ? e($designLabel) : '';
 
 $fields = [
-	'Design' => $designValue,
-	'Species' => e((string) ($study['species'] ?? '')),
-	'Population' => e((string) ($study['population'] ?? '')),
-	'Sample size' => e((string) ($study['sample_size'] ?? '')),
-	'Intervention' => e((string) ($study['intervention'] ?? '')),
-	'Comparator' => e((string) ($study['comparator'] ?? '')),
-	'Duration' => e((string) ($study['duration'] ?? '')),
-	'Registration' => e((string) ($study['registration'] ?? '')),
+	[
+		'title' => 'Design and population',
+		'items' => [
+			['label' => 'Design', 'value' => $designValue, 'code' => $design !== '' ? $design : null],
+			['label' => 'Species', 'value' => e((string) ($study['species'] ?? ''))],
+			['label' => 'Population', 'value' => e((string) ($study['population'] ?? '')), 'wide' => true],
+			['label' => 'Sample size', 'value' => e((string) ($study['sample_size'] ?? ''))],
+			['label' => 'Registration', 'value' => e((string) ($study['registration'] ?? ''))],
+		],
+	],
+	[
+		'title' => 'Intervention and comparison',
+		'items' => [
+			['label' => 'Intervention', 'value' => e((string) ($study['intervention'] ?? '')), 'wide' => true],
+			['label' => 'Comparator', 'value' => e((string) ($study['comparator'] ?? '')), 'wide' => true],
+			['label' => 'Duration', 'value' => e((string) ($study['duration'] ?? ''))],
+		],
+	],
 ];
 
-$items = [];
+$groups = [];
 
-foreach ($fields as $label => $value) {
-	if (trim(strip_tags($value)) === '') {
+foreach ($fields as $group) {
+	$items = [];
+
+	foreach ($group['items'] as $item) {
+		// Код дизайна — не текст: пустое значение отсекаем по подписи, а не по
+		// разметке, потому что у него значение уже без тегов.
+		if (trim(strip_tags((string) $item['value'])) === '') {
+			continue;
+		}
+
+		$items[] = $item;
+	}
+
+	if ($items === []) {
 		continue;
 	}
 
-	$items[] = ['label' => $label, 'value' => $value];
+	$groups[] = ['title' => $group['title'], 'items' => $items];
 }
 
 $columns = [
@@ -108,7 +135,9 @@ foreach ($outcomes as $outcome) {
 	<?php endif ?>
 
 	<?= $this->insert('components::ui/key-value', [
-		'items' => $items,
+		'groups' => $groups,
+		// Две колонки: короткие поля встают парами, прозаические занимают строку.
+		'columns' => 2,
 		'density' => 'compact',
 		// Карточка уже даёт рамку: линии списка добавляли вторую, и блок
 		// «Design / Species / …» читался как таблица в таблице.
